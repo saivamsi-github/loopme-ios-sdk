@@ -1,5 +1,7 @@
 # LoopMe-iOS-SDK #
 
+[点击阅读SDK对接中文说明](README_CHINESE.md)
+
 ## Overview ##
 
 LoopMe is the largest mobile video DSP and Ad Network, reaching over 1 billion consumers world-wide. LoopMe’s full-screen video and rich media ad formats deliver more engaging mobile advertising experiences to consumers on smartphones and tablets.
