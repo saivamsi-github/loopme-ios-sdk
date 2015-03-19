@@ -2,9 +2,20 @@
 
 [点击阅读SDK对接中文说明](README_CHINESE.md)
 
+1. **[Overview](#overview)**
+2. **[Features](#features)**
+3. **[Requirements](#requirements)**
+4. **[Integration](#integration)**
+  * **[Full screen interstitial ads](#full-screen-interstitial-ads)**
+  * **[Banner ads](#banner-ads)**
+5. **[Sample projects](#sample-projects)**
+6. **[What's new](#whats-new)**
+
 ## Overview ##
 
 LoopMe is the largest mobile video DSP and Ad Network, reaching over 1 billion consumers world-wide. LoopMe’s full-screen video and rich media ad formats deliver more engaging mobile advertising experiences to consumers on smartphones and tablets.
+
+The LoopMe SDK is distributed as source code that you must include in your application and provides facilities to retrieve, display ads in your application.
 
 If you have questions please contact us at support@loopmemedia.com.
 
@@ -22,12 +33,10 @@ An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifie
 
 Requires `XCode 5` or higher, `iOS 6.0` and above. Built using `ARC`.
 
-## Usage ##
+## Integration ##
 
-Integrating the `loopme-ios-sdk` is very simple and should take less than 10 minutes.
-
-* Download `loopme-ios-sdk`
-* Copy the `loopme-sdk` folder to your `XCode` project
+* Download `loopme-ios-sdk` from this repository
+* Copy the  `LoopMeSDK` folder into your Xcode application project
 * Make sure following frameworks are added in `Xcode` project's `build phases`
   * `MessageUI.framework`
   * `StoreKit.framework`
@@ -37,10 +46,10 @@ Integrating the `loopme-ios-sdk` is very simple and should take less than 10 min
   * `AdSupport.framework`
   * `CoreTelephony.framework`
   * `SystemConfiguration.framework`  
-* Add following flags to other linker flags in `XCode` project's `build settings`
-  * `-ObjC`
-  * `-all_load`
-* Display full-screen interstitial or video ads:
+
+## Full-screen interstitial ads ##
+
+The `LoopMenterstitial` class provides the facilities to display a full-screen ad during natural transition points in your application.
 
 ```objective-c
 #import "LoopMeInterstitial.h"
@@ -51,73 +60,127 @@ Integrating the `loopme-ios-sdk` is very simple and should take less than 10 min
 
 /* ... */
 
-// Initialize the LoopMe interstitial,
-// using the unique appKey you received when registering your app via the LoopMe Dashboard:
+/** 
+ * Initialize the LoopMe interstitial ad
+ * using the unique appKey you received when registering your app via the LoopMe Dashboard.
+ * For test purposes you can use test appKeys constants defined in LoopMeInterstitial.h
+ */
 self.interstitial = [LoopMeInterstitial interstitialWithAppKey:YOUR_APPKEY
                                                       delegate:self];
 /* ... */
 
-// Use this method to preload the interstitial for display
-// (we also recommend to trigger it in -interstitialDidDisappear delegate method to keep content up-to-date)
+/**
+ * Starts loading ad content process.
+ * It is recommended triggering it in advance to have interstitial ad ready 
+ * and to be able to display instantly in your application.
+ */
 [self.interstitial loadAd];
 
 /* ... */
 
-// Displaying the LoopMe Interstitial can be user-initiated (e.g press on button)
-// or publisher-initiated (e.g. end of game level)
+/**
+ * Displaying the Interstitial.
+ * Can be user-initiated (e.g press on button) or publisher-initiated (e.g. end of game level)
+ */
 [self.interstitial showFromViewController:self];
 
 ```
-* Implement `LoopMeInterstitialDelegate` in order to receive notifications during the loading/displaying ad processes, that you can use to trigger subsequent in-app events:
+ * It is recommended to implement `LoopMeInterstitialDelegate` in order to receive notifications during the loading/displaying ad processes, that you can use to trigger subsequent in-app events:
    * `-loopMeInterstitialDidLoadAd`: triggered when interstitial has been loaded the ad content
    * `-loopMeInterstitial: didFailToLoadAdWithError:`: triggered when interstitial failed to load the ad content
+   * `-loopMeInterstitialVideoDidReachEnd`: triggered when interstitial video ad has been completely watched
    * `-loopMeInterstitialWillAppear`: triggered when interstitial ad will appear on the screen
    * `-loopMeInterstitialDidAppear:`: triggered when interstitial ad did appear on the screen
    * `-loopMeInterstitialWillDisappear`: triggered when interstitial ad will disappear from the screen
    * `-loopMeInterstitialDidDisappear`: triggered when interstitial ad did disappear from the screen
-   * `-loopMeInterstitialVideoDidReachEnd`: triggered when interstitial video ad has been completely watched
-   * `-loopMeInterstitialDidReceiveTap`: triggered when interstitial ad was clicked
-   * `-loopMeInterstitialDidExpire`: triggered when interstitial ad is expired, it is recommended to re-load
+   * `-loopMeInterstitialDidReceiveTap`: triggered when interstitial ad was tapped
 
 
-* Display banner ads:
+## Banner ads ##
 
-   ```objective-c
-   #import "LoopMeBanner.h"
+The `LoopMeAdView` class provides facilities to display a custom size ads during natural transition points in your application.
 
-   /* ... */  
+```objective-c
+#import "LoopMeAdView.h"
 
-   @property (nonatomic, strong) LoopMeBanner *banner;
+/* ... */  
 
-   /* ... */
+@property (nonatomic, strong) LoopMeAdView *adView;
 
-   // Initialize the LoopMe banner,
-   // using the unique appKey you received when registering your app via the LoopMe Dashboard:
-   self.banner = [LoopMeBanner bannerWithAppKey:YOUR_APPKEY
-   delegate:self];
-   /* ... */
+/* ... */  
 
-   // Banner ad remains on the screen and refreshes automatically.
-   // If the user leaves screen this is developer's responsibility to hide banner and stop sending ad requests.
-   [self.banner  showInView:parentView
-                  withFrame:CGRectMake(x, y, LOOPME_AD_SIZE_320_50.width, LOOPME_AD_SIZE_320_50.height)];
+/**
+* Initialize the LoopMe AdView 
+* using the unique appKey you received when registering your app via the LoopMe Dashboard.
+* For test purposes you can use test appKeys constants defined in LoopMeAdView.h    
+*/
+CGRect adFrame = CGRectMake(0, 0, 300, 250);
+self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame delegate:self];
+
+/* ... */
+
+/**
+ * Starts loading ad content process.
+ * It is recommended triggering it in advance to have interstitial ad ready 
+ * and to be able to display instantly in your application.
+ */
+[self.interstitial loadAd];
+
+/* ... */
+
+/**
+* Add adView as a subview to your view, LoopMeAdView is inherited from UIView class.
+* It is recommended to add adView to your view when the ad content was loaded
+*/
+- (void)loopMeAdViewDidLoadAd:(LoopMeAdView *)adView {
+    [yourView addSubview:adView];
+}
+
+/**
+ * Sometimes there is a necessity to pause/resume the ad's activity 
+ * during natural transitions between your views or view controllers
+ * You can use this method to manage ad visibility 
+ */
+ - (void)setAdVisible:(BOOL)visible;
    ```
-* Implement `LoopMeBannerDelegate` in order to receive notifications during the loading/displaying ad processes, that you can use to trigger subsequent in-app events:
-   * `-loopMeBanner: didFailToLoadAdWithError:`: triggered when interstitial failed to load the ad content
-   * `-loopMeBannerDidAppear:`: triggered when banner ad did appear on the screen
-   * `-loopMeBannerDidDisappear`: triggered when banner ad did disappear from the screen
-   * `-loopMeBannerDidReceiveTap`: triggered when banner ad was clicked
+
+**Displaying in scrollable content**
+```objective-c
+/**
+* IMPORTANT: if adView will be added to scrollable content, 
+* you should pass instance of your scrollView (f.e tableView) when initialise adView,
+* to let it manage ad content activity (f.e pause/resumes video when ad visibility changes)
+*/ 
+self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame scrollView:tableView delegate:self];
+
+/**
+ * Also you should let adView know when scrolling happens
+ */
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.adView updateAdVisibilityInScrollView];
+}
+   ```
+   
+* It is recommended to implement `LoopMeAdViewDelegate` in order to receive notifications during the loading/displaying ad processes, that you can use to trigger subsequent in-app events:
+   * `-loopMeAdViewDidLoadAd`: triggered when adView has been loaded the ad content
+   * `-loopMeAdView: didFailToLoadAdWithError:`: triggered when adView failed to load the ad content
+   * `-loopMeAdViewVideoDidReachEnd`: triggered when adView video ad has been completely watched
+   * `-loopMeInterstitialDidReceiveTap`: triggered when adView ad was tapped
+   * `-loopMeInterstitialDidExpire`:  triggered when the adView's loaded ad content is expired
 
 ## Sample project ##
 
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v4.0.1**
+**v5.0.0**
 
-* Video preloading performance improvements
-* New video ad UI design
-* Completed video view notification added
+Please view the [changelog](CHANGELOG.md) for details.
+
+- **Opened source code**
+- **Banner space (`LoopMeAdView`) supports preloaded video ads**.
+- **Dismiss method for `LoopMeInterstitial`**.
+- **Store up to 3 video files in cache**.
 
 ## License ##
 

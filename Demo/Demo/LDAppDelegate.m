@@ -1,17 +1,21 @@
 //
 //  LDAppDelegate.m
-//  Demo
+//  LoopmeDemo
 //
-//  Copyright (c) 2014 loopmemedia. All rights reserved.
+//  Copyright (c) 2015 Loopmemedia. All rights reserved.
 //
 
 #import "LDAppDelegate.h"
+#import "LoopMeLogging.h"
 
 @implementation LDAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName : [UIColor whiteColor]}];
+    
+    setLoopMeLogLevel(LoopMeLogLevelDebug);
     return YES;
 }
 							

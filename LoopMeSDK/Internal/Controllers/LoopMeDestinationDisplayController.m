@@ -1,0 +1,174 @@
+//
+//  LoopMeDestinationDisplayAgent.m
+//  LoopMeSDK
+//
+//  Created by Dmitriy Lihachov on 8/21/12.
+//  Copyright (c) 2012 LoopMe. All rights reserved.
+//
+
+#import <StoreKit/StoreKit.h>
+
+#import "LoopMeBrowserViewController.h"
+#import "LoopMeDestinationDisplayController.h"
+#import "LoopMeProgressOverlayView.h"
+
+@interface LoopMeDestinationDisplayController ()
+<
+    LoopMeProgressOverlayViewDelegate,
+    LoopMeBrowserControllerDelegate,
+    SKStoreProductViewControllerDelegate
+>
+
+@property (nonatomic, strong) LoopMeURLResolver *resolver;
+@property (nonatomic, strong) LoopMeProgressOverlayView *overlayView;
+@property (nonatomic, assign, getter = isLoadingDestination) BOOL loadingDestination;
+@property (nonatomic, strong) SKStoreProductViewController *storeKitController;
+@property (nonatomic, strong) LoopMeBrowserViewController *browserController;
+
+- (void)presentStoreKitControllerWithItemIdentifier:(NSString *)identifier
+                                        fallbackURL:(NSURL *)URL;
+- (void)hideOverlay;
+- (void)dismissStoreKitController;
+
+@end
+
+@implementation LoopMeDestinationDisplayController
+
+#pragma mark - Class Methods
+
++ (LoopMeDestinationDisplayController *)controllerWithDelegate:(id<LoopMeDestinationDisplayControllerDelegate>)delegate
+{
+    LoopMeDestinationDisplayController *agent = [[LoopMeDestinationDisplayController alloc] init];
+    agent.delegate = delegate;
+    agent.resolver = [LoopMeURLResolver resolver];
+    return agent;
+}
+
+#pragma mark - Private
+
+- (void)hideOverlay
+{
+    [LoopMeProgressOverlayView dismissOverlayFromWindow:[UIApplication sharedApplication].keyWindow
+                                               animated:YES];
+}
+
+- (void)presentStoreKitControllerWithItemIdentifier:(NSString *)identifier fallbackURL:(NSURL *)URL
+{
+    self.storeKitController = [[SKStoreProductViewController alloc] init];
+    self.storeKitController.delegate = self;
+    
+    NSDictionary *parameters = @{SKStoreProductParameterITunesItemIdentifier: identifier};
+    [self.storeKitController loadProductWithParameters:parameters completionBlock:nil];
+    [self hideOverlay];
+    
+    if (self.browserController.presentingViewController) {
+        [self.browserController presentViewController:self.storeKitController
+                                             animated:YES
+                                           completion:nil];
+    } else {
+        [[self.delegate viewControllerForPresentingModalView] presentViewController:self.storeKitController
+                                                                           animated:YES
+                                                                         completion:nil];
+    }
+}
+
+- (void)dismissStoreKitController
+{
+    [self.storeKitController.presentingViewController dismissViewControllerAnimated:YES completion:^{
+        [self.delegate destinationDisplayControllerDidDismissModal:self];
+    }];
+}
+
+#pragma mark - Public
+
+- (void)displayDestinationWithURL:(NSURL *)URL
+{
+    if (self.isLoadingDestination || ![self.delegate viewControllerForPresentingModalView]) {
+        return;
+    }
+    
+    self.loadingDestination = YES;
+
+    [self.delegate destinationDisplayControllerWillPresentModal:self];
+    [LoopMeProgressOverlayView presentOverlayInWindow:[UIApplication sharedApplication].keyWindow animated:YES delegate:self];
+    [self.resolver startResolvingWithURL:URL delegate:self];
+}
+
+- (void)cancel
+{
+    if (self.isLoadingDestination) {
+        self.loadingDestination = NO;
+        [self.resolver cancel];
+        [self hideOverlay];
+        [self.delegate destinationDisplayControllerDidDismissModal:self];
+    }
+}
+
+#pragma mark - LoopMeURLResolverDelegate
+
+- (void)showWebViewWithHTMLString:(NSString *)HTMLString
+                          baseURL:(NSURL *)URL
+{
+    [self hideOverlay];
+    self.browserController = [[LoopMeBrowserViewController alloc] initWithURL:URL
+                                                                   HTMLString:HTMLString
+                                                                     delegate:self];
+    [[self.delegate viewControllerForPresentingModalView] presentViewController:self.browserController
+                                                                       animated:NO
+                                                                     completion:^{
+                                                                         [self.browserController layoutBrowseToolbar];
+                                                                     }];    
+}
+
+- (void)showStoreKitProductWithParameter:(NSString *)parameter fallbackURL:(NSURL *)URL
+{
+    if (!!NSClassFromString(@"SKStoreProductViewController")) {
+        [self presentStoreKitControllerWithItemIdentifier:parameter fallbackURL:URL];
+    } else {
+        [self openURLInApplication:URL];
+    }
+}
+
+- (void)openURLInApplication:(NSURL *)URL
+{
+    [self hideOverlay];
+    [self.delegate destinationDisplayControllerWillLeaveApplication:self];
+
+    [[UIApplication sharedApplication] openURL:URL];
+    self.loadingDestination = NO;
+}
+
+- (void)failedToResolveURLWithError:(NSError *)error
+{
+    self.loadingDestination = NO;
+    [self hideOverlay];
+    [self.delegate destinationDisplayControllerDidDismissModal:self];
+}
+
+
+#pragma mark - LoopMeStoreProductViewControllerDelegate
+
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
+{
+    self.loadingDestination = NO;
+    [self dismissStoreKitController];
+}
+
+#pragma mark - LoopMeBrowserControllerDelegate
+
+- (void)dismissBrowserController:(LoopMeBrowserViewController *)browserController animated:(BOOL)animated
+{
+    self.loadingDestination = NO;
+    [[self.delegate viewControllerForPresentingModalView] dismissViewControllerAnimated:NO completion:^{
+        [self.delegate destinationDisplayControllerDidDismissModal:self];
+    }];
+}
+
+#pragma mark - LoopMeProgressOverlayViewDelegate
+
+- (void)overlayCancelButtonPressed:(LoopMeProgressOverlayView *)overlay
+{
+    [self cancel];
+}
+
+@end
