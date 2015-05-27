@@ -35,6 +35,13 @@ NSString *const TEST_APP_KEY_MPU;
 
 @property (nonatomic, weak) id<LoopMeAdViewDelegate> delegate;
 
+/*
+ * Enabling minimized mode.
+ * Represents copy of original ad added on top of `UIWindow`'s right-bottom corner.
+ * Minimized ad appears/disappears on the screen during scrolling when visibility of original ad is changed
+*/
+@property (nonatomic, assign, getter = isMinimizedModeEnabled) BOOL minimizedModeEnabled;
+
 /**
  * The appKey uniquely identifies your app to the LoopMe ad network.
  * To get an appKey visit the LoopMe Dashboard.
@@ -77,7 +84,6 @@ NSString *const TEST_APP_KEY_MPU;
                              frame:(CGRect)frame
                         scrollView:(UIScrollView *)scrollView
                           delegate:(id<LoopMeAdViewDelegate>)delegate;
-
 /**
  * Starts loading ad content process.
  * It is recommended triggering it in advance to have ad ready and to be able to display ad instantly in your application.

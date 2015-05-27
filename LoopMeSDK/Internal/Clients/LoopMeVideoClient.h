@@ -18,7 +18,6 @@ extern const struct LoopMeVideoStateStruct
 {
     __unsafe_unretained NSString *ready;
     __unsafe_unretained NSString *completed;
-    __unsafe_unretained NSString *buffering;
     __unsafe_unretained NSString *playing;
     __unsafe_unretained NSString *paused;
     __unsafe_unretained NSString *broken;
@@ -33,6 +32,8 @@ extern const struct LoopMeVideoStateStruct
 - (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate;
 - (void)adjustLayerToFrame:(CGRect)frame;
 - (void)cancel;
+
+- (void)moveLayer;
 
 @end
 

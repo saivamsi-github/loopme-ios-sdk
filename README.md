@@ -8,7 +8,7 @@
 4. **[Integration](#integration)**
   * **[Full screen interstitial ads](#full-screen-interstitial-ads)**
   * **[Banner ads](#banner-ads)**
-5. **[Sample projects](#sample-projects)**
+5. **[Sample project](#sample-project)**
 6. **[What's new](#whats-new)**
 
 ## Overview ##
@@ -23,8 +23,10 @@ If you have questions please contact us at support@loopmemedia.com.
 
 * Full-screen image interstitials
 * Full-screen rich media interstitials
-* Banner ads
 * Preloaded video ads
+* Banner ads
+* Native video ads
+* Minimized ad
 * In-app ad reward notifications, including video view completed
 
 ## Requirements ##
@@ -121,10 +123,10 @@ self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame delegate:
 
 /**
  * Starts loading ad content process.
- * It is recommended triggering it in advance to have interstitial ad ready 
+ * It is recommended triggering it in advance to have ad ready to be displyaed 
  * and to be able to display instantly in your application.
  */
-[self.interstitial loadAd];
+[self.adView loadAd];
 
 /* ... */
 
@@ -153,6 +155,13 @@ self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame delegate:
 */ 
 self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame scrollView:tableView delegate:self];
 
+/*
+* Enabling minimized mode.
+* Represents copy of original ad added on top of `UIWindow`'s right-bottom corner.
+* Minimized ad appears/disappears on the screen during scrolling when visibility of original ad is changed
+*/
+self.adView.minimizedModeEnabled = YES;
+
 /**
  * Also you should let adView know when scrolling happens
  */
@@ -173,14 +182,12 @@ self.adView = [LoopMeAdView adViewWithAppKey:YOUR_APPKEY frame:adFrame scrollVie
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.0.0**
+**v5.1.0**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- **Opened source code**
-- **Banner space (`LoopMeAdView`) supports preloaded video ads**.
-- **Dismiss method for `LoopMeInterstitial`**.
-- **Store up to 3 video files in cache**.
+- Displaying minimized ad during scrolling when original ad is out of viewport.
+- Swipe-to-remove minimized ad.
 
 ## License ##
 

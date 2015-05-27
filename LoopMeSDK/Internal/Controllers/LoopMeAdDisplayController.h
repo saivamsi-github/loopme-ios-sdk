@@ -1,9 +1,9 @@
 //
-//  LoopMeAdWebViewAgent.h
+//  LoopMeAdDisplayController.h
 //  LoopMeSDK
 //
 //  Created by Dmitriy Lihachov on 8/21/12.
-//  Copyright (c) 2012 LoopMe. All rights reserved.
+//  Copyright (c) 2013 LoopMe. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -19,6 +19,8 @@
 
 @property (nonatomic, weak) id<LoopMeAdDisplayControllerDelegate> delegate;
 @property (nonatomic, assign, getter=isVisible) BOOL visible;
+@property (nonatomic, assign, getter=isVisibleNoJS) BOOL visibleNoJS;
+@property (nonatomic, assign) BOOL forceHidden;
 
 - (instancetype)initWithDelegate:(id<LoopMeAdDisplayControllerDelegate>)delegate;
 - (void)loadConfiguration:(LoopMeAdConfiguration *)configuration;
@@ -27,6 +29,7 @@
 - (void)layoutSubviews;
 - (void)stopHandlingRequests;
 - (void)continueHandlingRequests;
+- (void)moveView;
 
 @end
 

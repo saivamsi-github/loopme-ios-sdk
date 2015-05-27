@@ -217,8 +217,8 @@
 - (void)handleURL:(NSURL *)URL
 {
     if  ([LoopMeURLResolver storeItemIdentifierForURL:URL]) {
-        LoopMeDestinationDisplayController *displayAgent = (LoopMeDestinationDisplayController *)self.delegate;
-        [displayAgent showStoreKitProductWithParameter:[LoopMeURLResolver storeItemIdentifierForURL:URL] fallbackURL:URL];
+        LoopMeDestinationDisplayController *displayController = (LoopMeDestinationDisplayController *)self.delegate;
+        [displayController showStoreKitProductWithParameter:[LoopMeURLResolver storeItemIdentifierForURL:URL] fallbackURL:URL];
     } else {
         if ([[UIApplication sharedApplication] canOpenURL:self.URL]) {
             [[UIApplication sharedApplication] openURL:self.URL];
@@ -304,8 +304,8 @@
 {
     self.actionSheet = nil;
     if (buttonIndex == 0) {
-        LoopMeDestinationDisplayController *displayAgent = (LoopMeDestinationDisplayController *)self.delegate;
-        [displayAgent openURLInApplication:self.URL];
+        LoopMeDestinationDisplayController *displayController = (LoopMeDestinationDisplayController *)self.delegate;
+        [displayController openURLInApplication:self.URL];
     }
 }
 

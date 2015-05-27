@@ -1,5 +1,5 @@
 //
-//  LoopMeAdWebViewAgent.m
+//  LoopMeAdDisplayController.m
 //  LoopMeSDK
 //
 //  Created by Dmitriy Lihachov on 8/21/12.
@@ -33,9 +33,8 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 @property (nonatomic, strong) LoopMeAdWebView *webView;
 @property (nonatomic, strong) LoopMeJSClient *JSClient;
 @property (nonatomic, strong) LoopMeVideoClient *videoClient;
-@property (nonatomic, strong) LoopMeDestinationDisplayController *destinationDisplayAgent;
+@property (nonatomic, strong) LoopMeDestinationDisplayController *destinationDisplayClient;
 @property (nonatomic, assign, getter = isShouldHandleRequests) BOOL shouldHandleRequests;
-@property (nonatomic, assign) BOOL forceInvisible;
 @property (nonatomic, strong) NSTimer *webViewTimeOutTimer;
 
 - (void)deviceShaken;
@@ -59,14 +58,31 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)setVisible:(BOOL)visible
 {
-    if (_forceInvisible) visible = NO;
     if (_visible != visible) {
-    
-        _visible = visible;
-        if (_visible) {
+        
+        if (_forceHidden) {
+            _visible = NO;
+        } else {
+            _visible = visible;
+        }
+        
+        if (visible && !_forceHidden) {
             [self.JSClient executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:LoopMeWebViewState.visible];
         } else {
             [self.JSClient executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:LoopMeWebViewState.hidden];
+        }
+    }
+}
+
+- (void)setVisibleNoJS:(BOOL)visibleNoJS
+{
+    if (_visibleNoJS != visibleNoJS) {
+        
+        _visibleNoJS = visibleNoJS;
+        if (_visibleNoJS) {
+            [self.videoClient play];
+        } else {
+            [self.videoClient pause];
         }
     }
 }
@@ -87,7 +103,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     self = [super init];
     if (self) {
         _delegate = delegate;
-        _destinationDisplayAgent = [LoopMeDestinationDisplayController controllerWithDelegate:self];
+        _destinationDisplayClient = [LoopMeDestinationDisplayController controllerWithDelegate:self];
         _JSClient = [[LoopMeJSClient alloc] initWithDelegate:self];
         _webView = [[LoopMeAdWebView alloc] init];
         _webView.delegate = self;
@@ -120,7 +136,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)interceptURL:(NSURL *)URL
 {
-    [self.destinationDisplayAgent displayDestinationWithURL:URL];
+    [self.destinationDisplayClient displayDestinationWithURL:URL];
 }
 
 - (void)cancelWebView
@@ -165,8 +181,11 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 - (void)stopHandlingRequests
 {
     self.shouldHandleRequests = NO;
-    [self.destinationDisplayAgent cancel];
+    [self.destinationDisplayClient cancel];
+    self.destinationDisplayClient = nil;
     [self.videoClient cancel];
+    self.videoClient = nil;
+    self.destinationDisplayClient = nil;
     [self.webView stopLoading];
     [self.webViewTimeOutTimer invalidate];
 }
@@ -174,6 +193,12 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 - (void)continueHandlingRequests
 {
     self.shouldHandleRequests = YES;
+}
+
+- (void)moveView
+{
+    [self.videoClient moveLayer];
+    [self displayAd];
 }
 
 #pragma mark - UIWebViewDelegate
@@ -206,29 +231,27 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     }
 }
 
-#pragma mark - LoopMeDestinationDisplayAgentDelegate
+#pragma mark - LoopMeDestinationDisplayControllerDelegate
 
 - (UIViewController *)viewControllerForPresentingModalView
 {
     return [self.delegate viewControllerForPresentation];
 }
 
-- (void)destinationDisplayControllerWillLeaveApplication:(LoopMeDestinationDisplayController *)destinationAgent
+- (void)destinationDisplayControllerWillLeaveApplication:(LoopMeDestinationDisplayController *)destinationDisplayController
 {
     if ([self.delegate respondsToSelector:@selector(adDisplayControllerWillLeaveApplication:)]) {
         [self.delegate adDisplayControllerWillLeaveApplication:self];
     }
 }
 
-- (void)destinationDisplayControllerWillPresentModal:(LoopMeDestinationDisplayController *)destinationAgent
+- (void)destinationDisplayControllerWillPresentModal:(LoopMeDestinationDisplayController *)destinationDisplayController
 {
-    self.forceInvisible = YES;
     self.visible = NO;
 }
 
-- (void)destinationDisplayControllerDidDismissModal:(LoopMeDestinationDisplayController *)destinationAgent
+- (void)destinationDisplayControllerDidDismissModal:(LoopMeDestinationDisplayController *)destinationDisplayController
 {
-    self.forceInvisible = NO;
     if ([self.delegate respondsToSelector:@selector(adDisplayControllerDidDismissModal:)]) {
         [self.delegate adDisplayControllerDidDismissModal:self];
     }
@@ -306,8 +329,10 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)videoClient:(LoopMeVideoClient *)client setupLayer:(AVPlayerLayer *)layer
 {
+    [CATransaction setDisableActions: YES];
     layer.frame = self.delegate.containerView.bounds;
     [[self.delegate containerView].layer insertSublayer:layer below:self.webView.layer];
+    [CATransaction setDisableActions:NO];
 }
 
 @end

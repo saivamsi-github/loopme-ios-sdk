@@ -28,7 +28,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
         _background.image = [UIImage imageNamedForDevice:@"bg_new_main"];
     }
@@ -38,8 +38,10 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    self.interstitial = [LoopMeInterstitial interstitialWithAppKey:TEST_APP_KEY_INTERSTITIAL_PORTRAIT delegate:self];
+
+    // Intializing `LoopMeInterstitial`
+    self.interstitial = [LoopMeInterstitial interstitialWithAppKey:TEST_APP_KEY_INTERSTITIAL_PORTRAIT
+                                                          delegate:self];
     if ([self.interstitial isReady]) {
         [self togglePreloadingProgress:LDButtonStateShow];
     } else {
@@ -61,7 +63,7 @@
         case LDButtonStateLoading:
             self.showButton.enabled = NO;
             [self.showButton setTitle:@"PRELOADING..." forState:UIControlStateDisabled];
-            [self.showButton setTitleColor:[UIColor redColor] forState:UIControlStateDisabled];
+            [self.showButton setTitleColor:[UIColor whiteColor] forState:UIControlStateDisabled];
             break;
             
         case LDButtonStateShow:
@@ -72,7 +74,7 @@
             
         case LDButtonStateRetry:
             self.showButton.enabled = YES;
-            [self.showButton setTitle:@"Retry" forState:UIControlStateNormal];
+            [self.showButton setTitle:@"RETRY" forState:UIControlStateNormal];
             [self.showButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
             break;
         default:
@@ -85,13 +87,16 @@
 - (IBAction)btnShow_Click:(id)sender
 {
     if ([self.interstitial isReady]) {
+        // Display ad
         [self.interstitial showFromViewController:self animated:YES];
         [self togglePreloadingProgress:LDButtonStateLoad];
     } else {
         [self togglePreloadingProgress:LDButtonStateLoading];
+        // Request ad
         [self.interstitial loadAd];
     }
 }
+
 #pragma mark - LoopMeInterstitialDelegate
 
 - (void)loopMeInterstitial:(LoopMeInterstitial *)interstitial didFailToLoadAdWithError:(NSError *)error
@@ -105,12 +110,13 @@
 }
 
 - (void)loopMeInterstitialVideoDidReachEnd:(LoopMeInterstitial *)interstitial {
-    
+    // Reward here
 }
 
 - (void)loopMeInterstitialDidExpire:(LoopMeInterstitial *)interstitial
 {
     [self togglePreloadingProgress:LDButtonStateLoading];
+    // Request for ad in order to keep ad content up-to-date
     [interstitial loadAd];
 }
 

@@ -13,21 +13,31 @@
 #import "LoopMeDefinitions.h"
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
+#import "LoopMeMinimizedAdView.h"
 
 NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 @interface LoopMeAdView ()
 <
     LoopMeAdManagerDelegate,
-    LoopMeAdDisplayControllerDelegate
+    LoopMeAdDisplayControllerDelegate,
+    LoopMeMinimizedAdViewDelegate
 >
 @property (nonatomic, strong) LoopMeAdManager *adManager;
 @property (nonatomic, strong) LoopMeAdDisplayController *adDisplayController;
+@property (nonatomic, strong) LoopMeMinimizedAdView *minimizedView;
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) NSString *appKey;
 @property (nonatomic, assign, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, getter = isReady) BOOL ready;
+@property (nonatomic, assign, getter = isMinimized) BOOL minimized;
+@property (nonatomic, assign, getter = isNeedsToBeDisplayedWhenReady) BOOL needsToBeDisplayedWhenReady;
 
+/*
+ * Update webView "visible" state is required on JS first time when ad appears on the screen,
+ * further, we're ommiting sending "webView" states to JS but managing video ad. playback in-SDK
+ */
+@property (nonatomic, assign, getter = isVisibilityUpdated) BOOL visibilityUpdated;
 @end
 
 @implementation LoopMeAdView
@@ -37,6 +47,7 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 - (void)dealloc
 {
     [self unRegisterObservers];
+    [_minimizedView removeFromSuperview];
     [_adDisplayController stopHandlingRequests];
 }
 
@@ -59,6 +70,20 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
         LoopMeLogInfo(@"Ad view initialized with appKey: %@", appKey);
     }
     return self;
+}
+
+- (void)setMinimizedModeEnabled:(BOOL)minimizedModeEnabled {
+    if (_minimizedModeEnabled != minimizedModeEnabled) {
+        _minimizedModeEnabled = minimizedModeEnabled;
+        if (_minimizedModeEnabled) {
+            _minimizedView = [[LoopMeMinimizedAdView alloc] initWithDelegate:self];
+            _minimizedView.backgroundColor = [UIColor blackColor];
+            _minimizedView.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
+            [[UIApplication sharedApplication].keyWindow addSubview:_minimizedView];
+        } else {
+            [self removeMinimizedView];
+        }
+    }
 }
 
 #pragma mark - Class Methods 
@@ -85,19 +110,18 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     [super willMoveToSuperview:newSuperview];
     
     if (!newSuperview) {
-        [self.adDisplayController closeAd];
-        self.ready = NO;
-        self.loading = NO;
+        [self closeAd];
     } else {
-        [self.adDisplayController displayAd];
-        [self.adManager invalidateTimers];
-
-        if (!self.scrollView) {
-            self.adDisplayController.visible = YES;
-        } else {
-            [self performSelector:@selector(updateAdVisibilityInScrollView) withObject:nil afterDelay:0.0f];
-        }
+        if (!self.isReady)
+            self.needsToBeDisplayedWhenReady = YES;
     }
+}
+
+- (void)didMoveToSuperview {
+    [super didMoveToSuperview];
+    
+    if (self.superview && self.isReady)
+        [self performSelector:@selector(displayAd) withObject:nil afterDelay:0.0];
 }
 
 #pragma mark - Observering
@@ -105,23 +129,31 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 - (void)unRegisterObservers
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (void)registerObservers
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didEnterBackground:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(deviceOrientationDidChange:)
+                                                 name:UIDeviceOrientationDidChangeNotification object:nil];
+    
 }
 
 - (void)didBecomeActive:(NSNotification *)notification
 {
     if (self.superview) {
-        if (!self.scrollView) {
-            self.adDisplayController.visible = YES;
-        } else {
-            [self updateAdVisibilityInScrollView];
-        }
+        self.visibilityUpdated = NO;
+        [self updateVisibility];
     }
 }
 
@@ -131,7 +163,6 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 }
 
 #pragma mark - Public
-
 
 - (void)setServerBaseURL:(NSURL *)URL
 {
@@ -153,35 +184,100 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
         LoopMeLogInfo(@"Ad already loaded and ready to be displayed");
         return;
     }
-    self.loading = YES;
     self.ready = NO;
-
     self.loading = YES;
     [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
 }
 
-- (void)setAdVisible:(BOOL)visible {
+- (void)setAdVisible:(BOOL)visible
+{
     if (self.isReady) {
+
+        self.adDisplayController.forceHidden = !visible;
         self.adDisplayController.visible = visible;
+        
+        if (self.isMinimizedModeEnabled && self.scrollView) {
+            if (!visible) {
+                [self toOriginalSize];
+            } else {
+                [self updateAdVisibilityInScrollView];
+            }
+        }
     }
 }
 
-- (void)updateAdVisibilityInScrollView {
-    
+/*
+ * Don't set visible/hidden state during scrolling, causes issues on iOS 8.0 and up
+ */
+- (void)updateAdVisibilityInScrollView
+{
     if (!self.superview) {
         return;
     }
 
-    CGRect frameRelativeToView = [self convertRect:self.bounds toView:self.scrollView];
-    CGRect visibleRect = CGRectMake(self.scrollView.contentOffset.x, self.scrollView.contentOffset.y, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
-    if (CGRectContainsPoint(visibleRect, CGPointMake(CGRectGetMidX(frameRelativeToView), CGRectGetMidY(frameRelativeToView)))) {
-        self.adDisplayController.visible = YES;
+    CGRect relativeToScrollViewAdRect = [self convertRect:self.bounds toView:self.scrollView];
+    CGRect visibleScrollViewRect = CGRectMake(self.scrollView.contentOffset.x, self.scrollView.contentOffset.y, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
+    
+    if (![self isRect:relativeToScrollViewAdRect outOfRect:visibleScrollViewRect]) {
+        if (self.isMinimizedModeEnabled && self.minimizedView.superview) {
+            [self updateAdVisibilityWhenScroll];
+            [self minimize];
+        }
     } else {
-        self.adDisplayController.visible = NO;
+        [self toOriginalSize];
+    }
+    
+    if (self.isMinimized) {
+        return;
+    }
+    
+    if ([self moreThenHalfOfRect:relativeToScrollViewAdRect visibleInRect:visibleScrollViewRect]) {
+        [self updateAdVisibilityWhenScroll];
+    } else {
+        self.adDisplayController.visibleNoJS = NO;
     }
 }
 
+- (void)deviceOrientationDidChange:(NSNotification *)notification
+{
+    [self.minimizedView rotateToInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation animated:YES];
+    [self.minimizedView adjustFrame];
+}
+
 #pragma mark - Private
+
+- (void)minimize
+{
+    if (!self.isMinimized && self.adDisplayController.isVisible) {
+        self.minimized = YES;
+        [self.minimizedView show];
+        [self.adDisplayController moveView];
+    }
+}
+
+- (void)toOriginalSize
+{
+    if (self.isMinimized) {
+        self.minimized = NO;
+        [self.minimizedView hide];
+        [self.adDisplayController moveView];
+    }
+}
+
+- (void)removeMinimizedView {
+    [self.minimizedView removeFromSuperview];
+    self.minimizedView = nil;
+}
+
+- (BOOL)moreThenHalfOfRect:(CGRect)rect visibleInRect:(CGRect)visibleRect
+{
+    return (CGRectContainsPoint(visibleRect, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect))));
+}
+
+- (BOOL)isRect:(CGRect)rect outOfRect:(CGRect)visibleRect
+{
+    return CGRectIntersectsRect(rect, visibleRect);
+}
 
 - (void)failedLoadingAdWithError:(NSError *)error
 {
@@ -192,10 +288,46 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     }
 }
 
+- (void)updateVisibility
+{
+    if (!self.scrollView) {
+        self.adDisplayController.visible = YES;
+    } else {
+        [self updateAdVisibilityInScrollView];
+    }
+}
+
+- (void)updateAdVisibilityWhenScroll {
+    if (!self.isVisibilityUpdated) {
+        self.adDisplayController.visible = YES;
+        self.visibilityUpdated = YES;
+    } else {
+        self.adDisplayController.visibleNoJS = YES;
+    }
+}
+
+- (void)closeAd
+{
+    [self.minimizedView removeFromSuperview];
+    [self.adDisplayController closeAd];
+    self.ready = NO;
+    self.loading = NO;
+}
+
+- (void)displayAd
+{
+    [self.adDisplayController displayAd];
+    [self.adManager invalidateTimers];
+    if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
+        return;
+    }
+    [self updateVisibility];
+}
+
 #pragma mark - LoopMeAdManagerDelegate
 
-- (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration {
-    
+- (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration
+{
     if (!adConfiguration || adConfiguration.format != LoopMeAdFormatBanner) {
         NSString *errorMessage = @"Could not process ad: interstitial format expected.";
         LoopMeLogDebug(errorMessage);
@@ -212,17 +344,31 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     [self failedLoadingAdWithError:error];
 }
 
-- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager {
+- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager
+{
     self.ready = NO;
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidExpire:)]) {
         [self.delegate loopMeAdViewDidExpire:self];
     }
 }
 
+#pragma mark - LoopMeMinimizedAdViewDelegate
+
+- (void)minimizedAdViewShouldRemove:(LoopMeMinimizedAdView *)minimizedAdView {
+    [self toOriginalSize];
+    [self.minimizedView removeFromSuperview];
+    self.minimizedView = nil;
+    [self updateAdVisibilityInScrollView];
+}
+
+
 #pragma mark - LoopMeAdDisplayControllerDelegate
 
 - (UIView *)containerView
 {
+    if (self.isMinimized) {
+        return self.minimizedView;
+    }
     return self;
 }
 
@@ -235,6 +381,11 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 {
     self.loading = NO;
     self.ready = YES;
+    if (self.isNeedsToBeDisplayedWhenReady) {
+        self.needsToBeDisplayedWhenReady = NO;
+        [self displayAd];
+    }
+    
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidLoadAd:)]) {
         [self.delegate loopMeAdViewDidLoadAd:self];
     }
@@ -261,6 +412,8 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 - (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController
 {
+    [self performSelector:@selector(removeMinimizedView) withObject:nil afterDelay:1.0];
+    
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewVideoDidReachEnd:)]) {
         [self.delegate loopMeAdViewVideoDidReachEnd:self];
     }
@@ -268,16 +421,13 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 - (void)adDisplayControllerDidDismissModal:(LoopMeAdDisplayController *)adDisplayController
 {
-    if (self.scrollView) {
-        [self updateAdVisibilityInScrollView];
-    } else {
-        self.adDisplayController.visible = YES;
-    }
+    self.visibilityUpdated = NO;
+    [self updateVisibility];
 }
 
 - (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController
 {
-    [self removeFromSuperview];
+    [self closeAd];
 }
 
 @end

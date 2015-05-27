@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		011F05341B06337700FF7B58 /* LoopMeMinimizedAdView.m in Sources */ = {isa = PBXBuildFile; fileRef = 011F05331B06337700FF7B58 /* LoopMeMinimizedAdView.m */; };
 		0120CD3F19BDD99000C7F0D8 /* icon_72x72.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD3219BDD99000C7F0D8 /* icon_72x72.png */; };
 		0120CD4019BDD99000C7F0D8 /* icon_114x114.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD3319BDD99000C7F0D8 /* icon_114x114.png */; };
 		0120CD4119BDD99000C7F0D8 /* icon_144x144.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD3419BDD99000C7F0D8 /* icon_144x144.png */; };
@@ -114,6 +115,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		011F05321B06337700FF7B58 /* LoopMeMinimizedAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoopMeMinimizedAdView.h; path = minimized/LoopMeMinimizedAdView.h; sourceTree = "<group>"; };
+		011F05331B06337700FF7B58 /* LoopMeMinimizedAdView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoopMeMinimizedAdView.m; path = minimized/LoopMeMinimizedAdView.m; sourceTree = "<group>"; };
 		0120CD3219BDD99000C7F0D8 /* icon_72x72.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_72x72.png; sourceTree = "<group>"; };
 		0120CD3319BDD99000C7F0D8 /* icon_114x114.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_114x114.png; sourceTree = "<group>"; };
 		0120CD3419BDD99000C7F0D8 /* icon_144x144.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon_144x144.png; sourceTree = "<group>"; };
@@ -300,6 +303,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		011F05311B06335700FF7B58 /* Minimized */ = {
+			isa = PBXGroup;
+			children = (
+				011F05321B06337700FF7B58 /* LoopMeMinimizedAdView.h */,
+				011F05331B06337700FF7B58 /* LoopMeMinimizedAdView.m */,
+			);
+			name = Minimized;
+			sourceTree = "<group>";
+		};
 		0120CD0D19BDD3B700C7F0D8 /* new_assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -444,6 +456,7 @@
 		01C106C31AB30318006CBCD1 /* AdView */ = {
 			isa = PBXGroup;
 			children = (
+				011F05311B06335700FF7B58 /* Minimized */,
 				01C106C41AB30318006CBCD1 /* LoopMeAdView.m */,
 			);
 			path = AdView;
@@ -839,6 +852,7 @@
 				01C1070F1AB30318006CBCD1 /* LoopMeAdView.m in Sources */,
 				01C107211AB30318006CBCD1 /* LoopMeIdentityProvider.m in Sources */,
 				01C1072A1AB30318006CBCD1 /* LoopMeAdWebView.m in Sources */,
+				011F05341B06337700FF7B58 /* LoopMeMinimizedAdView.m in Sources */,
 				01C1071F1AB30318006CBCD1 /* LoopMeError.m in Sources */,
 				01980CEE1ABB39F900513556 /* NSData+ImageContentType.m in Sources */,
 				01980CF71ABB39F900513556 /* UIImage+GIF.m in Sources */,

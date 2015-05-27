@@ -18,7 +18,6 @@ const struct LoopMeVideoStateStruct LoopMeVideoState =
 {
     .ready = @"READY",
     .completed = @"COMPLETE",
-    .buffering = @"BUFFERING",
     .playing = @"PLAYING",
     .paused = @"PAUSED",
     .broken = @"BROKEN"
@@ -170,6 +169,12 @@ const NSInteger kResizeOffset = 11;
     return [[self currentAssetURLForPlayer:self.player].absoluteString hasSuffix:self.videoPath];
 }
 
+- (BOOL)playerReachedEnd {
+    CMTime duration = self.playerItem.duration;
+    CMTime currentTime = self.playerItem.currentTime;
+    return (duration.value == currentTime.value) ? YES : NO;
+}
+
 #pragma mark Observers & Timers
 
 - (void)unregisterObservers
@@ -246,7 +251,6 @@ const NSInteger kResizeOffset = 11;
     }
 }
 
-
 #pragma mark - Public
 
 - (void)adjustLayerToFrame:(CGRect)frame
@@ -279,6 +283,11 @@ const NSInteger kResizeOffset = 11;
     self.shouldPlay = NO;
 }
 
+- (void)moveLayer
+{
+    [self.delegate videoClient:self setupLayer:_playerLayer];
+}
+
 #pragma mark - LoopMeJSVideoTransportProtocol
 
 - (void)loadWithURL:(NSURL *)URL
@@ -291,7 +300,6 @@ const NSInteger kResizeOffset = 11;
     } else if ([self.videoManager hasCachedURL:URL]) {
         [self setupPlayerWithFileURL:[self.videoManager videoFileURL]];
     } else {
-        [self.JSClient setState:LoopMeVideoState.buffering];
         [self.videoManager loadVideoWithURL:URL];
     }
 }
@@ -313,10 +321,27 @@ const NSInteger kResizeOffset = 11;
 
 - (void)playFromTime:(double)time
 {
-    [self seekToTime:time];
+    //if time is negative, dont seek. Hack for setVisibleNoJS property in LoopMeAdDisplaycontroller.
+    if (time >= 0) {
+        [self seekToTime:time];
+    }
     self.shouldPlay = YES;
     [self.JSClient setState:LoopMeVideoState.playing];
     [self.player play];
+}
+
+- (void)play
+{
+    if (![self playerReachedEnd]) {
+        self.shouldPlay = YES;
+        [self.player play];
+    }
+}
+
+- (void)pause
+{
+    self.shouldPlay = NO;
+    [self.player pause];
 }
 
 - (void)pauseOnTime:(double)time

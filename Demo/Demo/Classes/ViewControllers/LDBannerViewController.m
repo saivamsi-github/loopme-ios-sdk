@@ -10,6 +10,9 @@
 
 #import "LoopMeAdView.h"
 
+const float kLDAdViewHeight = 168.75; // Video dimension 16x9
+const float kLDAdViewWidth = 300.0f;
+
 @interface LDBannerViewController ()
 <
     LoopMeAdViewDelegate
@@ -24,7 +27,9 @@
 
 - (LoopMeAdView *)adView {
     if (_adView == nil) {
-        CGRect adFrame = CGRectMake(0, 0, 300, 250);
+        CGRect adFrame = CGRectMake(0, 0, kLDAdViewWidth, kLDAdViewHeight);
+
+        // Intializing `LoopMeAdView`
         _adView = [LoopMeAdView adViewWithAppKey:TEST_APP_KEY_MPU
                                            frame:adFrame
                                         delegate:self];
@@ -48,11 +53,17 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    /*
+     * Resuming video ad playback or any ad activity if `UIViewController` about to appear on the screen
+     */
     [self.adView setAdVisible:NO];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
+    /*
+     * Pausing video ad playback or any ad activity if `UIViewController` is dismissed
+     */
     [self.adView setAdVisible:YES];
 }
 

@@ -1,5 +1,5 @@
 //
-//  LoopMeDestinationDisplayAgent.m
+//  LoopMeDestinationDisplayController.m
 //  LoopMeSDK
 //
 //  Created by Dmitriy Lihachov on 8/21/12.
@@ -38,10 +38,10 @@
 
 + (LoopMeDestinationDisplayController *)controllerWithDelegate:(id<LoopMeDestinationDisplayControllerDelegate>)delegate
 {
-    LoopMeDestinationDisplayController *agent = [[LoopMeDestinationDisplayController alloc] init];
-    agent.delegate = delegate;
-    agent.resolver = [LoopMeURLResolver resolver];
-    return agent;
+    LoopMeDestinationDisplayController *controller = [[LoopMeDestinationDisplayController alloc] init];
+    controller.delegate = delegate;
+    controller.resolver = [LoopMeURLResolver resolver];
+    return controller;
 }
 
 #pragma mark - Private

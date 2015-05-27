@@ -17,6 +17,9 @@
 - (void)pauseOnTime:(double)time;
 - (void)setGravity:(NSString *)gravity;
 
+- (void)play;
+- (void)pause;
+
 @end
 
 #endif

@@ -1,9 +1,9 @@
 //
-//  LoopMeDestinationDisplayAgent.h
+//  LoopMeDestinationDisplayController.h
 //  LoopMeSDK
 //
 //  Created by Dmitriy Lihachov on 8/21/12.
-//  Copyright (c) 2012 LoopMe. All rights reserved.
+//  Copyright (c) 2013 LoopMe. All rights reserved.
 //
 
 #import "LoopMeURLResolver.h"
@@ -29,8 +29,8 @@
 
 - (UIViewController *)viewControllerForPresentingModalView;
 
-- (void)destinationDisplayControllerWillPresentModal:(LoopMeDestinationDisplayController *)destinationAgent;
-- (void)destinationDisplayControllerWillLeaveApplication:(LoopMeDestinationDisplayController *)destinationAgent;
-- (void)destinationDisplayControllerDidDismissModal:(LoopMeDestinationDisplayController *)destinationAgent;
+- (void)destinationDisplayControllerWillPresentModal:(LoopMeDestinationDisplayController *)destinationDisplayController;
+- (void)destinationDisplayControllerWillLeaveApplication:(LoopMeDestinationDisplayController *)destinationDisplayController;
+- (void)destinationDisplayControllerDidDismissModal:(LoopMeDestinationDisplayController *)destinationDisplayController;
 
 @end
