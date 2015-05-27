@@ -433,7 +433,7 @@
 				0150480E1AB979340039CB72 /* LoopMeInterstitial.h */,
 			);
 			name = LoopMeSDK;
-			path = ../../LoopMeSDK/LoopMeSDK;
+			path = ../../LoopMeSDK;
 			sourceTree = "<group>";
 		};
 		01C106C21AB30318006CBCD1 /* Internal */ = {
