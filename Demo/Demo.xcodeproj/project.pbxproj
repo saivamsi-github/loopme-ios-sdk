@@ -64,7 +64,6 @@
 		01C107201AB30318006CBCD1 /* LoopMeGeoLocationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106F01AB30318006CBCD1 /* LoopMeGeoLocationProvider.m */; };
 		01C107211AB30318006CBCD1 /* LoopMeIdentityProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106F21AB30318006CBCD1 /* LoopMeIdentityProvider.m */; };
 		01C107221AB30318006CBCD1 /* LoopMeLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106F41AB30318006CBCD1 /* LoopMeLogging.m */; };
-		01C107231AB30318006CBCD1 /* LoopMeUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106F61AB30318006CBCD1 /* LoopMeUtility.m */; };
 		01C107241AB30318006CBCD1 /* LoopMeInterstitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106FA1AB30318006CBCD1 /* LoopMeInterstitialViewController.m */; };
 		01C107251AB30318006CBCD1 /* LoopMeBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C106FD1AB30318006CBCD1 /* LoopMeBrowserViewController.m */; };
 		01C107261AB30318006CBCD1 /* LoopMeBackView.m in Sources */ = {isa = PBXBuildFile; fileRef = 01C107001AB30318006CBCD1 /* LoopMeBackView.m */; };
@@ -217,8 +216,6 @@
 		01C106F21AB30318006CBCD1 /* LoopMeIdentityProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeIdentityProvider.m; sourceTree = "<group>"; };
 		01C106F31AB30318006CBCD1 /* LoopMeLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeLogging.h; sourceTree = "<group>"; };
 		01C106F41AB30318006CBCD1 /* LoopMeLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeLogging.m; sourceTree = "<group>"; };
-		01C106F51AB30318006CBCD1 /* LoopMeUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeUtility.h; sourceTree = "<group>"; };
-		01C106F61AB30318006CBCD1 /* LoopMeUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeUtility.m; sourceTree = "<group>"; };
 		01C106F91AB30318006CBCD1 /* LoopMeInterstitialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeInterstitialViewController.h; sourceTree = "<group>"; };
 		01C106FA1AB30318006CBCD1 /* LoopMeInterstitialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeInterstitialViewController.m; sourceTree = "<group>"; };
 		01C106FC1AB30318006CBCD1 /* LoopMeBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeBrowserViewController.h; sourceTree = "<group>"; };
@@ -551,8 +548,6 @@
 				01C106F21AB30318006CBCD1 /* LoopMeIdentityProvider.m */,
 				01C106F31AB30318006CBCD1 /* LoopMeLogging.h */,
 				01C106F41AB30318006CBCD1 /* LoopMeLogging.m */,
-				01C106F51AB30318006CBCD1 /* LoopMeUtility.h */,
-				01C106F61AB30318006CBCD1 /* LoopMeUtility.m */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -883,7 +878,6 @@
 				01C107251AB30318006CBCD1 /* LoopMeBrowserViewController.m in Sources */,
 				01980CFF1ABB39F900513556 /* LDInterstitialViewController.m in Sources */,
 				01C107101AB30318006CBCD1 /* LoopMeServerURLBuilder.m in Sources */,
-				01C107231AB30318006CBCD1 /* LoopMeUtility.m in Sources */,
 				01980CEF1ABB39F900513556 /* SDImageCache.m in Sources */,
 				01C107271AB30318006CBCD1 /* LoopMeCancelView.m in Sources */,
 				01C107141AB30318006CBCD1 /* LoopMeDestinationDisplayController.m in Sources */,
