@@ -146,7 +146,7 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
                                        minimizedHeight,
                                        minimizedWidth);
             
-        } else if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationLandscapeRight) {
+        } else {
             origin = CGPointMake(kLoopMeMinimizedAdPadding,
                                  height - minimizedWidth - kLoopMeMinimizedAdPadding);
             minimizedRect = CGRectMake(origin.x,

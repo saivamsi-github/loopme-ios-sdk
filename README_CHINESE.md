@@ -1,5 +1,7 @@
 # LoopMe-iOS-SDK #
 
+Please note that this readme is compatible with the `LoopMe iOS SDK` v5.1.0.
+
 ## 概览 ##
 
 LoopMe是最大的移动视频DSP和广告网络，全球覆盖受众超过10亿。LoopMe的全屏视频和富媒体广告格式给受众带来互动性强的移动广告经验。

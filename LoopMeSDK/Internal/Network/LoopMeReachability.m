@@ -76,7 +76,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Public Class
 
-+ (LoopMeReachability *) reachabilityForLocalWiFi;
++ (LoopMeReachability *)reachabilityForLocalWiFi;
 {
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
@@ -94,7 +94,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Private 
 
-+ (LoopMeReachability *)reachabilityWithAddress: (const struct sockaddr_in*) hostAddress;
++ (LoopMeReachability *)reachabilityWithAddress:(const struct sockaddr_in*) hostAddress;
 {
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)hostAddress);
     LoopMeReachability* retVal = NULL;
@@ -110,7 +110,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark Network Flag Handling
 
-- (LoopMeReachabilityNetworkStatus)localWiFiStatusForFlags: (SCNetworkReachabilityFlags) flags
+- (LoopMeReachabilityNetworkStatus)localWiFiStatusForFlags:(SCNetworkReachabilityFlags) flags
 {
     BOOL retVal = LoopMeReachabilityNotReachable;
     if((flags & kSCNetworkReachabilityFlagsReachable) && (flags & kSCNetworkReachabilityFlagsIsDirect)) {
@@ -119,7 +119,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
     return retVal;
 }
 
-- (LoopMeReachabilityNetworkStatus) networkStatusForFlags: (SCNetworkReachabilityFlags) flags
+- (LoopMeReachabilityNetworkStatus)networkStatusForFlags:(SCNetworkReachabilityFlags) flags
 {
     if ((flags & kSCNetworkReachabilityFlagsReachable) == 0) {
         // if target host is not reachable
@@ -179,27 +179,29 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
     if ([self hasWifi]) {
         return LoopMeConnectionTypeWiFi;
     } else {
-        CTTelephonyNetworkInfo *telephonyInfo = [CTTelephonyNetworkInfo new];
-        NSString *radioAccessTechnology = telephonyInfo.currentRadioAccessTechnology;
         
-        if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] || [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge]) {
-            return LoopMeConnectionTypeCellular2G;
-        } else if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyWCDMA]        ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSDPA]        ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSUPA]        ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]       ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0] ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA] ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB] ||
-                   [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyeHRPD]) {
-            return LoopMeConnectionTypeCellular3G;
-        } else if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
-            return LoopMeConnectionTypeCellular4G;
-        } else {
-            return LoopMeConnectionTypeCellularUnknown;
+        CTTelephonyNetworkInfo *telephonyInfo = [CTTelephonyNetworkInfo new];
+        
+        if ([telephonyInfo respondsToSelector:@selector(currentRadioAccessTechnology)]) {
+            NSString *radioAccessTechnology = telephonyInfo.currentRadioAccessTechnology;
+            
+            if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] || [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyEdge]) {
+                return LoopMeConnectionTypeCellular2G;
+            } else if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyWCDMA]        ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSDPA]        ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyHSUPA]        ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMA1x]       ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORev0] ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevA] ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyCDMAEVDORevB] ||
+                       [radioAccessTechnology isEqualToString:CTRadioAccessTechnologyeHRPD]) {
+                return LoopMeConnectionTypeCellular3G;
+            } else if ([radioAccessTechnology isEqualToString:CTRadioAccessTechnologyLTE]) {
+                return LoopMeConnectionTypeCellular4G;
+            }
         }
+        return LoopMeConnectionTypeCellularUnknown;
     }
-    
     return LoopMeConnectionTypeUnknown;
 }
 

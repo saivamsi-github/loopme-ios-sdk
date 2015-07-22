@@ -17,7 +17,6 @@
 #import "LoopMeReachability.h"
 #import "LoopMeServerURLBuilder.h"
 #import "LoopMeTargeting.h"
-#import "LoopMeUtility.h"
 #import "LoopMeGeoLocationProvider.h"
 
 NSString * const kLoopMeAPIURL = @"http://loopme.me/api/loopme/ads/v3";

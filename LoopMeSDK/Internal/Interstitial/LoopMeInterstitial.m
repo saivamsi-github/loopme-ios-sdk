@@ -48,9 +48,9 @@ NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
 
 - (instancetype)initWithAppKey:(NSString *)appKey
             delegate:(id<LoopMeInterstitialDelegate>)delegate
-{
-    if (!appKey) {
-        LoopMeLogError(@"AppKey cann't be nil");
+{    
+    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+        LoopMeLogDebug(@"Block iOS versions less then 7.0");
         return nil;
     }
     
@@ -86,7 +86,8 @@ NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
         if (!returnableInterstitial) {
             returnableInterstitial = [[[self class] alloc] initWithAppKey:appKey
                                                                  delegate:delegate];
-            [interstitials addObject:returnableInterstitial];
+            if (returnableInterstitial)
+                [interstitials addObject:returnableInterstitial];
         }
         return returnableInterstitial;
     }

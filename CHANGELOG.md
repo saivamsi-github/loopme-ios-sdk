@@ -1,3 +1,9 @@
+## Version 5.1.1 (22.07.2015)
+
+- Add `LoopMeSDK` XCode project 
+- Fixed bug related to detecting connection type on devices with iOS version less then 7.0
+- Block ads for devices with iOS version less then 7.0
+
 ## Version 5.1.0 (27.05.2015)
 
 - Ability to enable displaying minimized version of `LoopMeAdView` ad during scrolling when original ad is out of viewport.

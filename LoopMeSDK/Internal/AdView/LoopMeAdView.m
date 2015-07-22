@@ -59,6 +59,12 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 {
     self = [super init];
     if (self) {
+        
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            LoopMeLogDebug(@"Block iOS versions less then 7.0");
+            return nil;
+        }
+        
         _appKey = appKey;
         _delegate = delegate;
         _adManager = [[LoopMeAdManager alloc] initWithDelegate:self];

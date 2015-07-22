@@ -25,7 +25,6 @@ If you have questions please contact us at support@loopmemedia.com.
 * Full-screen rich media interstitials
 * Preloaded video ads
 * Banner ads
-* Native video ads
 * Minimized ad
 * In-app ad reward notifications, including video view completed
 
@@ -182,12 +181,14 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.1.0**
+**v5.1.1**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Displaying minimized ad during scrolling when original ad is out of viewport.
-- Swipe-to-remove minimized ad.
+- Add `LoopMeSDK` XCode project 
+- Fixed bug related to detecting connection type on devices with iOS version less then 7.0
+- Block ads for devices with iOS version less then 7.0
+
 
 ## License ##
 
