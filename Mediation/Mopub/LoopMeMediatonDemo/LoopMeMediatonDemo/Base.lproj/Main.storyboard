@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7706" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="fJW-pu-JZ2">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7703"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--LoopMe Mediation Demo-->
+        <scene sceneID="id4-HS-qyZ">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Xhf-2W-GfB" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <tableViewController id="jM9-hu-EMu" customClass="LDTableViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="9Sn-oA-n4N">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="LDMenuItemIdentifier" id="juw-VN-jcx">
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="juw-VN-jcx" id="xMR-hf-Vk3">
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="jM9-hu-EMu" id="HwL-5w-HSX"/>
+                            <outlet property="delegate" destination="jM9-hu-EMu" id="QXP-WD-L5T"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="LoopMe Mediation Demo" id="xkp-h1-C7B"/>
+                    <connections>
+                        <segue destination="vXZ-lx-hvc" kind="show" identifier="LDShowAdRequestSegueIdentifier" id="OsA-d6-h7W"/>
+                    </connections>
+                </tableViewController>
+            </objects>
+            <point key="canvasLocation" x="-824" y="203"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="bBd-EG-YUR">
+            <objects>
+                <navigationController id="fJW-pu-JZ2" sceneMemberID="viewController">
+                    <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" barStyle="black" prompted="NO"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" barStyle="black" id="si9-Jw-KON">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="jM9-hu-EMu" kind="relationship" relationship="rootViewController" id="Bvd-cV-VrD"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LB5-sg-j9J" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1644" y="203"/>
+        </scene>
+        <!--Ad Request Demo-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController id="vXZ-lx-hvc" customClass="LDAdRequestViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="0ye-uO-jYh">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="vXZ-lx-hvc" id="Rwh-qp-u7Q"/>
+                                    <outlet property="delegate" destination="vXZ-lx-hvc" id="owh-Mv-Tv5"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="2fi-mo-0CV" firstAttribute="top" secondItem="0ye-uO-jYh" secondAttribute="bottom" id="ATW-hx-kOn"/>
+                            <constraint firstItem="0ye-uO-jYh" firstAttribute="top" secondItem="kh9-bI-dsS" secondAttribute="top" id="PBc-4f-b7I"/>
+                            <constraint firstItem="0ye-uO-jYh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" id="PO3-72-zRP"/>
+                            <constraint firstItem="0ye-uO-jYh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="WcP-Q6-15o"/>
+                            <constraint firstItem="0ye-uO-jYh" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leading" id="WwB-ea-HC7"/>
+                            <constraint firstAttribute="trailing" secondItem="0ye-uO-jYh" secondAttribute="trailing" id="a70-ib-LjH"/>
+                        </constraints>
+                        <variation key="default">
+                            <mask key="constraints">
+                                <exclude reference="PO3-72-zRP"/>
+                                <exclude reference="WcP-Q6-15o"/>
+                            </mask>
+                        </variation>
+                    </view>
+                    <navigationItem key="navigationItem" title="Ad Request Demo" id="2bc-t5-hZz"/>
+                    <connections>
+                        <outlet property="tableView" destination="0ye-uO-jYh" id="avT-gR-GF5"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-91" y="193"/>
+        </scene>
+    </scenes>
+</document>
