@@ -14,6 +14,9 @@
 #import "LoopMeError.h"
 #import "LoopMeVideoManager.h"
 
+#import "LoopMeReachability.h"
+#import "LoopMeGlobalSettings.h"
+
 const struct LoopMeVideoStateStruct LoopMeVideoState =
 {
     .ready = @"READY",
@@ -300,6 +303,10 @@ const NSInteger kResizeOffset = 11;
     } else if ([self.videoManager hasCachedURL:URL]) {
         [self setupPlayerWithFileURL:[self.videoManager videoFileURL]];
     } else {
+        if ([LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi && [[LoopMeReachability reachabilityForLocalWiFi] connectionType] != LoopMeConnectionTypeWiFi) {
+            [self videoManager:self.videoManager didFailLoadWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeCanNotLoadVideo]];
+            return;
+        }
         [self.videoManager loadVideoWithURL:URL];
     }
 }

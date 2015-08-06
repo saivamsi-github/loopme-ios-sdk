@@ -14,8 +14,7 @@
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
 #import "LoopMeMinimizedAdView.h"
-
-NSString * const TEST_APP_KEY_MPU = @"test_mpu";
+#import "LoopMeGlobalSettings.h"
 
 @interface LoopMeAdView ()
 <
@@ -26,7 +25,6 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 @property (nonatomic, strong) LoopMeAdManager *adManager;
 @property (nonatomic, strong) LoopMeAdDisplayController *adDisplayController;
 @property (nonatomic, strong) LoopMeMinimizedAdView *minimizedView;
-@property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) NSString *appKey;
 @property (nonatomic, assign, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, getter = isReady) BOOL ready;
@@ -92,6 +90,11 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     }
 }
 
+- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi
+{
+    [LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi = doNotLoadVideoWithoutWiFi;
+}
+
 #pragma mark - Class Methods 
 
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
@@ -127,7 +130,7 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     [super didMoveToSuperview];
     
     if (self.superview && self.isReady)
-        [self performSelector:@selector(displayAd) withObject:nil afterDelay:0.0];
+        [self displayAd];
 }
 
 #pragma mark - Observering
@@ -299,7 +302,7 @@ NSString * const TEST_APP_KEY_MPU = @"test_mpu";
     if (!self.scrollView) {
         self.adDisplayController.visible = YES;
     } else {
-        [self updateAdVisibilityInScrollView];
+        [self performSelector:@selector(updateAdVisibilityInScrollView) withObject:nil afterDelay:0.1];
     }
 }
 

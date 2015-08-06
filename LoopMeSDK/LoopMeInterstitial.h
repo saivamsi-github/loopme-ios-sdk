@@ -8,8 +8,9 @@
 /**
  * AppKeys for test purposes
  */
-NSString *const TEST_APP_KEY_INTERSTITIAL_PORTRAIT;
-NSString *const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE;
+
+static NSString * const TEST_APP_KEY_INTERSTITIAL_PORTRAIT = @"test_interstitial_p";
+static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
 
 @class LoopMeInterstitial;
 @class LoopMeTargeting;
@@ -46,6 +47,9 @@ NSString *const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE;
  * While this property is YES all other calling `loadAd` methods will be ignored
  */
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
+
+@property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
+
 
 /**
  * Indicates whether ad content was loaded succesfully and ready to be displayed.

@@ -16,9 +16,7 @@
 #import "LoopMeInterstitialViewController.h"
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
-
-NSString * const TEST_APP_KEY_INTERSTITIAL_PORTRAIT = @"test_interstitial_p";
-NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
+#import "LoopMeGlobalSettings.h"
 
 @interface LoopMeInterstitial ()
 <
@@ -48,7 +46,12 @@ NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
 
 - (instancetype)initWithAppKey:(NSString *)appKey
             delegate:(id<LoopMeInterstitialDelegate>)delegate
-{    
+{
+    if (!appKey) {
+        LoopMeLogError(@"AppKey cann't be nil");
+        return nil;
+    }
+    
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         LoopMeLogDebug(@"Block iOS versions less then 7.0");
         return nil;
@@ -64,6 +67,11 @@ NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitial_l";
         LoopMeLogInfo(@"Interstitial is initialized with appKey %@", appKey);
     }
     return self;
+}
+
+- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi
+{
+    [LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi = doNotLoadVideoWithoutWiFi;
 }
 
 #pragma mark - Class Methods

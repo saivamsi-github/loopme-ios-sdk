@@ -29,6 +29,8 @@
         errorMessage = @"Failed to resolve URL";
     } else if (statusCode == LoopMeErrorCodeWrirtingToDisk) {
         errorMessage = @"Error writing to disk";
+    } else if (statusCode == LoopMeErrorCodeCanNotLoadVideo){
+        errorMessage = @"Can not load video without Wi-Fi connection";
     } else {
         errorMessage = [NSString stringWithFormat:@"API returned status code %ld.", (long)statusCode];
     }

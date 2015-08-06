@@ -11,7 +11,8 @@
 /**
  * AppKey for test purposes
  */
-NSString *const TEST_APP_KEY_MPU;
+
+static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 @class LoopMeTargeting;
 
@@ -35,6 +36,8 @@ NSString *const TEST_APP_KEY_MPU;
 
 @property (nonatomic, weak) id<LoopMeAdViewDelegate> delegate;
 
+@property (nonatomic, weak) UIScrollView *scrollView;
+
 /*
  * Enabling minimized mode.
  * Represents copy of original ad added on top of `UIWindow`'s right-bottom corner.
@@ -54,6 +57,8 @@ NSString *const TEST_APP_KEY_MPU;
  * While this property is YES all other calling `loadAd` methods will be ignored
  */
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
+
+@property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
 
 /**
  * Indicates whether ad content was loaded succesfully and ready to be displayed.

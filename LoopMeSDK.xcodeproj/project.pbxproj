@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0178B4351B737838000221B9 /* LoopMeGlobalSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 0178B4331B737838000221B9 /* LoopMeGlobalSettings.h */; };
+		0178B4361B737838000221B9 /* LoopMeGlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 0178B4341B737838000221B9 /* LoopMeGlobalSettings.m */; };
 		01C106461AB2F99F006CBCD1 /* LoopMeInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 01C106441AB2F99F006CBCD1 /* LoopMeInterstitial.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01C1064E1AB2F9C2006CBCD1 /* LoopMeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 01C1064C1AB2F9C2006CBCD1 /* LoopMeAdView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		01C106A11AB2FDC4006CBCD1 /* LoopMeTargeting.h in Headers */ = {isa = PBXBuildFile; fileRef = 01C106A01AB2FDC4006CBCD1 /* LoopMeTargeting.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -70,6 +72,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0178B4331B737838000221B9 /* LoopMeGlobalSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeGlobalSettings.h; sourceTree = "<group>"; };
+		0178B4341B737838000221B9 /* LoopMeGlobalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeGlobalSettings.m; sourceTree = "<group>"; };
 		01C106441AB2F99F006CBCD1 /* LoopMeInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeInterstitial.h; sourceTree = "<group>"; };
 		01C1064C1AB2F9C2006CBCD1 /* LoopMeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeAdView.h; sourceTree = "<group>"; };
 		01C1065D1AB2FD49006CBCD1 /* LoopMeServerURLBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoopMeServerURLBuilder.h; sourceTree = "<group>"; };
@@ -226,6 +230,8 @@
 				01C106801AB2FD49006CBCD1 /* LoopMeDefinitions.h */,
 				01C106811AB2FD49006CBCD1 /* LoopMeError.h */,
 				01C106821AB2FD49006CBCD1 /* LoopMeError.m */,
+				0178B4331B737838000221B9 /* LoopMeGlobalSettings.h */,
+				0178B4341B737838000221B9 /* LoopMeGlobalSettings.m */,
 				01C106831AB2FD49006CBCD1 /* LoopMeGeoLocationProvider.h */,
 				01C106841AB2FD49006CBCD1 /* LoopMeGeoLocationProvider.m */,
 				01C106851AB2FD49006CBCD1 /* LoopMeIdentityProvider.h */,
@@ -430,6 +436,7 @@
 				EFE557E91B1DDE5D0032C9CF /* LoopMeActivityIndicatorView.h in Headers */,
 				EFE557C21B1DDDDD0032C9CF /* LoopMeVideoClient.h in Headers */,
 				EFE557D81B1DDE2D0032C9CF /* LoopMeError.h in Headers */,
+				0178B4351B737838000221B9 /* LoopMeGlobalSettings.h in Headers */,
 				EFE557D01B1DDE0B0032C9CF /* LoopMeVideoManager.h in Headers */,
 				EFE557BE1B1DDDD20032C9CF /* LoopMeServerURLBuilder.h in Headers */,
 				EFE557C01B1DDDD90032C9CF /* LoopMeJSClient.h in Headers */,
@@ -498,6 +505,7 @@
 			files = (
 				EFE557C91B1DDDF90032C9CF /* LoopMeAdManager.m in Sources */,
 				EFE557DB1B1DDE300032C9CF /* LoopMeGeoLocationProvider.m in Sources */,
+				0178B4361B737838000221B9 /* LoopMeGlobalSettings.m in Sources */,
 				EFE557BC1B1DDDCA0032C9CF /* LoopMeAdView.m in Sources */,
 				EFE557D61B1DDE1F0032C9CF /* UIImage+LoopMeBinaryImage.m in Sources */,
 				EFE557E81B1DDE560032C9CF /* LoopMeCancelView.m in Sources */,
