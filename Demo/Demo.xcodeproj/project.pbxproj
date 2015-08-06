@@ -22,6 +22,7 @@
 		0120CD5919BDDD3B00C7F0D8 /* bg_new-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD5619BDDD3B00C7F0D8 /* bg_new-568h@2x.png */; };
 		0120CD5A19BDDD3B00C7F0D8 /* bg_new.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD5719BDDD3B00C7F0D8 /* bg_new.png */; };
 		0120CD5B19BDDD3B00C7F0D8 /* bg_new@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 0120CD5819BDDD3B00C7F0D8 /* bg_new@2x.png */; };
+		0178B4391B737902000221B9 /* LoopMeGlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 0178B4381B737902000221B9 /* LoopMeGlobalSettings.m */; };
 		01980CEC1ABB39F900513556 /* TableCityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CBD1ABB39F900513556 /* TableCityCell.m */; };
 		01980CED1ABB39F900513556 /* MKAnnotationView+WebCache.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CC11ABB39F900513556 /* MKAnnotationView+WebCache.m */; };
 		01980CEE1ABB39F900513556 /* NSData+ImageContentType.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CC31ABB39F900513556 /* NSData+ImageContentType.m */; };
@@ -131,6 +132,8 @@
 		0120CD5719BDDD3B00C7F0D8 /* bg_new.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg_new.png; sourceTree = "<group>"; };
 		0120CD5819BDDD3B00C7F0D8 /* bg_new@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_new@2x.png"; sourceTree = "<group>"; };
 		0150480E1AB979340039CB72 /* LoopMeInterstitial.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LoopMeInterstitial.h; sourceTree = "<group>"; };
+		0178B4371B737902000221B9 /* LoopMeGlobalSettings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeGlobalSettings.h; sourceTree = "<group>"; };
+		0178B4381B737902000221B9 /* LoopMeGlobalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeGlobalSettings.m; sourceTree = "<group>"; };
 		01980CBC1ABB39F900513556 /* TableCityCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableCityCell.h; sourceTree = "<group>"; };
 		01980CBD1ABB39F900513556 /* TableCityCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableCityCell.m; sourceTree = "<group>"; };
 		01980CC01ABB39F900513556 /* MKAnnotationView+WebCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "MKAnnotationView+WebCache.h"; sourceTree = "<group>"; };
@@ -548,6 +551,8 @@
 				01C106F21AB30318006CBCD1 /* LoopMeIdentityProvider.m */,
 				01C106F31AB30318006CBCD1 /* LoopMeLogging.h */,
 				01C106F41AB30318006CBCD1 /* LoopMeLogging.m */,
+				0178B4371B737902000221B9 /* LoopMeGlobalSettings.h */,
+				0178B4381B737902000221B9 /* LoopMeGlobalSettings.m */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -836,6 +841,7 @@
 			files = (
 				01980CFD1ABB39F900513556 /* UIImage+iphone5.m in Sources */,
 				01C1071B1AB30318006CBCD1 /* LoopMeVideoManager.m in Sources */,
+				0178B4391B737902000221B9 /* LoopMeGlobalSettings.m in Sources */,
 				01980CF51ABB39F900513556 /* SDWebImagePrefetcher.m in Sources */,
 				01980CFC1ABB39F900513556 /* UIView+WebCacheOperation.m in Sources */,
 				01980CED1ABB39F900513556 /* MKAnnotationView+WebCache.m in Sources */,
