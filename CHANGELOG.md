@@ -1,3 +1,8 @@
+## Version 5.1.2 (06.08.2015)
+
+- Added "Do not load video without wifi" option 
+- Bridge to mediate between Mopub native ads and LoopMe video banner ad
+
 ## Version 5.1.1 (22.07.2015)
 
 - Add `LoopMeSDK` XCode project 
