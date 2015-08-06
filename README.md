@@ -181,14 +181,12 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.1.1**
+**v5.1.2**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Add `LoopMeSDK` XCode project 
-- Fixed bug related to detecting connection type on devices with iOS version less then 7.0
-- Block ads for devices with iOS version less then 7.0
-
+- Added "Do not load video without wifi" option 
+- Bridge to mediate between Mopub native ads and LoopMe video banner ad
 
 ## License ##
 
