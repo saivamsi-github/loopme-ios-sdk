@@ -7,7 +7,7 @@
 3. **[Requirements](#requirements)**
 4. **[Integration](#integration)**
   * **[Full screen interstitial ads](#full-screen-interstitial-ads)**
-  * **[Banner ads](#banner-ads)**
+  * **[In-stream ads](#in-stream-ads)**
 5. **[Sample project](#sample-project)**
 6. **[What's new](#whats-new)**
 
@@ -24,7 +24,7 @@ If you have questions please contact us at support@loopmemedia.com.
 * Full-screen image interstitials
 * Full-screen rich media interstitials
 * Preloaded video ads
-* Banner ads
+* In-stream ads
 * Minimized ad
 * In-app ad reward notifications, including video view completed
 
@@ -97,7 +97,7 @@ self.interstitial = [LoopMeInterstitial interstitialWithAppKey:YOUR_APPKEY
    * `-loopMeInterstitialDidReceiveTap`: triggered when interstitial ad was tapped
 
 
-## Banner ads ##
+## In-stream ads ##
 
 The `LoopMeAdView` class provides facilities to display a custom size ads during natural transition points in your application.
 
@@ -186,7 +186,7 @@ Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 Please view the [changelog](CHANGELOG.md) for details.
 
 - Added "Do not load video without wifi" option 
-- Bridge to mediate between Mopub native ads and LoopMe video banner ad
+- Bridge to mediate between Mopub native ads and LoopMe video in-stream ad
 
 ## License ##
 
