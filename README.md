@@ -181,7 +181,7 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.1.2**
+**v5.1.3**
 
 Please view the [changelog](CHANGELOG.md) for details.
 

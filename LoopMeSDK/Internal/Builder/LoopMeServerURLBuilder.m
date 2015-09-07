@@ -19,7 +19,7 @@
 #import "LoopMeTargeting.h"
 #import "LoopMeGeoLocationProvider.h"
 
-NSString * const kLoopMeAPIURL = @"http://loopme.me/api/loopme/ads/v3";
+NSString * const kLoopMeAPIURL = @"https://loopme.me/api/loopme/ads/v3";
 NSString * const kLoopMeInterfaceOrientationPortrait = @"p";
 NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 

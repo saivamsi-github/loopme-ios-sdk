@@ -1,3 +1,7 @@
+## Version 5.1.3 (07.09.2015)
+
+- Support https for iOS 9 
+
 ## Version 5.1.2 (06.08.2015)
 
 - Added "Do not load video without wifi" option 

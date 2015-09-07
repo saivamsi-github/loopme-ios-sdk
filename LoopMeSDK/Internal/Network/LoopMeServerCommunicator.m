@@ -17,11 +17,9 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 @property (nonatomic, assign, readwrite, getter = isLoading) BOOL loading;
 @property (nonatomic, copy) NSURL *URL;
-@property (nonatomic, strong) NSURLConnection *connection;
-@property (nonatomic, strong) NSMutableData *responseData;
+@property (nonatomic, strong) NSURLSessionDataTask *sessionDataTask;
+@property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) NSString *userAgent;
-
-- (NSURLRequest *)adRequestForURL:(NSURL *)URL;
 
 @end
 
@@ -41,7 +39,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 - (void)dealloc
 {
-    [self.connection cancel];
+    [self.sessionDataTask cancel];
 }
 
 - (instancetype)initWithDelegate:(id<LoopMeServerCommunicatorDelegate>)delegate
@@ -55,13 +53,14 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 #pragma mark - Private
 
-- (NSURLRequest *)adRequestForURL:(NSURL *)URL
+- (NSURLSession *)adSession
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
-    [request setCachePolicy:NSURLRequestReloadIgnoringCacheData];
-    [request setTimeoutInterval:kLoopMeAdRequestTimeOutInterval];
-    [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
-    return request;
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
+    configuration.timeoutIntervalForRequest = kLoopMeAdRequestTimeOutInterval;
+    configuration.HTTPAdditionalHeaders = @{@"User-Agent" : self.userAgent};
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    return session;
 }
 
 #pragma mark - Public
@@ -70,52 +69,41 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 {
     [self cancel];
     self.URL = URL;
-    self.connection = [NSURLConnection connectionWithRequest:[self adRequestForURL:URL]
-                                                    delegate:self];
+    
+    self.session = [self adSession];
+    
+    __weak LoopMeServerCommunicator *safeSelf = self;
+    
+    self.sessionDataTask = [self.session dataTaskWithURL:URL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if ([response respondsToSelector:@selector(statusCode)]) {
+            NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
+            if (statusCode != 200) {
+                safeSelf.loading = NO;
+                [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:[LoopMeError errorForStatusCode:statusCode]];
+                return;
+            }
+        }
+        
+        if (error) {
+            safeSelf.loading = NO;
+            [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:error];
+            return;
+        }
+        
+        LoopMeAdConfiguration *configuration = [[LoopMeAdConfiguration alloc] initWithData:[NSData dataWithData:data]];
+        safeSelf.loading = NO;
+        [safeSelf.delegate serverCommunicator:safeSelf didReceiveAdConfiguration:configuration];
+    }];
+    [self.sessionDataTask resume];
+    
     self.loading = YES;
 }
 
 - (void)cancel
 {
     self.loading = NO;
-    [self.connection cancel];
-    self.connection = nil;
-    self.responseData = nil;
-}
-
-#pragma mark - NSURLConnectionDataDelegate
-
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
-    if ([response respondsToSelector:@selector(statusCode)]) {
-        NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
-        if (statusCode != 200) {
-            [connection cancel];
-            self.loading = NO;
-            [self.delegate serverCommunicator:self didFailWithError:[LoopMeError errorForStatusCode:statusCode]];
-            return;
-        }
-    }
-    self.responseData = [NSMutableData data];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-    [self.responseData appendData:data];
-}
-
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
-    self.loading = NO;
-    [self.delegate serverCommunicator:self didFailWithError:error];
-}
-
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
-    LoopMeAdConfiguration *configuration = [[LoopMeAdConfiguration alloc] initWithData:[NSData dataWithData:self.responseData]];
-    self.responseData = nil;
-    self.loading = NO;
-    [self.delegate serverCommunicator:self didReceiveAdConfiguration:configuration];
+    [self.sessionDataTask cancel];
+    self.sessionDataTask = nil;
 }
 
 @end
