@@ -48,6 +48,31 @@ Requires `XCode 5` or higher, `iOS 6.0` and above. Built using `ARC`.
   * `CoreTelephony.framework`
   * `SystemConfiguration.framework`  
 
+## Preparing Integration For iOS9 ##
+
+To use LoopMe SDK on iOS 9 you need follow next steps:
+* Ensure that `loopme-ios-sdk` has version 5.1.3 or higher
+* Whitelist LoopMe server for network requests
+
+### Whitelist LoopMe server for network requests ###
+If you compile your app with iOS SDK 9.0, you will need to whitelist LoopMe domain in your app by adding the following to your app's plist:
+
+```objective-c
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>loopme.me</key>
+            <dict>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+                <key>NSExceptionRequiresForwardSecrecy</key>
+                <false/>
+            </dict>
+        </dict>
+    </dict>
+```
+
 ## Full-screen interstitial ads ##
 
 The `LoopMenterstitial` class provides the facilities to display a full-screen ad during natural transition points in your application.
