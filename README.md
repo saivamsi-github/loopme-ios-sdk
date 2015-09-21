@@ -32,7 +32,7 @@ If you have questions please contact us at support@loopmemedia.com.
 
 An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifies your app to the LoopMe ad network. (Example appKey: 7643ba4d53.) To get an appKey visit the **[LoopMe Dashboard](http://loopme.me/)**.
 
-Requires `XCode 5` or higher, `iOS 6.0` and above. Built using `ARC`.
+Requires `XCode 6` or higher, `iOS 7.0` and above. Built using `ARC`.
 
 ## Integration ##
 

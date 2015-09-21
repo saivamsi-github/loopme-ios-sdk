@@ -231,7 +231,7 @@ const NSInteger kResizeOffset = 11;
 
 - (void)playerItemDidReachEnd:(id)object
 {
-    [self.JSClient setState:LoopMeVideoState.completed];
+    [self.JSClient setVideoState:LoopMeVideoState.completed];
     self.shouldPlay = NO;
     [self.delegate videoClientDidReachEnd:self];
 }
@@ -242,11 +242,11 @@ const NSInteger kResizeOffset = 11;
     
     if (object == self.playerItem && [keyPath isEqualToString:kLoopMeVideoStatusKey]) {
         if (self.playerItem.status == AVPlayerItemStatusFailed) {
-            [self.JSClient setState:LoopMeVideoState.broken];
+            [self.JSClient setVideoState:LoopMeVideoState.broken];
             self.statusSent = YES;
         } else if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
             if (!self.isStatusSent) {
-                [self.JSClient setState:LoopMeVideoState.ready];
+                [self.JSClient setVideoState:LoopMeVideoState.ready];
                 [self.JSClient setDuration:CMTimeGetSeconds(self.player.currentItem.asset.duration)*1000];
                 self.statusSent = YES;
             }
@@ -298,7 +298,7 @@ const NSInteger kResizeOffset = 11;
     self.videoPath = URL.lastPathComponent;
     self.videoManager = [[LoopMeVideoManager alloc] initWithVideoPath:self.videoPath delegate:self];
     if ([self playerHasBufferedURL:URL]) {
-        [self.JSClient setState:LoopMeVideoState.ready];
+        [self.JSClient setVideoState:LoopMeVideoState.ready];
         [self.JSClient setDuration:CMTimeGetSeconds(self.player.currentItem.asset.duration)*1000];
     } else if ([self.videoManager hasCachedURL:URL]) {
         [self setupPlayerWithFileURL:[self.videoManager videoFileURL]];
@@ -333,7 +333,7 @@ const NSInteger kResizeOffset = 11;
         [self seekToTime:time];
     }
     self.shouldPlay = YES;
-    [self.JSClient setState:LoopMeVideoState.playing];
+    [self.JSClient setVideoState:LoopMeVideoState.playing];
     [self.player play];
 }
 
@@ -355,7 +355,7 @@ const NSInteger kResizeOffset = 11;
 {
     [self seekToTime:time];
     self.shouldPlay = NO;
-    [self.JSClient setState:LoopMeVideoState.paused];
+    [self.JSClient setVideoState:LoopMeVideoState.paused];
     [self.player pause];
 }
 
@@ -376,7 +376,7 @@ const NSInteger kResizeOffset = 11;
 
 - (void)videoManager:(LoopMeVideoManager *)videoManager didFailLoadWithError:(NSError *)error
 {
-    [self.JSClient setState:LoopMeVideoState.broken];
+    [self.JSClient setVideoState:LoopMeVideoState.broken];
     [self.delegate videoClient:self didFailToLoadVideoWithError:error];
 }
 

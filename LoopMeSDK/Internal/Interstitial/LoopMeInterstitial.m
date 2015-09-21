@@ -94,8 +94,7 @@
         if (!returnableInterstitial) {
             returnableInterstitial = [[[self class] alloc] initWithAppKey:appKey
                                                                  delegate:delegate];
-            if (returnableInterstitial)
-                [interstitials addObject:returnableInterstitial];
+            [interstitials addObject:returnableInterstitial];
         }
         return returnableInterstitial;
     }
@@ -301,6 +300,11 @@
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialVideoDidReachEnd:)]) {
         [self.delegate loopMeInterstitialVideoDidReachEnd:self];
     }
+}
+
+- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController
+{
+    
 }
 
 - (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController

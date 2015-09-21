@@ -13,7 +13,8 @@
 
 - (void)setCurrentTime:(CGFloat)currentTime;
 - (void)setDuration:(CGFloat)fullDuration;
-- (void)setState:(NSString *)state;
+- (void)setVideoState:(NSString *)state;
+- (void)setFullScreenModeEnabled:(BOOL)enabled;
 - (void)setShake;
 
 @end

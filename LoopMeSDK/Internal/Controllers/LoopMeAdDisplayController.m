@@ -37,6 +37,8 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 @property (nonatomic, assign, getter = isShouldHandleRequests) BOOL shouldHandleRequests;
 @property (nonatomic, strong) NSTimer *webViewTimeOutTimer;
 
+@property (nonatomic, assign, getter=isFirstCallToExpand) BOOL firstCallToExpand;
+
 - (void)deviceShaken;
 - (BOOL)shouldIntercept:(NSURL *)URL
          navigationType:(UIWebViewNavigationType)navigationType;
@@ -109,6 +111,8 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
         _webView.delegate = self;
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(deviceShaken) name:kLoopMeShakeNotificationName object:nil];
+        
+        _firstCallToExpand = YES;
     }
     return self;
 }
@@ -199,6 +203,16 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 {
     [self.videoClient moveLayer];
     [self displayAd];
+}
+
+- (void)expandReporting
+{
+    [self.JSClient setFullScreenModeEnabled:YES];
+}
+
+- (void)collapseReporting
+{
+    [self.JSClient setFullScreenModeEnabled:NO];
 }
 
 #pragma mark - UIWebViewDelegate
@@ -300,6 +314,26 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 - (void)JSClientDidReceiveVibrateCommand:(LoopMeJSClient *)client
 {
     AudioServicesPlaySystemSound(kSystemSoundID_Vibrate);
+}
+
+- (void)JSClientDidReceiveFulLScreenCommand:(LoopMeJSClient *)client fullScreen:(BOOL)expand
+{
+ 
+    if (self.isFirstCallToExpand) {
+        expand = NO;
+        self.firstCallToExpand = NO;
+    }
+    
+    if (expand) {
+        if ([self.delegate respondsToSelector:@selector(adDisplayControllerWillExpandAd:)]) {
+            [self.videoClient setGravity:AVLayerVideoGravityResizeAspect];
+            [self.delegate adDisplayControllerWillExpandAd:self];
+        }
+    } else {
+        if ([self.delegate respondsToSelector:@selector(adDisplayControllerWillCollapse:)]) {
+            [self.delegate adDisplayControllerWillCollapse:self];
+        }
+    }
 }
 
 #pragma mark - VideoClientDelegate

@@ -53,18 +53,10 @@ const float kLDAdViewWidth = 300.0f;
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    /*
-     * Resuming video ad playback or any ad activity if `UIViewController` about to appear on the screen
-     */
-    [self.adView setAdVisible:NO];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    /*
-     * Pausing video ad playback or any ad activity if `UIViewController` is dismissed
-     */
-    [self.adView setAdVisible:YES];
 }
 
 #pragma mark - Actions

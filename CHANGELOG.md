@@ -1,3 +1,7 @@
+## Version 5.2.0 (21.09.2015)
+
+- Support expand to full screen
+
 ## Version 5.1.3 (07.09.2015)
 
 - Support https for iOS 9 
