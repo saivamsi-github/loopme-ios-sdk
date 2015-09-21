@@ -31,6 +31,9 @@
 - (void)continueHandlingRequests;
 - (void)moveView;
 
+- (void)expandReporting;
+- (void)collapseReporting;
+
 @end
 
 @protocol LoopMeAdDisplayControllerDelegate <NSObject>
@@ -42,6 +45,8 @@
 - (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController;
 - (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController;
 - (void)adDisplayControllerDidDismissModal:(LoopMeAdDisplayController *)adDisplayController;
+- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController;
+- (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController;
 - (UIViewController *)viewControllerForPresentation;
 - (UIView *)containerView;
 

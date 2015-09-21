@@ -32,7 +32,7 @@ If you have questions please contact us at support@loopmemedia.com.
 
 An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifies your app to the LoopMe ad network. (Example appKey: 7643ba4d53.) To get an appKey visit the **[LoopMe Dashboard](http://loopme.me/)**.
 
-Requires `XCode 5` or higher, `iOS 6.0` and above. Built using `ARC`.
+Requires `XCode 6` or higher, `iOS 7.0` and above. Built using `ARC`.
 
 ## Integration ##
 
@@ -52,24 +52,14 @@ Requires `XCode 5` or higher, `iOS 6.0` and above. Built using `ARC`.
 
 To use LoopMe SDK on iOS 9 you need follow next steps:
 * Ensure that `loopme-ios-sdk` has version 5.1.3 or higher
-* Whitelist LoopMe server for network requests
-
-### Whitelist LoopMe server for network requests ###
-If you compile your app with iOS SDK 9.0, you will need to whitelist LoopMe domain in your app by adding the following to your app's plist:
+* Add the following to your app's plist file to allow any insecure connection:
 
 ```objective-c
     <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSExceptionDomains</key>
-        <dict>
-            <key>loopme.me</key>
-            <dict>
-                <key>NSIncludesSubdomains</key>
-                <true/>
-                <key>NSExceptionRequiresForwardSecrecy</key>
-                <false/>
-            </dict>
-        </dict>
+    	<dict>
+    	   <key>NSAllowsArbitraryLoads</key>
+    	   <true/>
+    	</dict>
     </dict>
 ```
 
@@ -206,12 +196,11 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.1.3**
+**v5.2.0**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Added "Do not load video without wifi" option 
-- Bridge to mediate between Mopub native ads and LoopMe video in-stream ad
+- Support expand to full screen
 
 ## License ##
 

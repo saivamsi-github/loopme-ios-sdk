@@ -36,8 +36,6 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 @property (nonatomic, weak) id<LoopMeAdViewDelegate> delegate;
 
-@property (nonatomic, weak) UIScrollView *scrollView;
-
 /*
  * Enabling minimized mode.
  * Represents copy of original ad added on top of `UIWindow`'s right-bottom corner.

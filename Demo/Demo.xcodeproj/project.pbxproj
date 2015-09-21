@@ -89,6 +89,7 @@
 		6F71AAC3199112EB009F6D99 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC2199112EB009F6D99 /* AdSupport.framework */; };
 		6F71AAC519911302009F6D99 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC419911302009F6D99 /* Twitter.framework */; };
 		6F71AAC71991130C009F6D99 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC61991130C009F6D99 /* SystemConfiguration.framework */; };
+		EF0FE0D41BB008EC00F62560 /* LoopMeMaximizedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0FE0D31BB008EC00F62560 /* LoopMeMaximizedViewController.m */; settings = {ASSET_TAGS = (); }; };
 		EFD966831A9F2A8300846727 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFD966821A9F2A8300846727 /* CoreLocation.framework */; };
 		EFDB8DCE1AA86BD2005CE218 /* bg_iPad_main.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDB8DC91AA86BD2005CE218 /* bg_iPad_main.png */; };
 		EFDB8DCF1AA86BD2005CE218 /* bg_iPad_main@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDB8DCA1AA86BD2005CE218 /* bg_iPad_main@2x.png */; };
@@ -255,6 +256,8 @@
 		6F71AAC2199112EB009F6D99 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		6F71AAC419911302009F6D99 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		6F71AAC61991130C009F6D99 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		EF0FE0D21BB008EC00F62560 /* LoopMeMaximizedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeMaximizedViewController.h; sourceTree = "<group>"; };
+		EF0FE0D31BB008EC00F62560 /* LoopMeMaximizedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeMaximizedViewController.m; sourceTree = "<group>"; };
 		EFD966821A9F2A8300846727 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		EFDB8DC91AA86BD2005CE218 /* bg_iPad_main.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = bg_iPad_main.png; sourceTree = "<group>"; };
 		EFDB8DCA1AA86BD2005CE218 /* bg_iPad_main@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_iPad_main@2x.png"; sourceTree = "<group>"; };
@@ -456,6 +459,7 @@
 		01C106C31AB30318006CBCD1 /* AdView */ = {
 			isa = PBXGroup;
 			children = (
+				EF0FE0D11BB008EC00F62560 /* Maximized */,
 				011F05311B06335700FF7B58 /* Minimized */,
 				01C106C41AB30318006CBCD1 /* LoopMeAdView.m */,
 			);
@@ -719,6 +723,16 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		EF0FE0D11BB008EC00F62560 /* Maximized */ = {
+			isa = PBXGroup;
+			children = (
+				EF0FE0D21BB008EC00F62560 /* LoopMeMaximizedViewController.h */,
+				EF0FE0D31BB008EC00F62560 /* LoopMeMaximizedViewController.m */,
+			);
+			name = Maximized;
+			path = maximized;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -882,6 +896,7 @@
 				01980CEC1ABB39F900513556 /* TableCityCell.m in Sources */,
 				01980CF61ABB39F900513556 /* UIButton+WebCache.m in Sources */,
 				01C107251AB30318006CBCD1 /* LoopMeBrowserViewController.m in Sources */,
+				EF0FE0D41BB008EC00F62560 /* LoopMeMaximizedViewController.m in Sources */,
 				01980CFF1ABB39F900513556 /* LDInterstitialViewController.m in Sources */,
 				01C107101AB30318006CBCD1 /* LoopMeServerURLBuilder.m in Sources */,
 				01980CEF1ABB39F900513556 /* SDImageCache.m in Sources */,
@@ -1009,7 +1024,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
@@ -1031,7 +1046,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";

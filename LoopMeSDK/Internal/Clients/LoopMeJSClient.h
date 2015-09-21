@@ -24,6 +24,7 @@ extern const struct LoopMeEventStruct
     __unsafe_unretained NSString *currentTime;
     __unsafe_unretained NSString *shake;
     __unsafe_unretained NSString *isNativeCallFinished;
+    __unsafe_unretained NSString *fullscreenMode;    
 } LoopMeEvent;
 
 extern const struct LoopMeWebViewStateStruct
@@ -54,6 +55,7 @@ extern const struct LoopMeWebViewStateStruct
 - (void)JSClientDidReceiveFailCommand:(LoopMeJSClient *)client;
 - (void)JSClientDidReceiveCloseCommand:(LoopMeJSClient *)client;
 - (void)JSClientDidReceiveVibrateCommand:(LoopMeJSClient *)client;
+- (void)JSClientDidReceiveFulLScreenCommand:(LoopMeJSClient *)client fullScreen:(BOOL)expand;
 
 @end
 

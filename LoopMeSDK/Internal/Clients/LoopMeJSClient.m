@@ -28,6 +28,7 @@ NSString * const _kLoopMeLoadCommand = @"load";
 NSString * const _kLoopMeVibrateCommand = @"vibrate";
 NSString * const _kLoopMeEnableStretchCommand = @"enableStretching";
 NSString * const _kLoopMeDisableStretchCommand = @"disableStretching";
+NSString * const _kLoopMeFullScreenCommand = @"fullscreenMode";
 
 typedef NS_ENUM(NSUInteger, LoopMeJSParamType)
 {
@@ -44,7 +45,8 @@ const struct LoopMeEventStruct LoopMeEvent =
     .duration = @"duration",
     .currentTime = @"currentTime",
     .shake = @"shake",
-    .isNativeCallFinished = @"isNativeCallFinished"
+    .isNativeCallFinished = @"isNativeCallFinished",
+    .fullscreenMode = @"fullscreenMode"
 };
 
 const struct LoopMeWebViewStateStruct LoopMeWebViewState =
@@ -122,6 +124,8 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 - (void)processCommand:(NSString *)command forNamespace:(NSString *)ns withParams:(NSDictionary *)params
 {
+    LoopMeLogDebug(@"JS command: %@", command);
+
     if ([ns isEqualToString:kLoopMeNamespaceWebview]) {
         [self processWebViewCommand:command withParams:params];
     } else if ([ns isEqualToString:kLoopMeNamespaceVideo]) {
@@ -141,6 +145,8 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
         [self.delegate JSClientDidReceiveCloseCommand:self];
     } else if ([command isEqualToString:_kLoopMeVibrateCommand]) {
         [self.delegate JSClientDidReceiveVibrateCommand:self];
+    } else if ([command isEqualToString:_kLoopMeFullScreenCommand]) {
+        [self.delegate JSClientDidReceiveFulLScreenCommand:self fullScreen:[params[@"mode"] boolValue]];
     } else {
         LoopMeLogDebug(@"JS command: %@ for namespace: %@ is not supported", command, @"webview");
     }
@@ -207,9 +213,14 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark - LoopMeJSTransportProtocol
 
-- (void)setState:(NSString *)state
+- (void)setVideoState:(NSString *)state
 {
     [self executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceVideo param:state];
+}
+
+- (void)setWebViewState:(NSString *)state
+{
+    [self executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:state];
 }
 
 - (void)setDuration:(CGFloat)fullDuration
@@ -225,5 +236,10 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 - (void)setShake
 {
     [self executeEvent:LoopMeEvent.shake forNamespace:kLoopMeNamespaceWebview param:@YES paramBOOL:YES];
+}
+
+- (void)setFullScreenModeEnabled:(BOOL)enabled
+{
+    [self executeEvent:LoopMeEvent.fullscreenMode forNamespace:kLoopMeNamespaceWebview param:@(enabled) paramBOOL:YES];
 }
 @end

@@ -14,17 +14,21 @@
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
 #import "LoopMeMinimizedAdView.h"
+#import "LoopMeMaximizedViewController.h"
 #import "LoopMeGlobalSettings.h"
 
 @interface LoopMeAdView ()
 <
     LoopMeAdManagerDelegate,
     LoopMeAdDisplayControllerDelegate,
-    LoopMeMinimizedAdViewDelegate
+    LoopMeMinimizedAdViewDelegate,
+    LoopMeMaximizedViewControllerDelegate
 >
 @property (nonatomic, strong) LoopMeAdManager *adManager;
 @property (nonatomic, strong) LoopMeAdDisplayController *adDisplayController;
 @property (nonatomic, strong) LoopMeMinimizedAdView *minimizedView;
+@property (nonatomic, strong) LoopMeMaximizedViewController *maximizedController;
+@property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) NSString *appKey;
 @property (nonatomic, assign, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, getter = isReady) BOOL ready;
@@ -46,6 +50,7 @@
 {
     [self unRegisterObservers];
     [_minimizedView removeFromSuperview];
+    [_maximizedController hide];
     [_adDisplayController stopHandlingRequests];
 }
 
@@ -67,6 +72,7 @@
         _delegate = delegate;
         _adManager = [[LoopMeAdManager alloc] initWithDelegate:self];
         _adDisplayController = [[LoopMeAdDisplayController alloc] initWithDelegate:self];
+        _maximizedController = [[LoopMeMaximizedViewController alloc] initWithDelegate:self];
         _scrollView = scrollView;
         self.frame = frame;
         self.backgroundColor = [UIColor blackColor];
@@ -95,7 +101,17 @@
     [LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi = doNotLoadVideoWithoutWiFi;
 }
 
-#pragma mark - Class Methods 
+- (void)expand
+{
+    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
+    if (!isMaximized) {
+        [self.maximizedController show];
+        [self.adDisplayController moveView];
+        [self.adDisplayController expandReporting];
+    }
+}
+
+#pragma mark - Class Methods
 
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
                              frame:(CGRect)frame
@@ -130,7 +146,7 @@
     [super didMoveToSuperview];
     
     if (self.superview && self.isReady)
-        [self displayAd];
+        [self performSelector:@selector(displayAd) withObject:nil afterDelay:0.0];
 }
 
 #pragma mark - Observering
@@ -140,6 +156,8 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+
 }
 
 - (void)registerObservers
@@ -155,6 +173,11 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange:)
                                                  name:UIDeviceOrientationDidChangeNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willResignActive:)
+                                                 name:UIApplicationWillResignActiveNotification
+                                               object:nil];
+
     
 }
 
@@ -255,6 +278,14 @@
 
 #pragma mark - Private
 
+- (void)willResignActive:(NSNotification *)n
+{
+    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
+    if (isMaximized) {
+        [self removeMaximizedView];
+    }
+}
+
 - (void)minimize
 {
     if (!self.isMinimized && self.adDisplayController.isVisible) {
@@ -276,6 +307,12 @@
 - (void)removeMinimizedView {
     [self.minimizedView removeFromSuperview];
     self.minimizedView = nil;
+}
+
+- (void)removeMaximizedView {
+    [self.maximizedController hide];
+    [self.adDisplayController moveView];
+    [self.adDisplayController collapseReporting];
 }
 
 - (BOOL)moreThenHalfOfRect:(CGRect)rect visibleInRect:(CGRect)visibleRect
@@ -302,7 +339,7 @@
     if (!self.scrollView) {
         self.adDisplayController.visible = YES;
     } else {
-        [self performSelector:@selector(updateAdVisibilityInScrollView) withObject:nil afterDelay:0.1];
+        [self updateAdVisibilityInScrollView];
     }
 }
 
@@ -331,6 +368,11 @@
         return;
     }
     [self updateVisibility];
+}
+
+- (BOOL)isMaximizedControllerIsPresented
+{
+    return self.maximizedController.isViewLoaded && self.maximizedController.view.window;
 }
 
 #pragma mark - LoopMeAdManagerDelegate
@@ -370,15 +412,31 @@
     [self updateAdVisibilityInScrollView];
 }
 
+#pragma mark - LoopMeMaximizedAdViewDelegate
+
+- (void)maximizedAdViewDidPresent:(LoopMeMaximizedViewController *)maximizedViewController
+{
+    [self.adDisplayController layoutSubviews];
+}
+
+- (void)maximizedViewControllerShouldRemove:(LoopMeMaximizedViewController *)maximizedViewController
+{
+    [self.adDisplayController moveView];
+}
 
 #pragma mark - LoopMeAdDisplayControllerDelegate
 
 - (UIView *)containerView
 {
+    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
+    
     if (self.isMinimized) {
         return self.minimizedView;
+    } else if (isMaximized) {
+        return self.maximizedController.view;
+    } else {
+        return self;
     }
-    return self;
 }
 
 - (UIViewController *)viewControllerForPresentation
@@ -407,6 +465,9 @@
 
 - (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController
 {
+    if ([self isMaximizedControllerIsPresented]) {
+        [self removeMaximizedView];
+    }
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidReceiveTap:)]) {
         [self.delegate loopMeAdViewDidReceiveTap:self];
     }
@@ -422,6 +483,10 @@
 - (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController
 {
     [self performSelector:@selector(removeMinimizedView) withObject:nil afterDelay:1.0];
+    
+    if ([self isMaximizedControllerIsPresented]) {
+        [self performSelector:@selector(removeMaximizedView) withObject:nil afterDelay:1.0];
+    }
     
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewVideoDidReachEnd:)]) {
         [self.delegate loopMeAdViewVideoDidReachEnd:self];
@@ -439,4 +504,13 @@
     [self closeAd];
 }
 
+- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController
+{
+    [self expand];
+}
+
+- (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController
+{
+    [self removeMaximizedView];
+}
 @end
