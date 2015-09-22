@@ -1,3 +1,7 @@
+## Version 5.2.1 (22.09.2015)
+
+- Fixed redirect URL handling after clicking on Ad
+
 ## Version 5.2.0 (21.09.2015)
 
 - Support expand to full screen

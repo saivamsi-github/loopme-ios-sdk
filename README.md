@@ -196,11 +196,11 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.2.0**
+**v5.2.1**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Support expand to full screen
+- Fixed redirect URL handling after clicking on Ad
 
 ## License ##
 

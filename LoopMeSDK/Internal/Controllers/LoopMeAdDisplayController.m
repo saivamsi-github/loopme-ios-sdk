@@ -58,6 +58,13 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     return _videoClient;
 }
 
+- (LoopMeDestinationDisplayController *)destinationDisplayClient {
+    if (_destinationDisplayClient == nil) {
+        _destinationDisplayClient = [LoopMeDestinationDisplayController controllerWithDelegate:self];
+    }
+    return _destinationDisplayClient;
+}
+
 - (void)setVisible:(BOOL)visible
 {
     if (_visible != visible) {
