@@ -56,10 +56,9 @@ To use LoopMe SDK on iOS 9 you need follow next steps:
 
 ```objective-c
     <key>NSAppTransportSecurity</key>
-    	<dict>
-    	   <key>NSAllowsArbitraryLoads</key>
-    	   <true/>
-    	</dict>
+    <dict>
+       <key>NSAllowsArbitraryLoads</key>
+       <true/>
     </dict>
 ```
 
