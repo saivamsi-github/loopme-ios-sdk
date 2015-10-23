@@ -28,7 +28,6 @@
 @property (nonatomic, strong) LoopMeAdDisplayController *adDisplayController;
 @property (nonatomic, strong) LoopMeMinimizedAdView *minimizedView;
 @property (nonatomic, strong) LoopMeMaximizedViewController *maximizedController;
-@property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, strong) NSString *appKey;
 @property (nonatomic, assign, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, getter = isReady) BOOL ready;

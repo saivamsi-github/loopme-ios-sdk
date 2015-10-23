@@ -56,6 +56,8 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
  */
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
 
+@property (nonatomic, weak) UIScrollView *scrollView;
+
 @property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
 
 /**
