@@ -198,7 +198,6 @@
     [self.adDisplayController displayAd];
     self.adDisplayController.visible = YES;
     [viewController presentViewController:self.adInterstitialViewController animated:animated completion:^{
-        [self.adDisplayController layoutSubviews];
         LoopMeLogDebug(@"Interstitial ad did appear");
         if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidAppear:)]) {
             [self.delegate loopMeInterstitialDidAppear:self];
@@ -314,6 +313,10 @@
 
 - (void)adDisplayControllerDidDismissModal:(LoopMeAdDisplayController *)adDisplayController {
     self.adDisplayController.visible = YES;
+}
+
+- (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController {
+    
 }
 
 @end

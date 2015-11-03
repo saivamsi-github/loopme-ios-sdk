@@ -9,7 +9,7 @@
 
 typedef NS_ENUM (NSInteger, LoopMeAdOrientation) {
     LoopMeAdOrientationUndefined,
-    LoopMeAdOrienationPortrait,
+    LoopMeAdOrientationPortrait,
     LoopMeAdOrientationLandscape
 };
 

@@ -89,7 +89,7 @@
 		6F71AAC3199112EB009F6D99 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC2199112EB009F6D99 /* AdSupport.framework */; };
 		6F71AAC519911302009F6D99 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC419911302009F6D99 /* Twitter.framework */; };
 		6F71AAC71991130C009F6D99 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6F71AAC61991130C009F6D99 /* SystemConfiguration.framework */; };
-		EF0FE0D41BB008EC00F62560 /* LoopMeMaximizedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0FE0D31BB008EC00F62560 /* LoopMeMaximizedViewController.m */; settings = {ASSET_TAGS = (); }; };
+		EF0FE0D41BB008EC00F62560 /* LoopMeMaximizedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EF0FE0D31BB008EC00F62560 /* LoopMeMaximizedViewController.m */; };
 		EFD966831A9F2A8300846727 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EFD966821A9F2A8300846727 /* CoreLocation.framework */; };
 		EFDB8DCE1AA86BD2005CE218 /* bg_iPad_main.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDB8DC91AA86BD2005CE218 /* bg_iPad_main.png */; };
 		EFDB8DCF1AA86BD2005CE218 /* bg_iPad_main@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = EFDB8DCA1AA86BD2005CE218 /* bg_iPad_main@2x.png */; };
@@ -781,6 +781,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = loopmemedia;
 				TargetAttributes = {
+					6F71AA7319910FD1009F6D99 = {
+						DevelopmentTeam = 5LM9LJ6JB7;
+					};
 					6F71AA9719910FD1009F6D99 = {
 						TestTargetID = 6F71AA7319910FD1009F6D99;
 					};
@@ -1045,7 +1048,7 @@
 		6F71AAAB19910FD1009F6D99 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_RESOURCE_RULES_PATH = "$(SDKROOT)/ResourceRules.plist";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

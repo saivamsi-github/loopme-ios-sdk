@@ -11,6 +11,7 @@
 #import <CoreTelephony/CTCall.h>
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#import <SystemConfiguration/CaptiveNetwork.h>
 
 #import "LoopMeDefinitions.h"
 #import "LoopMeIdentityProvider.h"
@@ -53,6 +54,8 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     parameters[@"lng"] = [self parameterForLanguage];
     parameters[@"cn"] = [self parameterForConnectionType];
     parameters[@"dnt"] = [self parameterForDNT];
+    parameters[@"bundleid"] = [self parameterForBundleIdentifier];
+    parameters[@"wn"] = [self parameterForWiFiName];
     parameters[@"sv"] = [NSString stringWithFormat:@"%@", LOOPME_SDK_VERSION];
     parameters[@"mr"] = @"0";
 
@@ -121,6 +124,17 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return ([LoopMeIdentityProvider advertisingTrackingEnabled] ? @"0" : @"1");
 }
 
++ (NSString *)parameterForWiFiName
+{
+    return [self fetchSSIDInfo][@"SSID"];
+}
+
++ (NSString *)parameterForBundleIdentifier
+{
+    NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
+    return bundleIdentifier ? [self escapeString:bundleIdentifier] : @"";
+}
+
 + (NSString *)buildParameters:(NSMutableDictionary *)parameters
 {
     NSMutableString *parametersString = [[NSMutableString alloc] init];
@@ -138,6 +152,24 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
                                                                     (CFStringRef)@"!*'\"();:@&=+$,/?%#[]% ",
                                                                     kCFStringEncodingUTF8 );
     return (__bridge_transfer NSString *)urlString;
+}
+
++ (NSDictionary *)fetchSSIDInfo
+{
+    NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
+    NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
+    
+    NSDictionary *SSIDInfo;
+    for (NSString *interfaceName in interfaceNames) {
+        SSIDInfo = CFBridgingRelease(
+                                     CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+        
+        BOOL isNotEmpty = (SSIDInfo.count > 0);
+        if (isNotEmpty) {
+            break;
+        }
+    }
+    return SSIDInfo;
 }
 
 @end
