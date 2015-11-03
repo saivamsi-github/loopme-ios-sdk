@@ -1,3 +1,7 @@
+## Version 5.2.2 (03.11.2015)
+
+- Fixed UI issue with full screen video
+
 ## Version 5.2.1 (22.09.2015)
 
 - Fixed redirect URL handling after clicking on Ad

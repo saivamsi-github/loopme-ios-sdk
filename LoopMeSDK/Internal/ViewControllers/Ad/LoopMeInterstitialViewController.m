@@ -55,7 +55,7 @@
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
 {
-    if (self.adOrientation == LoopMeAdOrienationPortrait) {
+    if (self.adOrientation == LoopMeAdOrientationPortrait) {
         return (toInterfaceOrientation == UIInterfaceOrientationPortrait ||
                 toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
     } else if (self.adOrientation == LoopMeAdOrientationLandscape) {
@@ -72,7 +72,7 @@
     [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[UIApplication sharedApplication].keyWindow];
     NSUInteger interstitialSupportedOrientations = applicationSupportedOrientations;
     
-    if (self.adOrientation == LoopMeAdOrienationPortrait) {
+    if (self.adOrientation == LoopMeAdOrientationPortrait) {
         interstitialSupportedOrientations &=
         (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
     } else if (self.adOrientation == LoopMeAdOrientationLandscape) {

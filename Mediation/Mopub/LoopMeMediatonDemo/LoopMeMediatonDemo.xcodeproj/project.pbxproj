@@ -169,7 +169,7 @@
 		01EDDB901B6B8404003BF9BE /* LDTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EDDB8F1B6B8404003BF9BE /* LDTableViewController.m */; };
 		01EDDB971B6B9ECF003BF9BE /* LoopMeNativeEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EDDB951B6B9ECF003BF9BE /* LoopMeNativeEvent.m */; };
 		01EDDC791B6BC621003BF9BE /* LoopMeNativeAd.m in Sources */ = {isa = PBXBuildFile; fileRef = 01EDDC781B6BC621003BF9BE /* LoopMeNativeAd.m */; };
-		EFF0CC9D1BD8F45E00385CDD /* LoopMeMaximizedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EFF0CC9C1BD8F45E00385CDD /* LoopMeMaximizedViewController.m */; settings = {ASSET_TAGS = (); }; };
+		EFF182B91BD783F0003EC70D /* LoopMeMaximizedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EFF182B81BD783F0003EC70D /* LoopMeMaximizedViewController.m */; settings = {ASSET_TAGS = (); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -521,8 +521,8 @@
 		01EDDB951B6B9ECF003BF9BE /* LoopMeNativeEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeNativeEvent.m; sourceTree = "<group>"; };
 		01EDDC771B6BC621003BF9BE /* LoopMeNativeAd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeNativeAd.h; sourceTree = "<group>"; };
 		01EDDC781B6BC621003BF9BE /* LoopMeNativeAd.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeNativeAd.m; sourceTree = "<group>"; };
-		EFF0CC9B1BD8F45E00385CDD /* LoopMeMaximizedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeMaximizedViewController.h; sourceTree = "<group>"; };
-		EFF0CC9C1BD8F45E00385CDD /* LoopMeMaximizedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeMaximizedViewController.m; sourceTree = "<group>"; };
+		EFF182B71BD783F0003EC70D /* LoopMeMaximizedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeMaximizedViewController.h; sourceTree = "<group>"; };
+		EFF182B81BD783F0003EC70D /* LoopMeMaximizedViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeMaximizedViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1038,7 +1038,7 @@
 			isa = PBXGroup;
 			children = (
 				0178B3C81B70F32D000221B9 /* LoopMeAdView.m */,
-				EFF0CC9A1BD8F45E00385CDD /* maximized */,
+				EFF182B61BD783F0003EC70D /* maximized */,
 				0178B3C91B70F32D000221B9 /* minimized */,
 			);
 			path = AdView;
@@ -1249,11 +1249,11 @@
 			path = LoopMeBridge;
 			sourceTree = "<group>";
 		};
-		EFF0CC9A1BD8F45E00385CDD /* maximized */ = {
+		EFF182B61BD783F0003EC70D /* maximized */ = {
 			isa = PBXGroup;
 			children = (
-				EFF0CC9B1BD8F45E00385CDD /* LoopMeMaximizedViewController.h */,
-				EFF0CC9C1BD8F45E00385CDD /* LoopMeMaximizedViewController.m */,
+				EFF182B71BD783F0003EC70D /* LoopMeMaximizedViewController.h */,
+				EFF182B81BD783F0003EC70D /* LoopMeMaximizedViewController.m */,
 			);
 			path = maximized;
 			sourceTree = "<group>";
@@ -1416,7 +1416,7 @@
 				014D6DD61B690F59006F3F62 /* MPInterstitialCustomEventAdapter.m in Sources */,
 				014D6E181B690F5A006F3F62 /* MPNativeAdRequest.m in Sources */,
 				014D6DF81B690F59006F3F62 /* MPLogProvider.m in Sources */,
-				EFF0CC9D1BD8F45E00385CDD /* LoopMeMaximizedViewController.m in Sources */,
+				EFF182B91BD783F0003EC70D /* LoopMeMaximizedViewController.m in Sources */,
 				014D6DE21B690F59006F3F62 /* MRCommand.m in Sources */,
 				0178B4281B70F32D000221B9 /* LoopMeGeoLocationProvider.m in Sources */,
 				014D6DE41B690F59006F3F62 /* MRController.m in Sources */,
@@ -1648,7 +1648,6 @@
 					../../LoopMeSDK,
 				);
 				INFOPLIST_FILE = LoopMeMediatonDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -1664,7 +1663,6 @@
 					../../LoopMeSDK,
 				);
 				INFOPLIST_FILE = LoopMeMediatonDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

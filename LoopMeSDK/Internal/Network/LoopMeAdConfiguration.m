@@ -53,7 +53,7 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     if ([settings[@"orientation"] isEqualToString:@"landscape"]) {
         _orientation = LoopMeAdOrientationLandscape;
     } else if ([settings[@"orientation"] isEqualToString:@"portrait"]) {
-        _orientation = LoopMeAdOrienationPortrait;
+        _orientation = LoopMeAdOrientationPortrait;
     } else {
         _orientation = LoopMeAdOrientationUndefined;
     }
@@ -62,7 +62,7 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
 - (NSString *)description {
     return [NSString stringWithFormat:@"Ad format: %@, orientation: %@, expires in: %ld seconds",
                    (self.format == LoopMeAdFormatBanner) ? @"banner" : @"interstitial",
-                   (self.orientation == LoopMeAdOrienationPortrait) ? @"portrait" : @"landscape",
+                   (self.orientation == LoopMeAdOrientationPortrait) ? @"portrait" : @"landscape",
                    (long)self.expirationTime];
 
 }

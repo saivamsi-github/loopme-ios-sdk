@@ -36,6 +36,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 @property (nonatomic, strong) LoopMeDestinationDisplayController *destinationDisplayClient;
 @property (nonatomic, assign, getter = isShouldHandleRequests) BOOL shouldHandleRequests;
 @property (nonatomic, strong) NSTimer *webViewTimeOutTimer;
+@property (nonatomic, strong) LoopMeAdConfiguration *configuration;
 
 @property (nonatomic, assign, getter=isFirstCallToExpand) BOOL firstCallToExpand;
 
@@ -164,6 +165,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)loadConfiguration:(LoopMeAdConfiguration *)configuration
 {
+    self.configuration = configuration;
     self.shouldHandleRequests = YES;
     [self.webView loadHTMLString:configuration.adResponseHTMLString
                          baseURL:nil];
@@ -173,7 +175,14 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 - (void)displayAd
 {
     self.webView.frame = self.delegate.containerView.bounds;
-    [self.videoClient adjustLayerToFrame:self.webView.frame];
+    
+    CGRect adjustedFrame = self.webView.frame;
+
+    if ((self.configuration.orientation == LoopMeAdOrientationLandscape && adjustedFrame.size.width < adjustedFrame.size.height) || (self.configuration.orientation == LoopMeAdOrientationPortrait && adjustedFrame.size.width > adjustedFrame.size.height)) {
+        adjustedFrame = CGRectMake(adjustedFrame.origin.x, adjustedFrame.origin.y, adjustedFrame.size.height, adjustedFrame.size.width);
+    }
+    
+    [self.videoClient adjustLayerToFrame:adjustedFrame];
     [self.delegate.containerView addSubview:self.webView];
     [self.delegate.containerView bringSubviewToFront:self.webView];
 }
