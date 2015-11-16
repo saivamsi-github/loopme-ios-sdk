@@ -53,33 +53,33 @@
 
 #pragma mark Orientation handling
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+- (BOOL)shouldAutorotate
 {
-    if (self.adOrientation == LoopMeAdOrientationPortrait) {
-        return (toInterfaceOrientation == UIInterfaceOrientationPortrait ||
-                toInterfaceOrientation == UIInterfaceOrientationPortraitUpsideDown);
-    } else if (self.adOrientation == LoopMeAdOrientationLandscape) {
-        return (toInterfaceOrientation == UIInterfaceOrientationLandscapeLeft ||
-                toInterfaceOrientation == UIInterfaceOrientationLandscapeRight);
+    return NO;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    if (self.adOrientation == LoopMeAdOrientationLandscape) {
+        return UIInterfaceOrientationLandscapeLeft;
     } else {
-        return YES;
+        return UIInterfaceOrientationPortrait;
     }
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    NSUInteger applicationSupportedOrientations =
+    UIInterfaceOrientationMask applicationSupportedOrientations =
     [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[UIApplication sharedApplication].keyWindow];
-    NSUInteger interstitialSupportedOrientations = applicationSupportedOrientations;
+    UIInterfaceOrientationMask interstitialSupportedOrientations = applicationSupportedOrientations;
     
     if (self.adOrientation == LoopMeAdOrientationPortrait) {
-        interstitialSupportedOrientations &=
+        interstitialSupportedOrientations |=
         (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
     } else if (self.adOrientation == LoopMeAdOrientationLandscape) {
-        interstitialSupportedOrientations &= UIInterfaceOrientationMaskLandscape;
+        interstitialSupportedOrientations |= UIInterfaceOrientationMaskLandscape;
     }
     
-    return (!interstitialSupportedOrientations) ? applicationSupportedOrientations : interstitialSupportedOrientations;
+    return interstitialSupportedOrientations;
 }
 
 #pragma mark - Public

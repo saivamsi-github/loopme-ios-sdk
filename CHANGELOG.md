@@ -1,3 +1,7 @@
+## Version 5.2.3 (16.11.2015)
+
+- Fixed landscape interstitial video with portrait apps.
+
 ## Version 5.2.2 (03.11.2015)
 
 - Fixed UI issue with full screen video
