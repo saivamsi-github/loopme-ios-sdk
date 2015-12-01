@@ -194,8 +194,14 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     [self.JSClient executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:LoopMeWebViewState.closed];
 }
 
-- (void)layoutSubviews {
-    [self.videoClient adjustLayerToFrame:self.webView.frame];
+- (void)layoutSubviews
+{
+    [self.videoClient adjustLayerToFrame:self.webView.bounds];
+}
+
+- (void)layoutSubviewsToFrame:(CGRect)frame
+{
+    [self.videoClient adjustLayerToFrame:frame];
 }
 
 - (void)stopHandlingRequests

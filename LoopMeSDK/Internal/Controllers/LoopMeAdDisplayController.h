@@ -27,6 +27,7 @@
 - (void)displayAd;
 - (void)closeAd;
 - (void)layoutSubviews;
+- (void)layoutSubviewsToFrame:(CGRect)frame;
 - (void)stopHandlingRequests;
 - (void)continueHandlingRequests;
 - (void)moveView;

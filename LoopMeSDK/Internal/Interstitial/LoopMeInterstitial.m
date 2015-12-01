@@ -21,7 +21,8 @@
 @interface LoopMeInterstitial ()
 <
     LoopMeAdManagerDelegate,
-    LoopMeAdDisplayControllerDelegate
+    LoopMeAdDisplayControllerDelegate,
+    LoopMeInterstitialViewControllerDelegate
 >
 @property (nonatomic, assign, getter = isLoading) BOOL loading;
 @property (nonatomic, assign, getter = isReady) BOOL ready;
@@ -64,6 +65,7 @@
         _adManager = [[LoopMeAdManager alloc] initWithDelegate:self];
         _adDisplayController = [[LoopMeAdDisplayController alloc] initWithDelegate:self];
         _adInterstitialViewController = [[LoopMeInterstitialViewController alloc] init];
+        _adInterstitialViewController.delegate = self;
         LoopMeLogInfo(@"Interstitial is initialized with appKey %@", appKey);
     }
     return self;
@@ -198,6 +200,7 @@
     [self.adDisplayController displayAd];
     self.adDisplayController.visible = YES;
     [viewController presentViewController:self.adInterstitialViewController animated:animated completion:^{
+        [self.adDisplayController layoutSubviews];
         LoopMeLogDebug(@"Interstitial ad did appear");
         if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidAppear:)]) {
             [self.delegate loopMeInterstitialDidAppear:self];
@@ -252,6 +255,12 @@
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidExpire:)]) {
         [self.delegate loopMeInterstitialDidExpire:self];
     }
+}
+
+#pragma mark - LoopMeInterstitialViewControllerDelegate
+
+- (void)viewWillTransitionToSize:(CGSize)size {
+    [self.adDisplayController layoutSubviewsToFrame:CGRectMake(0, 0, size.width, size.height)];
 }
 
 #pragma mark - LoopMeAdDisplayControllerDelegate

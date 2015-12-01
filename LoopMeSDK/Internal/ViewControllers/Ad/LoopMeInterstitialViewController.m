@@ -104,4 +104,11 @@
 
 #pragma mark - Public
 
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    if ([self.delegate respondsToSelector:@selector(viewWillTransitionToSize:)]) {
+        [self.delegate viewWillTransitionToSize:size];
+    }
+}
+
 @end

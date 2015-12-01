@@ -1,3 +1,7 @@
+## Version 5.2.4 (01.12.2015)
+
+- Added adaptive size to interstitial video for multitasking in iOS 9.
+
 ## Version 5.2.3 (16.11.2015)
 
 - Fixed landscape interstitial video with portrait apps.

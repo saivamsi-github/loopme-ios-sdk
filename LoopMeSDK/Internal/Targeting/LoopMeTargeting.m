@@ -14,6 +14,11 @@
 
 #pragma mark - Initialiation
 
+- (instancetype)init
+{
+    return [self initWithKeywords:nil yearOfBirth:nil gender:LoopMeGenderUnknown];
+}
+
 - (instancetype)initWithGender:(LoopMeGender)gender
 {
     return [self initWithKeywords:nil yearOfBirth:nil gender:gender];

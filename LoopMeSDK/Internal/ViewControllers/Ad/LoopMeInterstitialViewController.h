@@ -7,8 +7,17 @@
 //
 
 @class LoopMeInterstitialViewController;
+@protocol LoopMeInterstitialViewControllerDelegate;
 
 @interface LoopMeInterstitialViewController : UIViewController
+
+@property (nonatomic, weak) id<LoopMeInterstitialViewControllerDelegate> delegate;
 - (void)setOrientation:(LoopMeAdOrientation)orientation;
+
+@end
+
+@protocol LoopMeInterstitialViewControllerDelegate <NSObject>
+
+- (void)viewWillTransitionToSize:(CGSize)size;
 
 @end

@@ -19,6 +19,7 @@
 #import "LoopMeServerURLBuilder.h"
 #import "LoopMeTargeting.h"
 #import "LoopMeGeoLocationProvider.h"
+#import "LoopMeLogging.h"
 
 NSString * const kLoopMeAPIURL = @"https://loopme.me/api/loopme/ads/v3";
 NSString * const kLoopMeInterfaceOrientationPortrait = @"p";
@@ -157,12 +158,13 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 + (NSDictionary *)fetchSSIDInfo
 {
     NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
-    NSLog(@"%s: Supported interfaces: %@", __func__, interfaceNames);
+    LoopMeLogDebug(@"%s: Supported interfaces: %@", __func__, interfaceNames);
     
     NSDictionary *SSIDInfo;
     for (NSString *interfaceName in interfaceNames) {
         SSIDInfo = CFBridgingRelease(
                                      CNCopyCurrentNetworkInfo((__bridge CFStringRef)interfaceName));
+        LoopMeLogDebug(@"%s: %@ => %@", __func__, interfaceName, SSIDInfo);
         
         BOOL isNotEmpty = (SSIDInfo.count > 0);
         if (isNotEmpty) {

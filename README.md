@@ -195,11 +195,11 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.2.3**
+**v5.2.4**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Fixed landscape interstitial video with portrait apps.
+- Added adaptive size to interstitial video for multitasking in iOS 9.
 
 ## License ##
 
