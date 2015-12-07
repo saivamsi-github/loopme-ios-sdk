@@ -1,3 +1,7 @@
+## Version 5.2.5 (07.12.2015)
+
+- Added CocoaPods integration.
+
 ## Version 5.2.4 (01.12.2015)
 
 - Added adaptive size to interstitial video for multitasking in iOS 9.

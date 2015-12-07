@@ -36,6 +36,25 @@ Requires `XCode 6` or higher, `iOS 7.0` and above. Built using `ARC`.
 
 ## Integration ##
 
+### CocoaPods ###
+
+* Open Podfile, and add your dependencies.
+
+```
+  platform :ios, '7.0'
+  pod 'LoopMeSDK'
+```
+
+* Run the pod `install` command. 
+
+```
+  $ pod install
+```
+
+* Open your app's .xcworkspace file to launch Xcode. Use this file for all development on your app.
+
+### Manual ###
+
 * Download `loopme-ios-sdk` from this repository
 * Copy the  `LoopMeSDK` folder into your Xcode application project
 * Make sure following frameworks are added in `Xcode` project's `build phases`
@@ -195,11 +214,11 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.2.4**
+**v5.2.5**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Added adaptive size to interstitial video for multitasking in iOS 9.
+- Added CocoaPods integration.
 
 ## License ##
 

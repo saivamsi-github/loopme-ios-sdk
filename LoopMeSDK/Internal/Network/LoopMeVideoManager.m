@@ -35,6 +35,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
     if (self) {
         _videoPath = videoPath;
         _delegate = delegate;
+        [self clearOldCacheFiles];
     }
     return self;
 }
@@ -62,20 +63,34 @@ NSInteger const videoLoadTimeOutInterval = 180;
     self.connection = nil;
 }
 
+- (void)clearOldCacheFiles {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSString *directoryPath = self.assetsDirectory;
+    NSDirectoryEnumerator* enumerator = [fm enumeratorAtPath:directoryPath];
+    
+    NSString* file;
+    while (file = [enumerator nextObject]) {
+
+        NSDate *creationDate = [[fm attributesOfItemAtPath:[directoryPath stringByAppendingPathComponent:file] error:nil] fileCreationDate];
+        NSDate *yesterDay = [[NSDate date] dateByAddingTimeInterval:(-1*32*60*60)];
+        
+        if ([creationDate compare:yesterDay] == NSOrderedAscending) {
+            [fm removeItemAtPath:[directoryPath stringByAppendingPathComponent:file] error:nil];
+        }
+    }
+}
+
+
 - (void)cacheVideoData:(NSData *)data
 {
     NSString *directoryPath = self.assetsDirectory;
-    
-    NSArray *fileList = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directoryPath error:nil];
-    if ([fileList count] == 3) {
-        NSString *file = [directoryPath stringByAppendingPathComponent:fileList[arc4random_uniform(3)]];
-        [[NSFileManager defaultManager] removeItemAtPath:file error:nil];
-    }
     
     [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath
                               withIntermediateDirectories:NO
                                                attributes:nil
                                                     error:nil];
+    
     NSString *dataPath = [directoryPath stringByAppendingPathComponent:self.videoPath];
     NSURL *URL = [NSURL fileURLWithPath:dataPath];
     
