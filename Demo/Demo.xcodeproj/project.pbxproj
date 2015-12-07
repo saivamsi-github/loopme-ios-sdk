@@ -1038,7 +1038,7 @@
 					"$(PROJECT_DIR)/Demo",
 				);
 				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = "-all_load";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME) Trailer";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
@@ -1060,7 +1060,7 @@
 					"$(PROJECT_DIR)/Demo",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-all_load";
+				OTHER_LDFLAGS = "$(inherited)";
 				PRODUCT_NAME = "$(TARGET_NAME) Trailer";
 				PROVISIONING_PROFILE = "";
 				WRAPPER_EXTENSION = app;
