@@ -48,6 +48,9 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
  */
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
 
+/**
+ * Set YES if you want to disable loading video when Wi-Fi turned off. Default value NO.
+ */
 @property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
 
 

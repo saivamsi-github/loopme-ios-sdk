@@ -53,8 +53,8 @@
         return nil;
     }
     
-    if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-        LoopMeLogDebug(@"Block iOS versions less then 7.0");
+    if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+        LoopMeLogDebug(@"Block iOS versions less then 8.0");
         return nil;
     }
     
@@ -188,6 +188,7 @@
 {
     if (!self.isReady) {
         LoopMeLogInfo(@"Ad isn't ready to be displayed");
+        [[LoopMeLoggingSender sharedInstance] notReadyDisplay];
         return;
     }
 

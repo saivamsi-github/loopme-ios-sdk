@@ -32,7 +32,7 @@ If you have questions please contact us at support@loopmemedia.com.
 
 An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifies your app to the LoopMe ad network. (Example appKey: 7643ba4d53.) To get an appKey visit the **[LoopMe Dashboard](http://loopme.me/)**.
 
-Requires `XCode 6` or higher, `iOS 7.0` and above. Built using `ARC`.
+Requires `XCode 7` or higher, `iOS 8.0` and above. Built using `ARC`.
 
 ## Integration ##
 
@@ -41,7 +41,7 @@ Requires `XCode 6` or higher, `iOS 7.0` and above. Built using `ARC`.
 * Open Podfile, and add your dependencies.
 
 ```
-  platform :ios, '7.0'
+  platform :ios, '8.0'
   pod 'LoopMeSDK'
 ```
 
@@ -214,11 +214,12 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.2.5**
+**v5.2.6**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Added CocoaPods integration.
+- Added live debug feature. It will provide us with essential debug info to help you eliminate possible bugs of integration much quicker. You can enable this feature in our dashboard.
+- Stop iOS 7 supporting.
 
 ## License ##
 

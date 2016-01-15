@@ -1,3 +1,8 @@
+## Version 5.2.6 (15.01.2016)
+
+- Added live debug feature. It will provide us with essential debug info to help you eliminate possible bugs of integration much quicker. You can enable this feature in our dashboard.
+- Stop iOS 7 supporting.
+
 ## Version 5.2.5 (07.12.2015)
 
 - Added CocoaPods integration.

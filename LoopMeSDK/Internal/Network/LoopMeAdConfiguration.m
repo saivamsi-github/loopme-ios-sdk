@@ -7,6 +7,7 @@
 
 #import "LoopMeAdConfiguration.h"
 #import "LoopMeLogging.h"
+#import "LoopMeGlobalSettings.h"
 
 const int kLoopMeExpireTimeIntervalMinimum = 600;
 
@@ -48,6 +49,10 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     _expirationTime = [settings[@"ad_expiry_time"] integerValue];
     if (_expirationTime < kLoopMeExpireTimeIntervalMinimum) {
         _expirationTime = kLoopMeExpireTimeIntervalMinimum;
+    }
+    
+    if ([settings objectForKey:@"debug"]) {
+        [LoopMeGlobalSettings sharedInstance].liveDebugEnabled = [settings[@"debug"] boolValue];
     }
     
     if ([settings[@"orientation"] isEqualToString:@"landscape"]) {

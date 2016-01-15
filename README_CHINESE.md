@@ -33,7 +33,7 @@ LoopMe的SDK以代码格式传播并且能够在你的应用里检索、展示�
 
 在您使用`loopme-ios-sdk`前，您需要前往我们的**[系统后台](http://loopme.me/)** 注册并获取appKey。appKey是用来在我们的广告网络中识别您的应用的。（示例appKey：7643ba4d53）.
 
-仅支持`XCode 5`及更高系统, `iOS 6.0`及更高系统。用`ARC`编译。
+仅支持`XCode 7`及更高系统, `iOS 8.0`及更高系统。用`ARC`编译。
 
 ## 对接 ##
 
@@ -182,12 +182,9 @@ self.adView.minimizedModeEnabled = YES;
 请查看我们的demo`loopme-ios-sdk` 对接后示例。
 
 ## 更新 ##
-**v5.1.0**
+**v5.2.6**
 
 详情请查阅 [changelog](CHANGELOG.md) 。
-
-- 当原始`横幅`视频不在视口内时展示可定制尺寸的`最小化视频`。
-- `最小化视频`可以通过滑动视频关闭。
 
 ## 许可 ##
 

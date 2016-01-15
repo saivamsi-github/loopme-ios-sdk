@@ -13,6 +13,7 @@
 #import "LoopMeJSCommunicatorProtocol.h"
 #import "LoopMeError.h"
 #import "LoopMeVideoManager.h"
+#import "LoopMeLogging.h"
 
 #import "LoopMeReachability.h"
 #import "LoopMeGlobalSettings.h"
@@ -46,6 +47,8 @@ const NSInteger kResizeOffset = 11;
 @property (nonatomic, assign, getter = isShouldPlay) BOOL shouldPlay;
 @property (nonatomic, assign, getter = isStatusSent) BOOL statusSent;
 @property (nonatomic, strong) NSString *layerGravity;
+
+@property (nonatomic, strong) NSDate *loadingVideoStart;
 
 - (AVPlayerLayer *)playerLayer;
 - (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player;
@@ -307,6 +310,7 @@ const NSInteger kResizeOffset = 11;
             [self videoManager:self.videoManager didFailLoadWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeCanNotLoadVideo]];
             return;
         }
+        self.loadingVideoStart = [NSDate date];
         [self.videoManager loadVideoWithURL:URL];
     }
 }
@@ -371,6 +375,8 @@ const NSInteger kResizeOffset = 11;
 
 - (void)videoManager:(LoopMeVideoManager *)videoManager didLoadVideo:(NSURL *)videoURL
 {
+    NSTimeInterval secondsFromVideoLoadStart = [self.loadingVideoStart timeIntervalSinceNow];
+    [LoopMeLoggingSender sharedInstance].videoLoadingTimeInterval = fabs(secondsFromVideoLoadStart);
     [self setupPlayerWithFileURL:videoURL];
 }
 

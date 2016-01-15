@@ -172,11 +172,7 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
 
 - (BOOL)isAuthorizedStatus:(CLAuthorizationStatus)status
 {
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        return (status == kCLAuthorizationStatusAuthorizedAlways) || (status == kCLAuthorizationStatusAuthorizedWhenInUse);
-    } else {
-        return status == kCLAuthorizationStatusAuthorized;
-    }
+    return (status == kCLAuthorizationStatusAuthorizedAlways) || (status == kCLAuthorizationStatusAuthorizedWhenInUse);
 }
 
 #pragma mark - CLLocation Helpers
@@ -219,10 +215,8 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
         case kCLAuthorizationStatusRestricted:
             self.authorizedForLocationServices = NO;
             break;
-        case kCLAuthorizationStatusAuthorized: // same as kCLAuthorizationStatusAuthorizedAlways
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+        case kCLAuthorizationStatusAuthorizedAlways:
         case kCLAuthorizationStatusAuthorizedWhenInUse:
-    #endif
             self.authorizedForLocationServices = YES;
             break;
         default:

@@ -58,6 +58,9 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 @property (nonatomic, weak) UIScrollView *scrollView;
 
+/**
+ * Set YES if you want to disable loading video when Wi-Fi turned off. Default value NO.
+ */
 @property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
 
 /**

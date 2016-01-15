@@ -76,6 +76,10 @@
 {
     [self.storeKitController.presentingViewController dismissViewControllerAnimated:YES completion:^{
         [self.delegate destinationDisplayControllerDidDismissModal:self];
+                UIViewController *presenting = [self.delegate viewControllerForPresentingModalView].presentingViewController;
+                [presenting dismissViewControllerAnimated:NO completion:^{
+                    [presenting presentViewController:[self.delegate viewControllerForPresentingModalView] animated:NO completion:nil];
+                }];
     }];
 }
 

@@ -21,3 +21,13 @@ void setLoopMeLogLevel(LoopMeLogLevel level);
 void LoopMeLogDebug(NSString *format, ...);
 void LoopMeLogInfo(NSString *format, ...);
 void LoopMeLogError(NSString *format, ...);
+
+@interface LoopMeLoggingSender : NSObject
+
+@property (nonatomic) NSTimeInterval videoLoadingTimeInterval;
+
++ (LoopMeLoggingSender *)sharedInstance;
+- (void)notReadyDisplay;
+- (void)propertyTriggered:(NSString *)name value:(id)value;
+
+@end

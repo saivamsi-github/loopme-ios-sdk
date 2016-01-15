@@ -9,7 +9,7 @@
 #ifndef LoopMeDefinitions_h
 #define LoopMeDefinitions_h
 
-#define LOOPME_SDK_VERSION @"5.2.5"
+#define LOOPME_SDK_VERSION @"5.2.6"
 
 #undef SYSTEM_VERSION_LESS_THAN
 

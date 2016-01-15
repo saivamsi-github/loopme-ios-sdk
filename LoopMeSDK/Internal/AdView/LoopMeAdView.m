@@ -62,8 +62,8 @@
     self = [super init];
     if (self) {
         
-        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
-            LoopMeLogDebug(@"Block iOS versions less then 7.0");
+        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
+            LoopMeLogDebug(@"Block iOS versions less then 8.0");
             return nil;
         }
         
@@ -83,6 +83,7 @@
 
 - (void)setMinimizedModeEnabled:(BOOL)minimizedModeEnabled {
     if (_minimizedModeEnabled != minimizedModeEnabled) {
+        [[LoopMeLoggingSender sharedInstance] propertyTriggered:NSStringFromSelector(@selector(isMinimizedModeEnabled)) value:@(_minimizedModeEnabled)];
         _minimizedModeEnabled = minimizedModeEnabled;
         if (_minimizedModeEnabled) {
             _minimizedView = [[LoopMeMinimizedAdView alloc] initWithDelegate:self];
@@ -136,8 +137,10 @@
     if (!newSuperview) {
         [self closeAd];
     } else {
-        if (!self.isReady)
+        if (!self.isReady) {
+            [[LoopMeLoggingSender sharedInstance] notReadyDisplay];
             self.needsToBeDisplayedWhenReady = YES;
+        }
     }
 }
 

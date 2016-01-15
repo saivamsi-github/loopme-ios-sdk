@@ -13,5 +13,6 @@
 + (instancetype)sharedInstance;
 
 @property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
+@property (nonatomic, assign, getter = isLiveDebugEnabled) BOOL liveDebugEnabled;
 
 @end
