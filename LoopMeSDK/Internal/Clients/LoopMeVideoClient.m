@@ -29,11 +29,14 @@ const struct LoopMeVideoStateStruct LoopMeVideoState =
 
 static void *VideoControllerStatusObservationContext = &VideoControllerStatusObservationContext;
 NSString * const kLoopMeVideoStatusKey = @"status";
+NSString * const kLoopMeLoadedTimeRangesKey = @"loadedTimeRanges";
+
 const NSInteger kResizeOffset = 11;
 
 @interface LoopMeVideoClient ()
 <
-    LoopMeVideoManagerDelegate
+    LoopMeVideoManagerDelegate,
+    AVAssetResourceLoaderDelegate
 >
 @property (nonatomic, weak) id<LoopMeVideoClientDelegate> delegate;
 @property (nonatomic, weak) id<LoopMeJSCommunicatorProtocol> JSClient;
@@ -48,7 +51,12 @@ const NSInteger kResizeOffset = 11;
 @property (nonatomic, assign, getter = isStatusSent) BOOL statusSent;
 @property (nonatomic, strong) NSString *layerGravity;
 
-@property (nonatomic, strong) NSDate *loadingVideoStart;
+@property (nonatomic, strong) NSDate *loadingVideoStartDate;
+@property (nonatomic, strong) NSURL *videoURL;
+@property (nonatomic, assign) CMTime preloadedDuration;
+@property (nonatomic, assign) BOOL preloadingForCacheStarted;
+
+@property (nonatomic, strong) AVAssetResourceLoadingRequest *resourceLoadingRequest;
 
 - (AVPlayerLayer *)playerLayer;
 - (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player;
@@ -90,9 +98,15 @@ const NSInteger kResizeOffset = 11;
     if (_playerItem != playerItem) {
         if (_playerItem) {
             [_playerItem removeObserver:self forKeyPath:kLoopMeVideoStatusKey context:VideoControllerStatusObservationContext];
+            [_playerItem removeObserver:self forKeyPath:kLoopMeLoadedTimeRangesKey context:VideoControllerStatusObservationContext];
             [[NSNotificationCenter defaultCenter] removeObserver:self
                                                             name:AVPlayerItemDidPlayToEndTimeNotification
                                                           object:_playerItem];
+            [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                            name:AVPlayerItemFailedToPlayToEndTimeNotification
+                                                          object:_playerItem];
+            
+            [[NSNotificationCenter defaultCenter] removeObserver:self name:AVPlayerItemPlaybackStalledNotification object:_playerItem];
         }
         _playerItem = playerItem;
         if (_playerItem) {
@@ -101,8 +115,27 @@ const NSInteger kResizeOffset = 11;
                                                      selector:@selector(playerItemDidReachEnd:)
                                                          name:AVPlayerItemDidPlayToEndTimeNotification
                                                        object:_playerItem];
+            [[NSNotificationCenter defaultCenter] addObserver:self
+                                                     selector:@selector(playerItemDidFailedToPlayToEndTime:)
+                                                         name:AVPlayerItemFailedToPlayToEndTimeNotification
+                                                       object:_playerItem];
+            
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(playbackStalled:) name:AVPlayerItemPlaybackStalledNotification object:_playerItem];
+            
+            [_playerItem addObserver:self
+                             forKeyPath:kLoopMeLoadedTimeRangesKey
+                                options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+                                context:VideoControllerStatusObservationContext];
+
         }
     }
+}
+
+- (void)playbackStalled:(NSNotification *)n
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self play];
+    });
 }
 
 - (void)setPlayer:(AVPlayer *)player
@@ -239,19 +272,52 @@ const NSInteger kResizeOffset = 11;
     [self.delegate videoClientDidReachEnd:self];
 }
 
+- (void)playerItemDidFailedToPlayToEndTime:(id)object
+{
+    [self pause];
+    [self.JSClient setVideoState:LoopMeVideoState.paused];
+}
+
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
                         change:(NSDictionary *)change context:(void *)context
 {
-    
-    if (object == self.playerItem && [keyPath isEqualToString:kLoopMeVideoStatusKey]) {
-        if (self.playerItem.status == AVPlayerItemStatusFailed) {
-            [self.JSClient setVideoState:LoopMeVideoState.broken];
-            self.statusSent = YES;
-        } else if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
-            if (!self.isStatusSent) {
-                [self.JSClient setVideoState:LoopMeVideoState.ready];
-                [self.JSClient setDuration:CMTimeGetSeconds(self.player.currentItem.asset.duration)*1000];
-                self.statusSent = YES;
+    if (object == self.playerItem ) {
+        if ([keyPath isEqualToString:kLoopMeVideoStatusKey]) {
+            if (self.playerItem.status == AVPlayerItemStatusFailed) {
+                if ([[LoopMeGlobalSettings sharedInstance] isPreload25Enabled]) {
+                    [self.videoManager failedInitPlayer: self.videoURL];
+                } else {
+                    [self.JSClient setVideoState:LoopMeVideoState.broken];
+                    self.statusSent = YES;
+                }
+            } else if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
+                if (([self.videoManager hasCachedURL:self.videoURL] && !self.isStatusSent) ) {
+                    [self.JSClient setVideoState:LoopMeVideoState.ready];
+                    [self.JSClient setDuration:CMTimeGetSeconds(self.player.currentItem.asset.duration)*1000];
+                    self.statusSent = YES;
+                }
+            }
+        } else if ([keyPath isEqualToString:kLoopMeLoadedTimeRangesKey]) {
+            if ([LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
+                
+                if (self.preloadedDuration.value == 0) {
+                    return;
+                }
+                
+                CMTimeRange loadedTimeRanges = [[[object loadedTimeRanges] objectAtIndex:0] CMTimeRangeValue];
+                long long loadedLenght = (loadedTimeRanges.start.value + loadedTimeRanges.duration.value);
+                BOOL isFullyPreloaded =  loadedLenght == self.preloadedDuration.value;
+                
+                if (isFullyPreloaded && ![self.videoManager hasCachedURL:self.videoURL] && !self.preloadingForCacheStarted) {
+                        self.preloadingForCacheStarted = YES;
+                        [self.videoManager loadVideoWithURL:self.videoURL];
+                } else if ((loadedLenght >= self.preloadedDuration.value / 4) && !self.statusSent) {
+                    if (![self.videoManager hasCachedURL:self.videoURL]) {
+                        [self.JSClient setVideoState:LoopMeVideoState.ready];
+                        [self.JSClient setDuration:CMTimeGetSeconds(self.preloadedDuration)*1000];
+                        self.statusSent = YES;
+                    }
+                }
             }
         }
     }
@@ -310,8 +376,21 @@ const NSInteger kResizeOffset = 11;
             [self videoManager:self.videoManager didFailLoadWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeCanNotLoadVideo]];
             return;
         }
-        self.loadingVideoStart = [NSDate date];
-        [self.videoManager loadVideoWithURL:URL];
+        
+        self.loadingVideoStartDate = [NSDate date];
+        self.videoURL = URL;
+        if ([LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
+            AVURLAsset *asset = [AVURLAsset assetWithURL:URL];
+            self.preloadedDuration = kCMTimeZero;
+            __weak LoopMeVideoClient *safeSelf = self;
+            [asset loadValuesAsynchronouslyForKeys:@[@"duration"] completionHandler:^{
+                safeSelf.preloadedDuration = asset.duration;
+            }];
+            self.playerItem = [AVPlayerItem playerItemWithAsset:asset];
+            self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
+        } else {
+            [self.videoManager loadVideoWithURL:URL];
+        }
     }
 }
 
@@ -375,15 +454,20 @@ const NSInteger kResizeOffset = 11;
 
 - (void)videoManager:(LoopMeVideoManager *)videoManager didLoadVideo:(NSURL *)videoURL
 {
-    NSTimeInterval secondsFromVideoLoadStart = [self.loadingVideoStart timeIntervalSinceNow];
+    NSTimeInterval secondsFromVideoLoadStart = [self.loadingVideoStartDate timeIntervalSinceNow];
     [LoopMeLoggingSender sharedInstance].videoLoadingTimeInterval = fabs(secondsFromVideoLoadStart);
-    [self setupPlayerWithFileURL:videoURL];
+    
+    if (![LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
+        [self setupPlayerWithFileURL:videoURL];
+    }
 }
 
 - (void)videoManager:(LoopMeVideoManager *)videoManager didFailLoadWithError:(NSError *)error
 {
-    [self.JSClient setVideoState:LoopMeVideoState.broken];
-    [self.delegate videoClient:self didFailToLoadVideoWithError:error];
+    if (![LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
+        [self.JSClient setVideoState:LoopMeVideoState.broken];
+        [self.delegate videoClient:self didFailToLoadVideoWithError:error];
+    }
 }
 
 @end

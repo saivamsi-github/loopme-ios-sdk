@@ -214,12 +214,14 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.2.6**
+**v5.3.0**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Added live debug feature. It will provide us with essential debug info to help you eliminate possible bugs of integration much quicker. You can enable this feature in our dashboard.
-- Stop iOS 7 supporting.
+- 25% preloading video helps to load and show the video ad quickly. You can enable this feature on our dashboard.
+
+- New download manager can continue download video after connection is lost.
+
 
 ## License ##
 

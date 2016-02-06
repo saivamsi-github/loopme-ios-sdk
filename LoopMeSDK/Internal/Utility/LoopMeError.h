@@ -17,6 +17,7 @@
 @end
 
 typedef NS_ENUM(NSUInteger, LoopMeErrorCode) {
+    LoopMeErrorCodeVideoDownloadTimeout = 408,
     LoopMeErrorCodeIncorrectResponse = -10,
     LoopMeErrorCodeIncorrectFormat = -11,
     LoopMeErrorCodeSpecificHost = -12,

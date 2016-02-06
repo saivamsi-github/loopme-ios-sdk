@@ -31,6 +31,8 @@
         errorMessage = @"Error writing to disk";
     } else if (statusCode == LoopMeErrorCodeCanNotLoadVideo){
         errorMessage = @"Can not load video without Wi-Fi connection";
+    } else if (statusCode == LoopMeErrorCodeVideoDownloadTimeout) {
+        errorMessage = @"Video download timeout";
     } else {
         errorMessage = [NSString stringWithFormat:@"API returned status code %ld.", (long)statusCode];
     }

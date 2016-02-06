@@ -5,6 +5,7 @@
 //  Created by Dmitriy Lihachov on 07/11/13.
 //  Copyright (c) 2013 LoopMe. All rights reserved.
 
+#import "LoopMeGlobalSettings.h"
 #import "LoopMeAdConfiguration.h"
 #import "LoopMeLogging.h"
 #import "LoopMeGlobalSettings.h"
@@ -45,6 +46,8 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     } else if ([settings[@"format"] isEqualToString:@"interstitial"]) {
         _format = LoopMeAdFormatInterstitial;
     }
+    
+    [[LoopMeGlobalSettings sharedInstance] setPreload25:[[settings objectForKey:@"preload25"] boolValue]];
     
     _expirationTime = [settings[@"ad_expiry_time"] integerValue];
     if (_expirationTime < kLoopMeExpireTimeIntervalMinimum) {

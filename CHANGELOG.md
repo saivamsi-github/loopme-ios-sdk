@@ -1,3 +1,9 @@
+## Version 5.3.0 (06.02.2016)
+
+- 25% preloading video helps to load and show the video ad quickly. You can enable this feature on our dashboard.
+
+- New download manager can continue download video after connection is lost.
+
 ## Version 5.2.6 (15.01.2016)
 
 - Added live debug feature. It will provide us with essential debug info to help you eliminate possible bugs of integration much quicker. You can enable this feature in our dashboard.

@@ -20,6 +20,7 @@
 - (BOOL)hasCachedURL:(NSURL *)URL;
 - (NSURL *)videoFileURL;
 - (void)cancel;
+- (void)failedInitPlayer: (NSURL *)url;
 
 @end
 
