@@ -17,6 +17,8 @@
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
 #import "LoopMeGlobalSettings.h"
+#import "LoopMeErrorEventSender.h"
+#import "LoopMeAnalyticsProvider.h"
 
 @interface LoopMeInterstitial ()
 <
@@ -30,6 +32,7 @@
 @property (nonatomic, strong) LoopMeAdManager *adManager;
 @property (nonatomic, strong) LoopMeAdDisplayController *adDisplayController;
 @property (nonatomic, strong) LoopMeInterstitialViewController *adInterstitialViewController;
+@property (nonatomic, strong) NSTimer *timeoutTimer;
 
 @end
 
@@ -67,6 +70,8 @@
         _adInterstitialViewController = [[LoopMeInterstitialViewController alloc] init];
         _adInterstitialViewController.delegate = self;
         LoopMeLogInfo(@"Interstitial is initialized with appKey %@", appKey);
+        
+        [LoopMeAnalyticsProvider sharedInstance];
     }
     return self;
 }
@@ -120,9 +125,6 @@
         [interstitial dismissAnimated:NO];
         LoopMeLogInfo(@"Removing interstitial ad for appKey:%@", interstitial.appKey);
         [[[self class] sharedInterstitials] removeObject:interstitial];
-        if ([[self class] sharedInterstitials].count == 0) {
-            [[LoopMeGeoLocationProvider sharedProvider] setLocationUpdateEnabled:NO];
-        }
     } else {
         LoopMeLogInfo(@"Interstitial ad for appKey:%@ not found", interstitial.appKey);
     }
@@ -157,6 +159,17 @@
     }
 }
 
+- (void)timeOut {
+    [self.adDisplayController stopHandlingRequests];
+    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeHTMLRequestTimeOut]];
+}
+
+- (void)invalidateTimer {
+    [self.timeoutTimer invalidate];
+    self.timeoutTimer = nil;
+}
+
 #pragma mark - Public Mehtods
 
 - (void)setServerBaseURL:(NSURL *)URL
@@ -181,6 +194,7 @@
     }
     self.loading = YES;
     self.ready = NO;
+    self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
     [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
 }
 
@@ -280,6 +294,7 @@
 {
     self.loading = NO;
     self.ready = YES;
+    [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidLoadAd:)]) {
         [self.delegate loopMeInterstitialDidLoadAd:self];
     }
@@ -287,6 +302,7 @@
 
 - (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
 {
+    [self invalidateTimer];
     [self failedLoadingAdWithError:error];
 }
 

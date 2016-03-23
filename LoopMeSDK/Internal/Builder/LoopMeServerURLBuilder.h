@@ -14,6 +14,8 @@
 + (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting;
 + (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting baseURL:(NSURL *)baseURL;
 
++ (NSString *)packageIDs;
+
 + (NSString *)parameterForBundleIdentifier;
 + (NSString *)parameterForUniqueIdentifier;
 

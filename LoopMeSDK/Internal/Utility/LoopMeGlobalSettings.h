@@ -15,5 +15,6 @@
 @property (nonatomic, assign, getter = isDoNotLoadVideoWithoutWiFi) BOOL doNotLoadVideoWithoutWiFi;
 @property (nonatomic, assign, getter = isLiveDebugEnabled) BOOL liveDebugEnabled;
 @property (nonatomic, assign, getter = isPreload25Enabled) BOOL preload25;
+@property (nonatomic, strong) NSString *errorLinkFormat;
 
 @end

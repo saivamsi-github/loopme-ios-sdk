@@ -13,7 +13,6 @@
 #import "LoopMeLogging.h"
 
 const NSTimeInterval kLoopMeLocationUpdateLength = 15;
-const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
 
 @interface LoopMeGeoLocationProvider ()
 <
@@ -25,6 +24,8 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
 @property (nonatomic, strong) NSDate *timeOfLastLocationUpdate;
 @property (nonatomic, readwrite, strong) CLLocation *location;
 @property (nonatomic, getter = isAuthorizedForLocationServices) BOOL authorizedForLocationServices;
+
+- (BOOL)isValidLocation:(CLLocation *)inputLocation;
 
 @end
 
@@ -68,10 +69,12 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
 {
     self = [super init];
     if (self) {
-        _locationUpdateEnabled = YES;
+        self.locationUpdateEnabled = YES;
         
         _locationManager = [[CLLocationManager alloc] init];
         _locationManager.delegate = self;
+        
+        _locationUpdateInterval = 300;
         
         if ([self isValidLocation:_locationManager.location]) {
             _location = _locationManager.location;
@@ -129,7 +132,7 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
     [self.locationManager stopUpdatingLocation];
     
     if (_location) {
-        [self scheduleNextLocationUpdateAfterDelay:kLoopMeLocationUpdateInterval];
+        [self scheduleNextLocationUpdateAfterDelay:self.locationUpdateInterval];
     } else {
         [self startLocationUpdate];
     }
@@ -154,13 +157,13 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
     if (_locationUpdateEnabled) {
         NSTimeInterval timeSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.timeOfLastLocationUpdate];
         
-        if (timeSinceLastUpdate >= kLoopMeLocationUpdateInterval || !self.timeOfLastLocationUpdate || !self.location) {
+        if (timeSinceLastUpdate >= self.locationUpdateInterval || !self.timeOfLastLocationUpdate || !self.location) {
             [self startLocationUpdate];
         } else if (timeSinceLastUpdate >= 0) {
-            NSTimeInterval timeToNextUpdate = kLoopMeLocationUpdateInterval - timeSinceLastUpdate;
+            NSTimeInterval timeToNextUpdate = self.locationUpdateInterval - timeSinceLastUpdate;
             [self scheduleNextLocationUpdateAfterDelay:timeToNextUpdate];
         } else {
-            [self scheduleNextLocationUpdateAfterDelay:kLoopMeLocationUpdateInterval];
+            [self scheduleNextLocationUpdateAfterDelay:self.locationUpdateInterval];
         }
     }
 }
@@ -175,6 +178,12 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
     return (status == kCLAuthorizationStatusAuthorizedAlways) || (status == kCLAuthorizationStatusAuthorizedWhenInUse);
 }
 
+#pragma mark - public
+
+- (BOOL)isValidLocation {
+    return [self isValidLocation:self.location];
+}
+
 #pragma mark - CLLocation Helpers
 
 - (BOOL)isLocation:(CLLocation *)location betterThanLocation:(CLLocation *)otherLocation
@@ -185,7 +194,7 @@ const NSTimeInterval kLoopMeLocationUpdateInterval = 600;
     
     // Nil locations and locations with invalid horizontal accuracy are worse than any location.
     if (![self locationHasValidCoordinates:location]) {
-            return NO;
+        return NO;
     }
     
     if ([self isLocation:location olderThanLocation:otherLocation]) {

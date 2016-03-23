@@ -20,6 +20,7 @@
 #import "LoopMeTargeting.h"
 #import "LoopMeGeoLocationProvider.h"
 #import "LoopMeLogging.h"
+#import "NSData+LoopMeAES128.h"
 
 NSString * const kLoopMeAPIURL = @"https://loopme.me/api/loopme/ads/v3";
 NSString * const kLoopMeInterfaceOrientationPortrait = @"p";
@@ -59,6 +60,8 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     parameters[@"wn"] = [self parameterForWiFiName];
     parameters[@"sv"] = [NSString stringWithFormat:@"%@", LOOPME_SDK_VERSION];
     parameters[@"mr"] = @"0";
+    parameters[@"plg"] = [self parameterForBatteryState];
+    parameters[@"chl"] = [NSString stringWithFormat:@"%f", [UIDevice currentDevice].batteryLevel];
 
     if (targeting) {
         if (targeting.keywordsParameter)
@@ -69,7 +72,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
             parameters[@"gender"] = targeting.genderParameter;
     }
     
-    if ([[LoopMeGeoLocationProvider sharedProvider] isLocationUpdateEnabled] && [[LoopMeGeoLocationProvider sharedProvider] isValidLocation:[LoopMeGeoLocationProvider sharedProvider].location]) {
+    if ([[LoopMeGeoLocationProvider sharedProvider] isLocationUpdateEnabled] && [[LoopMeGeoLocationProvider sharedProvider] isValidLocation]) {
         parameters[@"lat"] = [NSString stringWithFormat:@"%0.4f", (float)[LoopMeGeoLocationProvider sharedProvider].location.coordinate.latitude];
         parameters[@"lon"] = [NSString stringWithFormat:@"%0.4f", (float)[LoopMeGeoLocationProvider sharedProvider].location.coordinate.longitude];
     }
@@ -77,6 +80,39 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     NSString *parametersString = [self buildParameters:parameters];
     NSURL *URL = [NSURL URLWithString:parametersString relativeToURL:baseURL];
     return URL;
+}
+
++ (NSString *)packageIDs {
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    parameters[@"vt"] = [LoopMeIdentityProvider loopMeUniqueIdentifier];
+    parameters[@"av"] = [self parameterForApplicationVersion];
+    parameters[@"or"] = [self parameterForOrientation];
+    parameters[@"tz"] = [self parameterForTimeZone];
+    parameters[@"lng"] = [self parameterForLanguage];
+    parameters[@"cn"] = [self parameterForConnectionType];
+    parameters[@"dnt"] = [self parameterForDNT];
+    parameters[@"bundleid"] = [self parameterForBundleIdentifier];
+    parameters[@"wn"] = [self parameterForWiFiName];
+    parameters[@"sv"] = [NSString stringWithFormat:@"%@", LOOPME_SDK_VERSION];
+    parameters[@"mr"] = @"0";
+    parameters[@"plg"] = [self parameterForBatteryState];
+    parameters[@"chl"] = [NSString stringWithFormat:@"%f", [UIDevice currentDevice].batteryLevel];
+
+    if ([[LoopMeGeoLocationProvider sharedProvider] isLocationUpdateEnabled] && [[LoopMeGeoLocationProvider sharedProvider] isValidLocation]) {
+        parameters[@"lat"] = [NSString stringWithFormat:@"%0.4f", (float)[LoopMeGeoLocationProvider sharedProvider].location.coordinate.latitude];
+        parameters[@"lon"] = [NSString stringWithFormat:@"%0.4f", (float)[LoopMeGeoLocationProvider sharedProvider].location.coordinate.longitude];
+    }
+    
+    NSMutableString *parametersString = [[NSMutableString alloc] init];
+    [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+        [parametersString appendFormat:@"%@=%@&", key, value];
+    }];
+    parametersString = [parametersString substringToIndex:[parametersString length]-1];
+
+    NSData *plain = [parametersString dataUsingEncoding:NSUTF8StringEncoding];
+
+    NSData *cipher = [plain AES128Encrypt];
+    return [cipher base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
 + (NSString *)parameterForUniqueIdentifier
@@ -134,6 +170,19 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 {
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     return bundleIdentifier ? [self escapeString:bundleIdentifier] : @"";
+}
+
++ (NSString *)parameterForBatteryState {
+    [UIDevice currentDevice].batteryMonitoringEnabled = YES;
+    UIDeviceBatteryState currentState = [[UIDevice currentDevice] batteryState];
+    if (currentState != UIDeviceBatteryStateUnknown) {
+        if (currentState == UIDeviceBatteryStateUnplugged) {
+            return @"NCHRG";
+        } else {
+            return @"CHRG";
+        }
+    }
+    return @"UNKNOWN";
 }
 
 + (NSString *)buildParameters:(NSMutableDictionary *)parameters

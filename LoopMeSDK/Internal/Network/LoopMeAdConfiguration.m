@@ -39,6 +39,11 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
 
 - (void)mapAdConfigurationFromDictionary:(NSDictionary *)dictionary
 {
+    NSDictionary *tracking = dictionary[@"tracking"];
+    NSString *errorLink = tracking[@"error"][0];
+    errorLink = [errorLink stringByReplacingOccurrencesOfString:@"{error_type}" withString:@"%@"];
+    [LoopMeGlobalSettings sharedInstance].errorLinkFormat = errorLink;
+    
     NSDictionary *settings = dictionary[@"settings"];
     
     if ([settings[@"format"] isEqualToString:@"banner"]) {

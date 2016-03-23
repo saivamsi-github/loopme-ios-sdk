@@ -9,8 +9,11 @@
 #import <AdSupport/AdSupport.h>
 
 #import "LoopMeIdentityProvider.h"
+#import "LoopMeKeychain.h"
+#import "LoopMeLogging.h"
 
-#define LOOOPME_UNIQUE_IDENTIFIER_KEY @"com.loopmemedia.identifier"
+static NSString * const kLoopMeKeychainServiceName = @"LoopMe";
+static NSString * const kLoopMeKeychainAccountName = @"loopme";
 
 @implementation LoopMeIdentityProvider
 
@@ -46,17 +49,24 @@
 
 + (NSString *)loopMeUniqueIdentifier
 {
-    NSString *identifier = [[NSUserDefaults standardUserDefaults] objectForKey:LOOOPME_UNIQUE_IDENTIFIER_KEY];
-    if (!identifier) {
-        CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
-        NSString *uuidStr = (NSString *)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, uuidObject));
-        CFRelease(uuidObject);
-        
-        identifier = [NSString stringWithFormat:@"r_%@", uuidStr];
-        [[NSUserDefaults standardUserDefaults] setObject:identifier forKey:LOOOPME_UNIQUE_IDENTIFIER_KEY];
-        [[NSUserDefaults standardUserDefaults] synchronize];
+    NSError *error = nil;
+    NSString *identifier = [LoopMeKeychain passwordForService:kLoopMeKeychainServiceName account:kLoopMeKeychainAccountName error:&error];
+    
+    if (!identifier || [error code] == LoopMeKeychainErrorNotFound) {
+        identifier = [self createUUID];
+        [LoopMeKeychain setPassword:identifier forService:kLoopMeKeychainServiceName account:kLoopMeKeychainAccountName error:&error];
+        LoopMeLogDebug(@"%@", error);
     }
+    
     return identifier;
+}
+
++ (NSString *)createUUID {
+    CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
+    NSString *uuidStr = (NSString *)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, uuidObject));
+    CFRelease(uuidObject);
+    
+    return [NSString stringWithFormat:@"r_%@", uuidStr];
 }
 
 + (BOOL)deviceHasAdvertisingIdentifier

@@ -3,7 +3,7 @@
 //  LoopMeSDK
 //
 //  Created by Kogda Bogdan on 2/13/15.
-//
+//  Copyright (c) 2012 LoopMe. All rights reserved.
 //
 
 #import "LoopMeAdView.h"
@@ -16,6 +16,9 @@
 #import "LoopMeMinimizedAdView.h"
 #import "LoopMeMaximizedViewController.h"
 #import "LoopMeGlobalSettings.h"
+#import "LoopMeErrorEventSender.h"
+#import "LoopMeAnalyticsProvider.h"
+
 
 @interface LoopMeAdView ()
 <
@@ -33,6 +36,7 @@
 @property (nonatomic, assign, getter = isReady) BOOL ready;
 @property (nonatomic, assign, getter = isMinimized) BOOL minimized;
 @property (nonatomic, assign, getter = isNeedsToBeDisplayedWhenReady) BOOL needsToBeDisplayedWhenReady;
+@property (nonatomic, strong) NSTimer *timeoutTimer;
 
 /*
  * Update webView "visible" state is required on JS first time when ad appears on the screen,
@@ -77,6 +81,8 @@
         self.backgroundColor = [UIColor blackColor];
         [self registerObservers];
         LoopMeLogInfo(@"Ad view initialized with appKey: %@", appKey);
+        
+        [LoopMeAnalyticsProvider sharedInstance];
     }
     return self;
 }
@@ -220,6 +226,7 @@
     }
     self.ready = NO;
     self.loading = YES;
+    self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
     [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
 }
 
@@ -377,6 +384,17 @@
     return self.maximizedController.isViewLoaded && self.maximizedController.view.window;
 }
 
+- (void)timeOut {
+    [self.adDisplayController stopHandlingRequests];
+    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeHTMLRequestTimeOut]];
+}
+
+- (void)invalidateTimer {
+    [self.timeoutTimer invalidate];
+    self.timeoutTimer = nil;
+}
+
 #pragma mark - LoopMeAdManagerDelegate
 
 - (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration
@@ -455,6 +473,7 @@
         [self displayAd];
     }
     
+    [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidLoadAd:)]) {
         [self.delegate loopMeAdViewDidLoadAd:self];
     }
@@ -462,6 +481,7 @@
 
 - (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
 {
+    [self invalidateTimer];
     [self failedLoadingAdWithError:error];
 }
 

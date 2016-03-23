@@ -17,6 +17,7 @@
 
 #import "LoopMeReachability.h"
 #import "LoopMeGlobalSettings.h"
+#import  "LoopMeErrorEventSender.h"
 
 const struct LoopMeVideoStateStruct LoopMeVideoState =
 {
@@ -288,6 +289,7 @@ const NSInteger kResizeOffset = 11;
                     [self.videoManager failedInitPlayer: self.videoURL];
                 } else {
                     [self.JSClient setVideoState:LoopMeVideoState.broken];
+                    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
                     self.statusSent = YES;
                 }
             } else if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {

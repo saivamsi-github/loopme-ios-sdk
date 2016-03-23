@@ -9,6 +9,7 @@
 #import <stdlib.h>
 #import "LoopMeVideoManager.h"
 #import "LoopMeError.h"
+#import "LoopMeErrorEventSender.h"
 #import "LoopMeGlobalSettings.h"
 
 NSInteger const videoLoadTimeOutInterval = 180;
@@ -152,6 +153,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 - (void)timeOut {
     [self cancel];
+     [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
     NSError *error = [LoopMeError errorForStatusCode:LoopMeErrorCodeVideoDownloadTimeout];
     [self.delegate videoManager:self didFailLoadWithError:error];
 }
@@ -169,6 +171,10 @@ NSInteger const videoLoadTimeOutInterval = 180;
             return;
         }
         if (statusCode != 206) {
+            if (statusCode == 504) {
+                [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorType504];
+            }
+            [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
             [connection cancel];
             [self.delegate videoManager:self didFailLoadWithError:[LoopMeError errorForStatusCode:statusCode]];
         }
@@ -186,6 +192,14 @@ NSInteger const videoLoadTimeOutInterval = 180;
         [self reconect];
         return;
     }
+
+    if (error.code == NSURLErrorTimedOut) {
+        [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    }
+    
+    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
+
+
     [self.delegate videoManager:self didFailLoadWithError:error];
     [self invalidateTimers];
 }
@@ -197,6 +211,5 @@ NSInteger const videoLoadTimeOutInterval = 180;
     self.connection = nil;
     [self invalidateTimers];
 }
-
 
 @end

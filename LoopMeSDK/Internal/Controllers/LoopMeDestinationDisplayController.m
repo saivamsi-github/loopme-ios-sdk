@@ -11,6 +11,8 @@
 #import "LoopMeBrowserViewController.h"
 #import "LoopMeDestinationDisplayController.h"
 #import "LoopMeProgressOverlayView.h"
+#import "LoopMeErrorEventSender.h"
+#import "LoopMeGlobalSettings.h"
 
 @interface LoopMeDestinationDisplayController ()
 <
@@ -146,6 +148,7 @@
 {
     self.loadingDestination = NO;
     [self hideOverlay];
+    [LoopMeErrorEventSender sendEventTo:[[LoopMeGlobalSettings sharedInstance] errorLinkFormat] withError:LoopMeEventErrorTypeWrongRedirect];
     [self.delegate destinationDisplayControllerDidDismissModal:self];
 }
 

@@ -182,7 +182,7 @@ self.adView.minimizedModeEnabled = YES;
 请查看我们的demo`loopme-ios-sdk` 对接后示例。
 
 ## 更新 ##
-**v5.3.0**
+**v5.4.0**
 
 详情请查阅 [changelog](CHANGELOG.md) 。
 

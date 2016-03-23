@@ -10,6 +10,7 @@
 #import "LoopMeDefinitions.h"
 #import "LoopMeServerCommunicator.h"
 #import "LoopMeError.h"
+#import "LoopMeErrorEventSender.h"
 
 const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
@@ -78,6 +79,9 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
         if ([response respondsToSelector:@selector(statusCode)]) {
             NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
             if (statusCode != 200) {
+                if (statusCode == 504) {
+                    [LoopMeErrorEventSender sendEventTo:nil withError:LoopMeEventErrorType504];
+                }
                 safeSelf.loading = NO;
                 [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:[LoopMeError errorForStatusCode:statusCode]];
                 return;
@@ -86,6 +90,10 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
         
         if (error) {
             safeSelf.loading = NO;
+            if (error.code == NSURLErrorTimedOut) {
+                [LoopMeErrorEventSender sendEventTo:nil withError:LoopMeEventErrorTypeTimeOut];
+            }
+            
             [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:error];
             return;
         }

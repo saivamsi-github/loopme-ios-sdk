@@ -14,7 +14,8 @@
 
 @property (nonatomic, getter = isLocationUpdateEnabled) BOOL locationUpdateEnabled;
 @property (nonatomic, readonly, strong) CLLocation *location;
+@property (nonatomic, assign) NSTimeInterval locationUpdateInterval;
 
 + (LoopMeGeoLocationProvider *)sharedProvider;
-- (BOOL)isValidLocation:(CLLocation *)inputLocation;
+- (BOOL)isValidLocation;
 @end

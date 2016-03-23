@@ -10,4 +10,5 @@
 
 + (BOOL)advertisingTrackingEnabled;
 + (NSString *)uniqueIdentifier;
++ (NSString *)loopMeUniqueIdentifier;
 @end

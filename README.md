@@ -30,7 +30,7 @@ If you have questions please contact us at support@loopmemedia.com.
 
 ## Requirements ##
 
-An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifies your app to the LoopMe ad network. (Example appKey: 7643ba4d53.) To get an appKey visit the **[LoopMe Dashboard](http://loopme.me/)**.
+An appKey is required to use the `loopme-ios-sdk`. The appKey uniquely identifies your app to the LoopMe ad network. (Example appKey: test_interstitial_p) To get an appKey visit the **[LoopMe Dashboard](http://loopme.me/)**.
 
 Requires `Xcode 7` or higher, `iOS 8.0` and above. Built using `ARC`.
 
@@ -214,14 +214,12 @@ self.adView.minimizedModeEnabled = YES;
 Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 ## What's new ##
-**v5.3.0**
+**v5.4.0**
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- 25% preloading video helps to load and show the video ad quickly. You can enable this feature on our dashboard.
-
-- New download manager can continue download video after connection is lost.
-
+- Added error messages. It will provide us to find the errors that can to appear while SDK is working.
+- Added additional analytic information.
 
 ## License ##
 

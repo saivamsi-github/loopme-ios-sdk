@@ -1,3 +1,9 @@
+
+## Version 5.4.0 (23.03.2016)
+
+- Added error messages. It will provide us to find the errors that can to appear while SDK is working.
+- Added additional analytic information.
+
 ## Version 5.3.0 (06.02.2016)
 
 - 25% preloading video helps to load and show the video ad quickly. You can enable this feature on our dashboard.
