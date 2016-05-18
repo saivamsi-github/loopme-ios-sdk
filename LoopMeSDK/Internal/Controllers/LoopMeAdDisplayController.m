@@ -19,6 +19,8 @@
 #import "LoopMeError.h"
 #import "LoopMeLogging.h"
 
+#import "LoopMe360ViewController.h"
+
 NSInteger const kLoopMeWebViewLoadingTimeout = 180;
 NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
@@ -39,6 +41,9 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 @property (nonatomic, strong) LoopMeAdConfiguration *configuration;
 
 @property (nonatomic, assign, getter=isFirstCallToExpand) BOOL firstCallToExpand;
+@property (nonatomic, assign) CGPoint prevLoaction;
+@property (nonatomic, strong) UIPanGestureRecognizer *panWebView;
+@property (nonatomic, strong) UIPinchGestureRecognizer *pinchWebView;
 
 - (void)deviceShaken;
 - (BOOL)shouldIntercept:(NSURL *)URL
@@ -140,8 +145,6 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
             [self.delegate adDisplayControllerDidReceiveTap:self];
         }
         return YES;
-    } else if (navigationType == UIWebViewNavigationTypeOther) {
-        return NO;
     }
     return NO;
 }
@@ -161,6 +164,24 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
         [self.delegate adDisplayController:self didFailToLoadAdWithError:error];
     }
 }
+
+- (void)panWebView:(UIPanGestureRecognizer *)recognizer
+{
+    CGPoint currentLocation = [recognizer locationInView:self.webView];
+    if (recognizer.state == UIGestureRecognizerStateBegan) {
+        self.prevLoaction = currentLocation;
+    }
+    
+    LoopMe360ViewController *vc = [self.videoClient viewController360];
+    [vc pan:currentLocation prevLocation:self.prevLoaction];
+    self.prevLoaction = currentLocation;
+}
+
+- (void)pinchWebView:(UIPinchGestureRecognizer *)recognizer
+{
+    LoopMe360ViewController *vc = [self.videoClient viewController360];
+    [vc handlePinchGesture:recognizer];
+}
 #pragma mark - Public
 
 - (void)loadConfiguration:(LoopMeAdConfiguration *)configuration
@@ -174,6 +195,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)displayAd
 {
+    self.videoClient.viewController = [self.delegate viewControllerForPresentation];
     self.webView.frame = self.delegate.containerView.bounds;
     
     CGRect adjustedFrame = self.webView.frame;
@@ -182,26 +204,36 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
         adjustedFrame = CGRectMake(adjustedFrame.origin.x, adjustedFrame.origin.y, adjustedFrame.size.height, adjustedFrame.size.width);
     }
     
-    [self.videoClient adjustLayerToFrame:adjustedFrame];
+    [self.videoClient adjustViewToFrame:adjustedFrame];
     [self.delegate.containerView addSubview:self.webView];
     [self.delegate.containerView bringSubviewToFront:self.webView];
+    [self.videoClient willAppear];
+    
+    
+    self.panWebView = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panWebView:)];
+    [self.webView addGestureRecognizer:self.panWebView];
+    
+    self.pinchWebView = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchWebView:)];
+    [self.webView addGestureRecognizer:self.pinchWebView];
 }
 
 - (void)closeAd
 {
     [self stopHandlingRequests];
     self.visible = NO;
+    [self.webView removeGestureRecognizer:self.panWebView];
+    [self.webView removeGestureRecognizer:self.pinchWebView];
     [self.JSClient executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:LoopMeWebViewState.closed];
 }
 
 - (void)layoutSubviews
 {
-    [self.videoClient adjustLayerToFrame:self.webView.bounds];
+    [self.videoClient adjustViewToFrame:self.webView.bounds];
 }
 
 - (void)layoutSubviewsToFrame:(CGRect)frame
 {
-    [self.videoClient adjustLayerToFrame:frame];
+    [self.videoClient adjustViewToFrame:frame];
 }
 
 - (void)stopHandlingRequests
@@ -223,7 +255,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 
 - (void)moveView
 {
-    [self.videoClient moveLayer];
+    [self.videoClient moveView];
     [self displayAd];
 }
 
@@ -383,12 +415,10 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     }
 }
 
-- (void)videoClient:(LoopMeVideoClient *)client setupLayer:(AVPlayerLayer *)layer
+- (void)videoClient:(LoopMeVideoClient *)client setupView:(UIView *)view
 {
-    [CATransaction setDisableActions: YES];
-    layer.frame = self.delegate.containerView.bounds;
-    [[self.delegate containerView].layer insertSublayer:layer below:self.webView.layer];
-    [CATransaction setDisableActions:NO];
+    view.frame = self.delegate.containerView.bounds;
+    [[self.delegate containerView] insertSubview:view belowSubview:self.webView];
 }
 
 @end

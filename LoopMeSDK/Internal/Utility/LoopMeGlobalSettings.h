@@ -16,5 +16,6 @@
 @property (nonatomic, assign, getter = isLiveDebugEnabled) BOOL liveDebugEnabled;
 @property (nonatomic, assign, getter = isPreload25Enabled) BOOL preload25;
 @property (nonatomic, strong) NSString *errorLinkFormat;
+@property (nonatomic, assign, getter = isV360) BOOL v360;
 
 @end

@@ -60,6 +60,9 @@
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
     if (self.adOrientation == LoopMeAdOrientationLandscape) {
+        if (UIInterfaceOrientationIsLandscape([UIApplication sharedApplication].statusBarOrientation)) {
+            return [UIApplication sharedApplication].statusBarOrientation;
+        }
         return UIInterfaceOrientationLandscapeLeft;
     } else {
         return UIInterfaceOrientationPortrait;

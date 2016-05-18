@@ -62,6 +62,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     parameters[@"mr"] = @"0";
     parameters[@"plg"] = [self parameterForBatteryState];
     parameters[@"chl"] = [NSString stringWithFormat:@"%f", [UIDevice currentDevice].batteryLevel];
+    parameters[@"v360"] = @"1";
 
     if (targeting) {
         if (targeting.keywordsParameter)
@@ -107,7 +108,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [parametersString appendFormat:@"%@=%@&", key, value];
     }];
-    parametersString = [parametersString substringToIndex:[parametersString length]-1];
+    parametersString = [[parametersString substringToIndex:[parametersString length]-1] mutableCopy];
 
     NSData *plain = [parametersString dataUsingEncoding:NSUTF8StringEncoding];
 

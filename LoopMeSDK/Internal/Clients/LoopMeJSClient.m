@@ -49,6 +49,17 @@ const struct LoopMeEventStruct LoopMeEvent =
     .fullscreenMode = @"fullscreenMode"
 };
 
+const struct LoopMe360EventStruct LoopMe360Event =
+{
+    .swipe = @"swipe",
+    .gyro = @"gyro",
+    .front = @"front",
+    .left = @"left",
+    .right = @"right",
+    .back = @"back",
+    .zoom = @"zoom"
+};
+
 const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 {
     .visible = @"VISIBLE",
@@ -61,6 +72,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 @property (nonatomic, weak) id<LoopMeJSClientDelegate> delegate;
 @property (nonatomic, strong, readonly) id<LoopMeVideoCommunicatorProtocol> videoClient;
 @property (nonatomic, strong, readonly) UIWebView *webViewClient;
+@property (nonatomic, strong) NSMutableSet *events360;
 
 - (void)loadVideoWithParams:(NSDictionary *)params;
 - (void)playVideoWithParams:(NSDictionary *)params;
@@ -75,6 +87,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 {
     if (self = [super init]) {
         _delegate = deleagate;
+        _events360 = [[NSMutableSet alloc] init];
     }
     return self;
 }
@@ -186,6 +199,16 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark - Public
 
+- (void)executeInteractionCustomEvent:(NSString *)customEventName {
+    
+    if (![self.events360 containsObject:customEventName]) {
+        NSString *eventString = [NSString stringWithFormat:@"L.track({eventType:\"INTERACTION\", customEventName: \"video360&mode=%@\"})", customEventName];
+        [self.webViewClient stringByEvaluatingJavaScriptFromString:eventString];
+        
+        [self.events360 addObject:customEventName];
+    }
+}
+
 - (void)executeEvent:(NSString *)event forNamespace:(NSString *)ns param:(NSObject *)param
 {
     [self executeEvent:event forNamespace:ns param:param paramBOOL:NO];
@@ -242,4 +265,33 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 {
     [self executeEvent:LoopMeEvent.fullscreenMode forNamespace:kLoopMeNamespaceWebview param:@(enabled) paramBOOL:YES];
 }
+
+- (void)track360LeftSector {
+    [self executeInteractionCustomEvent:LoopMe360Event.left];
+}
+
+- (void)track360BackSector {
+    [self executeInteractionCustomEvent:LoopMe360Event.back];
+}
+
+- (void)track360FrontSector {
+    [self executeInteractionCustomEvent:LoopMe360Event.front];
+}
+
+- (void)track360RightSector {
+    [self executeInteractionCustomEvent:LoopMe360Event.right];
+}
+
+- (void)track360Gyro {
+    [self executeInteractionCustomEvent:LoopMe360Event.gyro];
+}
+
+- (void)track360Swipe {
+    [self executeInteractionCustomEvent:LoopMe360Event.swipe];
+}
+
+- (void)track360Zoom {
+    [self executeInteractionCustomEvent:LoopMe360Event.zoom];
+}
+
 @end

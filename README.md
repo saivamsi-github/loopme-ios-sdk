@@ -21,6 +21,8 @@ If you have questions please contact us at support@loopmemedia.com.
 
 ## Features ##
 
+__INTRODUCING LOOPME 360 VIDEO, THE ONLY FULL-SCREEN 360 SOLUTION DELIVERING GLOBAL SCALE.__
+
 * Full-screen image interstitials
 * Full-screen rich media interstitials
 * Preloaded video ads
@@ -218,8 +220,7 @@ Check out our `Demo` project as an example of `loopme-ios-sdk` integration.
 
 Please view the [changelog](CHANGELOG.md) for details.
 
-- Added error messages. It will provide us to find the errors that can to appear while SDK is working.
-- Added additional analytic information.
+- 360 video ad
 
 ## License ##
 
