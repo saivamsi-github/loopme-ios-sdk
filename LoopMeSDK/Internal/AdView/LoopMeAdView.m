@@ -164,8 +164,6 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
-
 }
 
 - (void)registerObservers
@@ -173,10 +171,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didEnterBackground:)
-                                                 name:UIApplicationWillResignActiveNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceOrientationDidChange:)
@@ -195,11 +189,6 @@
         self.visibilityUpdated = NO;
         [self updateVisibility];
     }
-}
-
-- (void)didEnterBackground:(NSNotification *)notification
-{
-    self.adDisplayController.visible = NO;
 }
 
 #pragma mark - Public
@@ -289,6 +278,7 @@
 
 - (void)willResignActive:(NSNotification *)n
 {
+    self.adDisplayController.visible = NO;
     BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
     if (isMaximized) {
         [self removeMaximizedView];

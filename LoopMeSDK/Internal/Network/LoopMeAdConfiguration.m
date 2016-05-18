@@ -53,6 +53,7 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     }
     
     [[LoopMeGlobalSettings sharedInstance] setPreload25:[[settings objectForKey:@"preload25"] boolValue]];
+    [[LoopMeGlobalSettings sharedInstance] setV360:[[settings objectForKey:@"v360"] boolValue]];
     
     _expirationTime = [settings[@"ad_expiry_time"] integerValue];
     if (_expirationTime < kLoopMeExpireTimeIntervalMinimum) {

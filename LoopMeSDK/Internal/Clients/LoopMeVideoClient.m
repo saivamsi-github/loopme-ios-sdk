@@ -17,7 +17,9 @@
 
 #import "LoopMeReachability.h"
 #import "LoopMeGlobalSettings.h"
-#import  "LoopMeErrorEventSender.h"
+#import "LoopMeErrorEventSender.h"
+#import "LoopMe360ViewController.h"
+#import "LoopMeAdWebView.h"
 
 const struct LoopMeVideoStateStruct LoopMeVideoState =
 {
@@ -33,17 +35,27 @@ NSString * const kLoopMeVideoStatusKey = @"status";
 NSString * const kLoopMeLoadedTimeRangesKey = @"loadedTimeRanges";
 
 const NSInteger kResizeOffset = 11;
+const CGFloat kOneFrameDuration = 0.03;
 
 @interface LoopMeVideoClient ()
 <
     LoopMeVideoManagerDelegate,
+    LoopMe360ToolsProtocol,
+    AVPlayerItemOutputPullDelegate,
     AVAssetResourceLoaderDelegate
 >
 @property (nonatomic, weak) id<LoopMeVideoClientDelegate> delegate;
 @property (nonatomic, weak) id<LoopMeJSCommunicatorProtocol> JSClient;
+
 @property (nonatomic, strong) AVPlayer *player;
 @property (nonatomic, strong) AVPlayerItem *playerItem;
 @property (nonatomic, strong) AVPlayerLayer *playerLayer;
+
+@property (nonatomic, strong) AVPlayerItemVideoOutput *videoOutput;
+@property (nonatomic) dispatch_queue_t myVideoOutputQueue;
+@property (nonatomic, strong) UIView *videoView;
+@property (nonatomic, strong) LoopMe360ViewController *glkViewController;
+
 @property (nonatomic, strong) NSTimer *loadingVideoTimer;
 @property (nonatomic, strong) id playbackTimeObserver;
 @property (nonatomic, strong) LoopMeVideoManager *videoManager;
@@ -59,7 +71,6 @@ const NSInteger kResizeOffset = 11;
 
 @property (nonatomic, strong) AVAssetResourceLoadingRequest *resourceLoadingRequest;
 
-- (AVPlayerLayer *)playerLayer;
 - (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player;
 - (void)setupPlayerWithFileURL:(NSURL *)URL;
 - (BOOL)playerHasBufferedURL:(NSURL *)URL;
@@ -75,18 +86,37 @@ const NSInteger kResizeOffset = 11;
 
 #pragma mark - Properties
 
-- (AVPlayerLayer *)playerLayer
+- (UIView *)videoView
 {
-    if (_playerLayer == nil) {
+    if (_videoView == nil) {
         if (!self.player) {
             return nil;
         }
-        _playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
-        [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
-        _playerLayer.needsDisplayOnBoundsChange = YES;
-        [self.delegate videoClient:self setupLayer:_playerLayer];
+        
+        if ([LoopMeGlobalSettings sharedInstance].isV360) {
+            self.glkViewController = [[LoopMe360ViewController alloc] init];
+            self.glkViewController.customDelegate = self;
+            _videoView = self.glkViewController.view;
+            [self.viewController addChildViewController:self.glkViewController];
+            [self.glkViewController didMoveToParentViewController:self.viewController];
+        } else {
+            _playerLayer = [AVPlayerLayer playerLayerWithPlayer:self.player];
+            [_playerLayer setVideoGravity:AVLayerVideoGravityResizeAspect];
+            _playerLayer.needsDisplayOnBoundsChange = YES;
+            
+            UIView *videoView = [[UIView alloc] init];
+            [videoView.layer addSublayer:_playerLayer];
+            _videoView = videoView;
+        }
+        
+        [self.delegate videoClient:self setupView:_videoView];
     }
-    return _playerLayer;
+    return _videoView;
+}
+
+- (LoopMe360ViewController *)viewController360
+{
+    return self.glkViewController;
 }
 
 - (id<LoopMeJSCommunicatorProtocol>)JSClient
@@ -129,6 +159,16 @@ const NSInteger kResizeOffset = 11;
                                 context:VideoControllerStatusObservationContext];
 
         }
+        
+        if ([LoopMeGlobalSettings sharedInstance].isV360) {
+            NSDictionary *pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange)};
+            self.videoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
+            self.myVideoOutputQueue = dispatch_queue_create("myVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
+            [self.videoOutput setDelegate:self queue:self.myVideoOutputQueue];
+            
+            [_playerItem addOutput:self.videoOutput];
+            [self.videoOutput requestNotificationOfMediaDataChangeWithAdvanceInterval:kOneFrameDuration];
+        }
     }
 }
 
@@ -144,6 +184,7 @@ const NSInteger kResizeOffset = 11;
     if(_player != player) {
         self.statusSent = NO;
         [self.playerLayer removeFromSuperlayer];
+        [self.videoView removeFromSuperview];
         self.playerLayer = nil;
         
         if (_player) {
@@ -153,7 +194,7 @@ const NSInteger kResizeOffset = 11;
         
         if (_player) {
             [self addTimerForCurrentTime];
-            [self playerLayer];
+            [self videoView];
             self.shouldPlay = NO;
         }
     }
@@ -327,39 +368,49 @@ const NSInteger kResizeOffset = 11;
 
 #pragma mark - Public
 
-- (void)adjustLayerToFrame:(CGRect)frame
+- (void)adjustViewToFrame:(CGRect)frame
 {
-    self.playerLayer.frame = frame;
-    if (self.layerGravity) {
-        self.playerLayer.videoGravity = self.layerGravity;
-        self.layerGravity = nil;
-        return;
-    }
-    
-    CGRect videoRect = [self.playerLayer videoRect];
-    CGFloat k = 100;
-    if (videoRect.size.width == self.playerLayer.bounds.size.width) {
-        k = videoRect.size.height * 100 / self.playerLayer.bounds.size.height;
-    } else if (videoRect.size.height == self.playerLayer.bounds.size.height) {
-        k = videoRect.size.width * 100 / self.playerLayer.bounds.size.width;
-    }
-    
-    if ((100 - floorf(k)) <= kResizeOffset) {
-        [self.playerLayer setVideoGravity:AVLayerVideoGravityResize];
+    self.videoView.frame = frame;
+    if (self.playerLayer) {
+        self.playerLayer.frame = frame;
+        if (self.layerGravity) {
+            self.playerLayer.videoGravity = self.layerGravity;
+            self.layerGravity = nil;
+            return;
+        }
+        
+        CGRect videoRect = [self.playerLayer videoRect];
+        CGFloat k = 100;
+        if (videoRect.size.width == self.playerLayer.bounds.size.width) {
+            k = videoRect.size.height * 100 / self.playerLayer.bounds.size.height;
+        } else if (videoRect.size.height == self.playerLayer.bounds.size.height) {
+            k = videoRect.size.width * 100 / self.playerLayer.bounds.size.width;
+        }
+        
+        if ((100 - floorf(k)) <= kResizeOffset) {
+            [self.playerLayer setVideoGravity:AVLayerVideoGravityResize];
+        }
     }
 }
 
-- (void)cancel {
+- (void)cancel
+{
     [self.videoManager cancel];
     [self.playerLayer removeFromSuperlayer];
+    [self.videoView removeFromSuperview];
     self.player = nil;
     self.playerItem = nil;
     self.shouldPlay = NO;
 }
 
-- (void)moveLayer
+- (void)moveView
 {
-    [self.delegate videoClient:self setupLayer:_playerLayer];
+    [self.delegate videoClient:self setupView:self.videoView];
+}
+
+- (void)willAppear
+{
+    [self.glkViewController viewWillAppear:YES];
 }
 
 #pragma mark - LoopMeJSVideoTransportProtocol
@@ -450,6 +501,42 @@ const NSInteger kResizeOffset = 11;
     if (self.playerLayer) {
         self.playerLayer.videoGravity = gravity;
     }
+}
+
+#pragma mark - LoopMeDraweblePixelsProtocol
+
+- (CVPixelBufferRef)retrievePixelBufferToDraw {
+    CVPixelBufferRef pixelBuffer = [self.videoOutput copyPixelBufferForItemTime:[self.playerItem currentTime] itemTimeForDisplay:nil];
+    
+    return pixelBuffer;
+}
+
+- (void)track360RightSector {
+    [self.JSClient track360RightSector];
+}
+
+- (void)track360FrontSector {
+    [self.JSClient track360FrontSector];
+}
+
+- (void)track360BackSector {
+    [self.JSClient track360BackSector];
+}
+
+- (void)track360LeftSector {
+    [self.JSClient track360LeftSector];
+}
+
+- (void)track360Swipe {
+    [self.JSClient track360Swipe];
+}
+
+- (void)track360Gyro {
+    [self.JSClient track360Gyro];
+}
+
+- (void)track360Zoom {
+    [self.JSClient track360Zoom];
 }
 
 #pragma mark - LoopMeVideoManagerDelegate

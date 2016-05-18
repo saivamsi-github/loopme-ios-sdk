@@ -145,8 +145,6 @@ NSInteger const videoLoadTimeOutInterval = 180;
 - (void)reconect {
     [self.request setValue:self.ETag forHTTPHeaderField:@"If-Range"];
     
-    NSLog(@"%@", [NSString stringWithFormat:@"bytes=%lu-%lld", (unsigned long)self.videoData.length, self.contentLength]);
-    
     [self.request setValue:[NSString stringWithFormat:@"bytes=%lu-%lld", (unsigned long)self.videoData.length, self.contentLength] forHTTPHeaderField:@"Range"];
     self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self];
 }
@@ -210,6 +208,20 @@ NSInteger const videoLoadTimeOutInterval = 180;
     self.videoData = nil;
     self.connection = nil;
     [self invalidateTimers];
+}
+
+- (NSURLRequest *)connection: (NSURLConnection *)connection
+             willSendRequest: (NSURLRequest *)request
+            redirectResponse: (NSURLResponse *)redirectResponse;
+{
+    if (redirectResponse) {
+        NSURL *newURL = [request URL];
+        NSMutableURLRequest *newRequest = [self.request mutableCopy];
+        [newRequest setURL: newURL];
+        return newRequest;
+    } else {
+        return request;
+    }
 }
 
 @end

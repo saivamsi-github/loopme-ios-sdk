@@ -39,7 +39,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
         _sendInterval = 900;
         _analyticURLString = @"https://loopme.me/api/v2/events";
         
-        UIBackgroundTaskIdentifier bgTask = 0;
+        __block UIBackgroundTaskIdentifier bgTask = 0;
         UIApplication  *app = [UIApplication sharedApplication];
         bgTask = [app beginBackgroundTaskWithExpirationHandler:^{
             [app endBackgroundTask:bgTask];
@@ -70,7 +70,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
 }
 
 - (void)sendData {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfiguration:kLoopMeBackgroundAnalyticSessionID];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kLoopMeBackgroundAnalyticSessionID];
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
     self.sendURL = [NSURL URLWithString:[_analyticURLString stringByAppendingString:[NSString stringWithFormat:@"?et=INFO&vt=%@", [LoopMeIdentityProvider uniqueIdentifier]]]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.sendURL

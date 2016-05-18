@@ -8,6 +8,7 @@
 
 #import "LoopMeVideoCommunicatorProtocol.h"
 
+@class LoopMe360ViewController;
 @class LoopMeVideoClient;
 @class AVPlayerLayer;
 
@@ -27,20 +28,21 @@ extern const struct LoopMeVideoStateStruct
 <
     LoopMeVideoCommunicatorProtocol
 >
-@property (nonatomic, strong, readonly) AVPlayerLayer *playerLayer;
+@property (nonatomic, weak) UIViewController *viewController;
 
 - (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate;
-- (void)adjustLayerToFrame:(CGRect)frame;
+- (LoopMe360ViewController *)viewController360;
+- (void)adjustViewToFrame:(CGRect)frame;
 - (void)cancel;
-
-- (void)moveLayer;
+- (void)willAppear;
+- (void)moveView;
 
 @end
 
 @protocol LoopMeVideoClientDelegate <NSObject>
 
 - (id<LoopMeJSCommunicatorProtocol>)JSCommunicator;
-- (void)videoClient:(LoopMeVideoClient *)client setupLayer:(AVPlayerLayer *)layer;
+- (void)videoClient:(LoopMeVideoClient *)client setupView:(UIView *)view;
 - (void)videoClientDidReachEnd:(LoopMeVideoClient *)client;
 - (void)videoClient:(LoopMeVideoClient *)client didFailToLoadVideoWithError:(NSError *)error;
 
