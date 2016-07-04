@@ -1,3 +1,7 @@
+## Version 6.0.1 (04.07.2016)
+
+- fix time_out error
+
 ## Version 6.0.0 (17.05.2016)
 
 - 360 video ad

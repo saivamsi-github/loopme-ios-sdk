@@ -154,6 +154,7 @@
 - (void)failedLoadingAdWithError:(NSError *)error {
     self.loading = NO;
     self.ready = NO;
+    [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitial:didFailToLoadAdWithError:)]) {
         [self.delegate loopMeInterstitial:self didFailToLoadAdWithError:error];
     }
@@ -302,7 +303,6 @@
 
 - (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
 {
-    [self invalidateTimer];
     [self failedLoadingAdWithError:error];
 }
 

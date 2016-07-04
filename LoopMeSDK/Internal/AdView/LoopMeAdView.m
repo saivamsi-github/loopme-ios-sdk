@@ -328,6 +328,7 @@
 {
     self.loading = NO;
     self.ready = NO;
+    [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeAdView:didFailToLoadAdWithError:)]) {
         [self.delegate loopMeAdView:self didFailToLoadAdWithError:error];
     }
@@ -471,7 +472,6 @@
 
 - (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
 {
-    [self invalidateTimer];
     [self failedLoadingAdWithError:error];
 }
 
