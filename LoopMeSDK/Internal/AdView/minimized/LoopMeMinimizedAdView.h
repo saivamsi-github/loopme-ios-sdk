@@ -12,6 +12,7 @@
 @protocol LoopMeMinimizedAdViewDelegate <NSObject>
 
 - (void)minimizedAdViewShouldRemove:(LoopMeMinimizedAdView *)minimizedAdView;
+- (void)minimizedDidReceiveTap:(LoopMeMinimizedAdView *)minimizedAdView;
 
 @end
 

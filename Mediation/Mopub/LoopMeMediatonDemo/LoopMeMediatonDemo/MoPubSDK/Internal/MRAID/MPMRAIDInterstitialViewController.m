@@ -86,7 +86,10 @@
 
 - (CLLocation *)location
 {
-    return [self.delegate location];
+    if ([self.delegate respondsToSelector:@selector(location)]) {
+        return [self.delegate location];
+    }
+    return nil;
 }
 
 - (NSString *)adUnitId
@@ -154,10 +157,21 @@
     [UIViewController attemptRotationToDeviceOrientation];
 }
 
+- (void)rewardedVideoEnded
+{
+    if ([self.delegate respondsToSelector:@selector(interstitialRewardedVideoEnded)]) {
+        [self.delegate interstitialRewardedVideoEnded];
+    }
+}
+
 #pragma mark - Orientation Handling
 
 // supportedInterfaceOrientations and shouldAutorotate are for ios 6, 7, and 8.
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= MP_IOS_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#else
 - (NSUInteger)supportedInterfaceOrientations
+#endif
 {
     return ([[UIApplication sharedApplication] mp_supportsOrientationMask:self.supportedOrientationMask]) ? self.supportedOrientationMask : UIInterfaceOrientationMaskAll;
 }

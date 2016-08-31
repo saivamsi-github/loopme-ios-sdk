@@ -6,7 +6,6 @@
 //
 
 #import "MPAdDestinationDisplayAgent.h"
-#import "UIViewController+MPAdditions.h"
 #import "MPCoreInstanceProvider.h"
 #import "MPLastResortDelegate.h"
 #import "MPLogging.h"
@@ -107,11 +106,10 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
 - (void)cancel
 {
     if (self.isLoadingDestination) {
-        self.isLoadingDestination = NO;
         [self.resolver cancel];
         [self.enhancedDeeplinkFallbackResolver cancel];
         [self hideOverlay];
-        [self.delegate displayAgentDidDismissModal];
+        [self completeDestinationLoading];
     }
 }
 
@@ -167,7 +165,7 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
     if (didOpenSuccessfully) {
         [self hideOverlay];
         [self.delegate displayAgentWillLeaveApplication];
-        self.isLoadingDestination = NO;
+        [self completeDestinationLoading];
         [[[MPCoreInstanceProvider sharedProvider] sharedMPAnalyticsTracker] sendTrackingRequestForURLs:request.primaryTrackingURLs];
     } else if (request.fallbackURL) {
         [self handleEnhancedDeeplinkFallbackForRequest:request];
@@ -207,8 +205,7 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
                                                               HTMLString:HTMLString
                                                                 delegate:self];
     self.browserController.modalTransitionStyle = UIModalTransitionStyleCrossDissolve;
-    [[self.delegate viewControllerForPresentingModalView] mp_presentModalViewController:self.browserController
-                                                                               animated:MP_ANIMATED];
+    [[self.delegate viewControllerForPresentingModalView] presentViewController:self.browserController animated:MP_ANIMATED completion:nil];
 }
 
 - (void)showStoreKitProductWithParameter:(NSString *)parameter fallbackURL:(NSURL *)URL
@@ -230,10 +227,8 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
         BOOL didOpenSuccessfully = [[UIApplication sharedApplication] openURL:URL];
         if (didOpenSuccessfully) {
             [self.delegate displayAgentWillLeaveApplication];
-        } else {
-            [self.delegate displayAgentDidDismissModal];
         }
-        self.isLoadingDestination = NO;
+        [self completeDestinationLoading];
     }
 }
 
@@ -260,8 +255,7 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
                 [strongSelf.delegate displayAgentWillLeaveApplication];
                 [[UIApplication sharedApplication] openURL:targetTelephoneURL];
             }
-            strongSelf.isLoadingDestination = NO;
-            [strongSelf.delegate displayAgentDidDismissModal];
+            [strongSelf completeDestinationLoading];
         }
     }];
 
@@ -270,8 +264,13 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
 
 - (void)failedToResolveURLWithError:(NSError *)error
 {
-    self.isLoadingDestination = NO;
     [self hideOverlay];
+    [self completeDestinationLoading];
+}
+
+- (void)completeDestinationLoading
+{
+    self.isLoadingDestination = NO;
     [self.delegate displayAgentDidDismissModal];
 }
 
@@ -286,8 +285,7 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
     [self.storeKitController loadProductWithParameters:parameters completionBlock:nil];
 
     [self hideOverlay];
-    [[self.delegate viewControllerForPresentingModalView] mp_presentModalViewController:self.storeKitController
-                                                                               animated:MP_ANIMATED];
+    [[self.delegate viewControllerForPresentingModalView] presentViewController:self.storeKitController animated:MP_ANIMATED completion:nil];
 #endif
 }
 
@@ -307,6 +305,15 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
     [self hideModalAndNotifyDelegate];
 }
 
+- (MPAdConfiguration *)adConfiguration
+{
+    if ([self.delegate respondsToSelector:@selector(adConfiguration)]) {
+        return [self.delegate adConfiguration];
+    }
+
+    return nil;
+}
+
 #pragma mark - <MPProgressOverlayViewDelegate>
 
 - (void)overlayCancelButtonPressed
@@ -318,8 +325,9 @@ static NSString * const kDisplayAgentErrorDomain = @"com.mopub.displayagent";
 
 - (void)hideModalAndNotifyDelegate
 {
-    [[self.delegate viewControllerForPresentingModalView] mp_dismissModalViewControllerAnimated:MP_ANIMATED];
-    [self.delegate displayAgentDidDismissModal];
+    [[self.delegate viewControllerForPresentingModalView] dismissViewControllerAnimated:MP_ANIMATED completion:^{
+        [self.delegate displayAgentDidDismissModal];
+    }];
 }
 
 - (void)hideOverlay

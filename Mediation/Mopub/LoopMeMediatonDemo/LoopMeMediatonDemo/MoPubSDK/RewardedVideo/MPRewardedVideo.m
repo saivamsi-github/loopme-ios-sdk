@@ -10,13 +10,16 @@
 #import "MPRewardedVideoAdManager.h"
 #import "MPInstanceProvider.h"
 #import "MPRewardedVideoError.h"
+#import "MPRewardedVideoConnection.h"
+#import "MPRewardedVideo+Internal.h"
 
 static MPRewardedVideo *gSharedInstance = nil;
 
-@interface MPRewardedVideo () <MPRewardedVideoAdManagerDelegate>
+@interface MPRewardedVideo () <MPRewardedVideoAdManagerDelegate, MPRewardedVideoConnectionDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *rewardedVideoAdManagers;
 @property (nonatomic, weak) id<MPRewardedVideoDelegate> delegate;
+@property (nonatomic) NSMutableArray *rewardedVideoConnections;
 
 + (MPRewardedVideo *)sharedInstance;
 
@@ -28,12 +31,23 @@ static MPRewardedVideo *gSharedInstance = nil;
 {
     if (self = [super init]) {
         _rewardedVideoAdManagers = [[NSMutableDictionary alloc] init];
+        _rewardedVideoConnections = [NSMutableArray new];
     }
 
     return self;
 }
 
 + (void)loadRewardedVideoAdWithAdUnitID:(NSString *)adUnitID withMediationSettings:(NSArray *)mediationSettings
+{
+    [MPRewardedVideo loadRewardedVideoAdWithAdUnitID:adUnitID keywords:nil location:nil mediationSettings:mediationSettings];
+}
+
++ (void)loadRewardedVideoAdWithAdUnitID:(NSString *)adUnitID keywords:(NSString *)keywords location:(CLLocation *)location mediationSettings:(NSArray *)mediationSettings
+{
+    [self loadRewardedVideoAdWithAdUnitID:adUnitID keywords:keywords location:location customerId:nil mediationSettings:mediationSettings];
+}
+
++ (void)loadRewardedVideoAdWithAdUnitID:(NSString *)adUnitID keywords:(NSString *)keywords location:(CLLocation *)location customerId:(NSString *)customerId mediationSettings:(NSArray *)mediationSettings
 {
     MPRewardedVideo *sharedInstance = [[self class] sharedInstance];
 
@@ -51,8 +65,8 @@ static MPRewardedVideo *gSharedInstance = nil;
     }
 
     adManager.mediationSettings = mediationSettings;
-    
-    [adManager loadRewardedVideoAd];
+
+    [adManager loadRewardedVideoAdWithKeywords:keywords location:location customerId:customerId];
 }
 
 + (BOOL)hasAdAvailableForAdUnitID:(NSString *)adUnitID
@@ -176,10 +190,10 @@ static MPRewardedVideo *gSharedInstance = nil;
     // that their ads may not be available anymore since another ad unit might have "played" their ad. We go through and notify all ad managers
     // that are of the type of ad that is playing now.
     Class customEventClass = manager.customEventClass;
-    
+
     for (id key in self.rewardedVideoAdManagers) {
         MPRewardedVideoAdManager *adManager = self.rewardedVideoAdManagers[key];
-        
+
         if (adManager != manager && adManager.customEventClass == customEventClass) {
             [adManager handleAdPlayedForCustomEventNetwork];
         }
@@ -205,6 +219,22 @@ static MPRewardedVideo *gSharedInstance = nil;
     if ([self.delegate respondsToSelector:@selector(rewardedVideoAdShouldRewardForAdUnitID:reward:)]) {
         [self.delegate rewardedVideoAdShouldRewardForAdUnitID:manager.adUnitID reward:reward];
     }
+}
+
+#pragma mark - rewarded video server to server callback
+
+- (void)startRewardedVideoConnectionWithUrl:(NSURL *)url
+{
+    MPRewardedVideoConnection *connection = [[MPRewardedVideoConnection alloc] initWithUrl:url delegate:self];
+    [self.rewardedVideoConnections addObject:connection];
+    [connection sendRewardedVideoCompletionRequest];
+}
+
+#pragma mark - MPRewardedVideoConnectionDelegate
+
+- (void)rewardedVideoConnectionCompleted:(MPRewardedVideoConnection *)connection url:(NSURL *)url
+{
+    [self.rewardedVideoConnections removeObject:connection];
 }
 
 @end

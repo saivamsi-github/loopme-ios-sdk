@@ -37,11 +37,23 @@
 
 #pragma mark - <MPNativeAdRendering>
 
-- (void)layoutAdAssets:(MPNativeAd *)adObject
-{
-    [adObject loadTitleIntoLabel:self.titleLabel];
-    [adObject loadTextIntoLabel:self.mainTextLabel];
-    [adObject loadIconIntoImageView:self.iconImageView];
+//- (void)layoutAdAssets:(MPNativeAd *)adObject
+//{
+//    [adObject loadTitleIntoLabel:self.titleLabel];
+//    [adObject loadTextIntoLabel:self.mainTextLabel];
+//    [adObject loadIconIntoImageView:self.iconImageView];
+//}
+
+- (UILabel *)nativeTitleTextLabel {
+    return self.titleLabel;
+}
+
+- (UILabel *)nativeMainTextLabel {
+    return self.mainTextLabel;
+}
+
+- (UIImageView *)nativeIconImageView {
+    return self.iconImageView;
 }
 
 + (CGSize)sizeWithMaximumWidth:(CGFloat)maximumWidth

@@ -11,6 +11,7 @@
 #import "MPLogging.h"
 #import "math.h"
 #import "NSJSONSerialization+MPAdditions.h"
+#import "MPRewardedVideoReward.h"
 
 NSString * const kAdTypeHeaderKey = @"X-Adtype";
 NSString * const kAdUnitWarmingUpHeaderKey = @"X-Warmup";
@@ -37,11 +38,23 @@ NSString * const kIsVastVideoPlayerKey = @"X-VastVideoPlayer";
 NSString * const kInterstitialAdTypeHeaderKey = @"X-Fulladtype";
 NSString * const kOrientationTypeHeaderKey = @"X-Orientation";
 
+NSString * const kNativeVideoPlayVisiblePercentHeaderKey = @"X-Play-Visible-Percent";
+NSString * const kNativeVideoPauseVisiblePercentHeaderKey = @"X-Pause-Visible-Percent";
+NSString * const kNativeVideoImpressionMinVisiblePercentHeaderKey = @"X-Impression-Min-Visible-Percent";
+NSString * const kNativeVideoImpressionVisibleMsHeaderKey = @"X-Impression-Visible-Ms";
+NSString * const kNativeVideoMaxBufferingTimeMsHeaderKey = @"X-Max-Buffer-Ms";
+
 NSString * const kAdTypeHtml = @"html";
 NSString * const kAdTypeInterstitial = @"interstitial";
 NSString * const kAdTypeMraid = @"mraid";
 NSString * const kAdTypeClear = @"clear";
 NSString * const kAdTypeNative = @"json";
+NSString * const kAdTypeNativeVideo = @"json_video";
+
+// rewarded video
+NSString * const kRewardedVideoCurrencyNameHeaderKey = @"X-Rewarded-Video-Currency-Name";
+NSString * const kRewardedVideoCurrencyAmountHeaderKey = @"X-Rewarded-Video-Currency-Amount";
+NSString * const kRewardedVideoCompletionUrlHeaderKey = @"X-Rewarded-Video-Completion-Url";
 
 @interface MPAdConfiguration ()
 
@@ -59,28 +72,6 @@ NSString * const kAdTypeNative = @"json";
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 @implementation MPAdConfiguration
-
-@synthesize adType = _adType;
-@synthesize networkType = _networkType;
-@synthesize preferredSize = _preferredSize;
-@synthesize clickTrackingURL = _clickTrackingURL;
-@synthesize impressionTrackingURL = _impressionTrackingURL;
-@synthesize failoverURL = _failoverURL;
-@synthesize interceptURLPrefix = _interceptURLPrefix;
-@synthesize shouldInterceptLinks = _shouldInterceptLinks;
-@synthesize scrollable = _scrollable;
-@synthesize refreshInterval = _refreshInterval;
-@synthesize adTimeoutInterval = _adTimeoutInterval;
-@synthesize adResponseData = _adResponseData;
-@synthesize adResponseHTMLString = _adResponseHTMLString;
-@synthesize nativeSDKParameters = _nativeSDKParameters;
-@synthesize orientationType = _orientationType;
-@synthesize customEventClass = _customEventClass;
-@synthesize customEventClassData = _customEventClassData;
-@synthesize customSelectorName = _customSelectorName;
-@synthesize dspCreativeId = _dspCreativeId;
-@synthesize precacheRequired = _precacheRequired;
-@synthesize creationTimestamp = _creationTimestamp;
 
 - (id)initWithHeaders:(NSDictionary *)headers data:(NSData *)data
 {
@@ -135,6 +126,30 @@ NSString * const kAdTypeNative = @"json";
         self.creativeId = [headers objectForKey:kCreativeIdHeaderKey];
 
         self.headerAdType = [headers objectForKey:kAdTypeHeaderKey];
+
+        self.nativeVideoPlayVisiblePercent = [self percentFromHeaders:headers forKey:kNativeVideoPlayVisiblePercentHeaderKey];
+
+        self.nativeVideoPauseVisiblePercent = [self percentFromHeaders:headers forKey:kNativeVideoPauseVisiblePercentHeaderKey];
+
+        self.nativeVideoImpressionMinVisiblePercent = [self percentFromHeaders:headers forKey:kNativeVideoImpressionMinVisiblePercentHeaderKey];
+
+        self.nativeVideoImpressionVisible = [self timeIntervalFromMsHeaders:headers forKey:kNativeVideoImpressionVisibleMsHeaderKey];
+
+        self.nativeVideoMaxBufferingTime = [self timeIntervalFromMsHeaders:headers forKey:kNativeVideoMaxBufferingTimeMsHeaderKey];
+
+        // rewarded video
+        NSString *currencyName = [headers objectForKey:kRewardedVideoCurrencyNameHeaderKey];
+        NSNumber *currencyAmount = [self adAmountFromHeaders:headers key:kRewardedVideoCurrencyAmountHeaderKey];
+        if (!currencyName) {
+            currencyName = kMPRewardedVideoRewardCurrencyTypeUnspecified;
+        }
+        if (currencyAmount.integerValue > 0 ) {
+            self.rewardedVideoReward = [[MPRewardedVideoReward alloc] initWithCurrencyType:currencyName amount:currencyAmount];
+        } else {
+            self.rewardedVideoReward = [[MPRewardedVideoReward alloc] initWithCurrencyType:currencyName amount:@(kMPRewardedVideoRewardCurrencyAmountUnspecified)];
+        }
+
+        self.rewardedVideoCompletionUrl = [headers objectForKey:kRewardedVideoCompletionUrlHeaderKey];
     }
     return self;
 }
@@ -150,12 +165,15 @@ NSString * const kAdTypeNative = @"json";
         [convertedCustomEvents setObject:@"MPMillennialBannerCustomEvent" forKey:@"millennial_native"];
         [convertedCustomEvents setObject:@"MPHTMLBannerCustomEvent" forKey:@"html"];
         [convertedCustomEvents setObject:@"MPMRAIDBannerCustomEvent" forKey:@"mraid"];
+        [convertedCustomEvents setObject:@"MOPUBNativeVideoCustomEvent" forKey:@"json_video"];
+        [convertedCustomEvents setObject:@"MPMoPubNativeCustomEvent" forKey:@"json"];
     } else if (self.adType == MPAdTypeInterstitial) {
         [convertedCustomEvents setObject:@"MPiAdInterstitialCustomEvent" forKey:@"iAd_full"];
         [convertedCustomEvents setObject:@"MPGoogleAdMobInterstitialCustomEvent" forKey:@"admob_full"];
         [convertedCustomEvents setObject:@"MPMillennialInterstitialCustomEvent" forKey:@"millennial_full"];
         [convertedCustomEvents setObject:@"MPHTMLInterstitialCustomEvent" forKey:@"html"];
         [convertedCustomEvents setObject:@"MPMRAIDInterstitialCustomEvent" forKey:@"mraid"];
+        [convertedCustomEvents setObject:@"MPMoPubRewardedVideoCustomEvent" forKey:@"rewarded_video"];
     }
     if ([convertedCustomEvents objectForKey:self.networkType]) {
         customEventClassName = [convertedCustomEvents objectForKey:self.networkType];
@@ -208,7 +226,7 @@ NSString * const kAdTypeNative = @"json";
 {
     NSString *adTypeString = [headers objectForKey:kAdTypeHeaderKey];
 
-    if ([adTypeString isEqualToString:@"interstitial"]) {
+    if ([adTypeString isEqualToString:@"interstitial"] || [adTypeString isEqualToString:@"rewarded_video"]) {
         return MPAdTypeInterstitial;
     } else if (adTypeString &&
                [headers objectForKey:kOrientationTypeHeaderKey]) {
@@ -259,6 +277,36 @@ NSString * const kAdTypeNative = @"json";
     return interval;
 }
 
+- (NSTimeInterval)timeIntervalFromMsHeaders:(NSDictionary *)headers forKey:(NSString *)key
+{
+    NSString *msString = [headers objectForKey:key];
+    NSTimeInterval interval = -1;
+    if (msString) {
+        int parsedInt = -1;
+        BOOL isNumber = [[NSScanner scannerWithString:msString] scanInt:&parsedInt];
+        if (isNumber && parsedInt >= 0) {
+            interval = parsedInt / 1000.0f;
+        }
+    }
+
+    return interval;
+}
+
+- (NSInteger)percentFromHeaders:(NSDictionary *)headers forKey:(NSString *)key
+{
+    NSString *percentString = [headers objectForKey:key];
+    NSInteger percent = -1;
+    if (percentString) {
+        int parsedInt = -1;
+        BOOL isNumber = [[NSScanner scannerWithString:percentString] scanInt:&parsedInt];
+        if (isNumber && parsedInt >= 0 && parsedInt <= 100) {
+            percent = parsedInt;
+        }
+    }
+
+    return percent;
+}
+
 - (NSTimeInterval)adTimeoutIntervalFromHeaders:(NSDictionary *)headers
 {
     NSString *intervalString = [headers objectForKey:kAdTimeoutHeaderKey];
@@ -272,6 +320,21 @@ NSString * const kAdTypeNative = @"json";
     }
 
     return interval;
+}
+
+- (NSNumber *)adAmountFromHeaders:(NSDictionary *)headers key:(NSString *)key
+{
+    NSString *amountString = [headers objectForKey:key];
+    NSNumber *amount = @(-1);
+    if (amountString) {
+        int parsedInt = -1;
+        BOOL isNumber = [[NSScanner scannerWithString:amountString] scanInt:&parsedInt];
+        if (isNumber && parsedInt >= 0) {
+            amount = @(parsedInt);
+        }
+    }
+
+    return amount;
 }
 
 - (MPInterstitialOrientationType)orientationTypeFromHeaders:(NSDictionary *)headers

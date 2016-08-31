@@ -9,9 +9,10 @@
 
 #import "MPGlobal.h"
 #import "MPLogging.h"
-#import "UIViewController+MPAdditions.h"
+#import "UIButton+MPAdditions.h"
 
-static const CGFloat kCloseButtonPadding = 6.0;
+static const CGFloat kCloseButtonPadding = 5.0;
+static const CGFloat kCloseButtonEdgeInset = 5.0;
 static NSString * const kCloseButtonXImageName = @"MPCloseButtonX.png";
 
 @interface MPInterstitialViewController ()
@@ -120,6 +121,7 @@ static NSString * const kCloseButtonXImageName = @"MPCloseButtonX.png";
                                         kCloseButtonPadding,
                                         self.closeButton.bounds.size.width,
                                         self.closeButton.bounds.size.height);
+    self.closeButton.mp_TouchAreaInsets = UIEdgeInsetsMake(kCloseButtonEdgeInset, kCloseButtonEdgeInset, kCloseButtonEdgeInset, kCloseButtonEdgeInset);
     [self setCloseButtonStyle:self.closeButtonStyle];
     [self.view addSubview:self.closeButton];
     [self.view bringSubviewToFront:self.closeButton];
@@ -162,13 +164,15 @@ static NSString * const kCloseButtonXImageName = @"MPCloseButtonX.png";
 
     [self willDismissInterstitial];
 
-    UIViewController *presentingViewController = [self mp_presentingViewController];
+    UIViewController *presentingViewController = self.presentingViewController;
     // TODO: Is this check necessary?
-    if ([presentingViewController mp_presentedViewController] == self) {
-        [presentingViewController mp_dismissModalViewControllerAnimated:MP_ANIMATED];
+    if (presentingViewController.presentedViewController == self) {
+        [presentingViewController dismissViewControllerAnimated:MP_ANIMATED completion:^{
+            [self didDismissInterstitial];
+        }];
+    } else {
+        [self didDismissInterstitial];
     }
-
-    [self didDismissInterstitial];
 }
 
 #pragma mark - Hidding status bar (pre-iOS 7)
@@ -193,7 +197,11 @@ static NSString * const kCloseButtonXImageName = @"MPCloseButtonX.png";
     return YES;
 }
 
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= MP_IOS_9_0
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+#else
 - (NSUInteger)supportedInterfaceOrientations
+#endif
 {
     NSUInteger applicationSupportedOrientations =
     [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:MPKeyWindow()];

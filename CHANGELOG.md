@@ -1,3 +1,8 @@
+## Version 6.0.2 (31.08.2016)
+
+- updated Mopub mediation bridges
+- fix minimized mod in AdView
+
 ## Version 6.0.1 (04.07.2016)
 
 - fix time_out error

@@ -109,10 +109,10 @@
 
 - (void)expand
 {
-    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
+    BOOL isMaximized = [self.maximizedController isBeingPresented];
     if (!isMaximized) {
         [self.maximizedController show];
-        [self.adDisplayController moveView];
+        [self.adDisplayController moveView:NO];
         [self.adDisplayController expandReporting];
     }
 }
@@ -244,6 +244,15 @@
     if (!self.superview) {
         return;
     }
+    
+    if ([self.maximizedController isBeingPresented]) {
+        self.adDisplayController.visibleNoJS = YES;
+        return;
+    }
+    
+    if (self.adDisplayController.destinationIsPresented) {
+        return;
+    }
 
     CGRect relativeToScrollViewAdRect = [self convertRect:self.bounds toView:self.scrollView];
     CGRect visibleScrollViewRect = CGRectMake(self.scrollView.contentOffset.x, self.scrollView.contentOffset.y, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
@@ -279,8 +288,7 @@
 - (void)willResignActive:(NSNotification *)n
 {
     self.adDisplayController.visible = NO;
-    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
-    if (isMaximized) {
+    if ([self.maximizedController isBeingPresented]) {
         [self removeMaximizedView];
     }
 }
@@ -290,7 +298,7 @@
     if (!self.isMinimized && self.adDisplayController.isVisible) {
         self.minimized = YES;
         [self.minimizedView show];
-        [self.adDisplayController moveView];
+        [self.adDisplayController moveView:YES];
     }
 }
 
@@ -299,7 +307,7 @@
     if (self.isMinimized) {
         self.minimized = NO;
         [self.minimizedView hide];
-        [self.adDisplayController moveView];
+        [self.adDisplayController moveView:NO];
     }
 }
 
@@ -310,7 +318,7 @@
 
 - (void)removeMaximizedView {
     [self.maximizedController hide];
-    [self.adDisplayController moveView];
+    [self.adDisplayController moveView:NO];
     [self.adDisplayController collapseReporting];
 }
 
@@ -370,11 +378,6 @@
     [self updateVisibility];
 }
 
-- (BOOL)isMaximizedControllerIsPresented
-{
-    return self.maximizedController.isViewLoaded && self.maximizedController.view.window;
-}
-
 - (void)timeOut {
     [self.adDisplayController stopHandlingRequests];
     [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
@@ -423,23 +426,29 @@
     [self updateAdVisibilityInScrollView];
 }
 
+- (void)minimizedDidReceiveTap:(LoopMeMinimizedAdView *)minimizedAdView {
+    CGRect relativeToScrollViewAdRect = [self convertRect:self.bounds toView:self.scrollView];
+    [self.scrollView scrollRectToVisible:relativeToScrollViewAdRect animated:YES];
+}
+
 #pragma mark - LoopMeMaximizedAdViewDelegate
 
 - (void)maximizedAdViewDidPresent:(LoopMeMaximizedViewController *)maximizedViewController
 {
     [self.adDisplayController layoutSubviews];
+    [self setAdVisible:YES];
 }
 
 - (void)maximizedViewControllerShouldRemove:(LoopMeMaximizedViewController *)maximizedViewController
 {
-    [self.adDisplayController moveView];
+    [self.adDisplayController moveView:NO];
 }
 
 #pragma mark - LoopMeAdDisplayControllerDelegate
 
 - (UIView *)containerView
 {
-    BOOL isMaximized = SYSTEM_VERSION_LESS_THAN(@"8") ? [self isMaximizedControllerIsPresented] : [self.maximizedController isBeingPresented];
+    BOOL isMaximized = [self.maximizedController isBeingPresented];
     
     if (self.isMinimized) {
         return self.minimizedView;
@@ -477,7 +486,7 @@
 
 - (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController
 {
-    if ([self isMaximizedControllerIsPresented]) {
+    if ([self.maximizedController isBeingPresented]) {
         [self removeMaximizedView];
     }
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidReceiveTap:)]) {
@@ -496,7 +505,7 @@
 {
     [self performSelector:@selector(removeMinimizedView) withObject:nil afterDelay:1.0];
     
-    if ([self isMaximizedControllerIsPresented]) {
+    if ([self.maximizedController isBeingPresented]) {
         [self performSelector:@selector(removeMaximizedView) withObject:nil afterDelay:1.0];
     }
     

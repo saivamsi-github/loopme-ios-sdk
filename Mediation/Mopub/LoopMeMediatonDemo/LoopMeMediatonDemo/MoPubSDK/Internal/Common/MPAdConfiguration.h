@@ -8,6 +8,8 @@
 #import <Foundation/Foundation.h>
 #import "MPGlobal.h"
 
+@class MPRewardedVideoReward;
+
 enum {
     MPAdTypeUnknown = -1,
     MPAdTypeBanner = 0,
@@ -36,6 +38,9 @@ extern NSString * const kWidthHeaderKey;
 extern NSString * const kDspCreativeIdKey;
 extern NSString * const kPrecacheRequiredKey;
 extern NSString * const kIsVastVideoPlayerKey;
+extern NSString * const kRewardedVideoCurrencyNameHeaderKey;
+extern NSString * const kRewardedVideoCurrencyAmountHeaderKey;
+extern NSString * const kRewardedVideoCompletionUrlHeaderKey;
 
 extern NSString * const kInterstitialAdTypeHeaderKey;
 extern NSString * const kOrientationTypeHeaderKey;
@@ -45,6 +50,7 @@ extern NSString * const kAdTypeInterstitial;
 extern NSString * const kAdTypeMraid;
 extern NSString * const kAdTypeClear;
 extern NSString * const kAdTypeNative;
+extern NSString * const kAdTypeNativeVideo;
 
 @interface MPAdConfiguration : NSObject
 
@@ -72,6 +78,13 @@ extern NSString * const kAdTypeNative;
 @property (nonatomic, strong) NSDate *creationTimestamp;
 @property (nonatomic, copy) NSString *creativeId;
 @property (nonatomic, copy) NSString *headerAdType;
+@property (nonatomic, assign) NSInteger nativeVideoPlayVisiblePercent;
+@property (nonatomic, assign) NSInteger nativeVideoPauseVisiblePercent;
+@property (nonatomic, assign) NSInteger nativeVideoImpressionMinVisiblePercent;
+@property (nonatomic, assign) NSTimeInterval nativeVideoImpressionVisible;
+@property (nonatomic, assign) NSTimeInterval nativeVideoMaxBufferingTime;
+@property (nonatomic) MPRewardedVideoReward *rewardedVideoReward;
+@property (nonatomic, copy) NSString *rewardedVideoCompletionUrl;
 
 - (id)initWithHeaders:(NSDictionary *)headers data:(NSData *)data;
 

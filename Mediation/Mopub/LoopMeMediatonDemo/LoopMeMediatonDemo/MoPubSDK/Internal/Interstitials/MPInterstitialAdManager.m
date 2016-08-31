@@ -129,21 +129,21 @@
     if (self.configuration.adUnitWarmingUp) {
         MPLogInfo(kMPWarmingUpErrorLogFormatWithAdUnitID, self.delegate.interstitialAdController.adUnitId);
         self.loading = NO;
-        [self.delegate manager:self didFailToLoadInterstitialWithError:[MPError errorWithCode:MPErrorAdUnitWarmingUp]];
+        [self.delegate manager:self didFailToLoadInterstitialWithError:[MOPUBError errorWithCode:MOPUBErrorAdUnitWarmingUp]];
         return;
     }
 
     if ([self.configuration.networkType isEqualToString:kAdTypeClear]) {
         MPLogInfo(kMPClearErrorLogFormatWithAdUnitID, self.delegate.interstitialAdController.adUnitId);
         self.loading = NO;
-        [self.delegate manager:self didFailToLoadInterstitialWithError:[MPError errorWithCode:MPErrorNoInventory]];
+        [self.delegate manager:self didFailToLoadInterstitialWithError:[MOPUBError errorWithCode:MOPUBErrorNoInventory]];
         return;
     }
 
     if (self.configuration.adType != MPAdTypeInterstitial) {
         MPLogWarn(@"Could not load ad: interstitial object received a non-interstitial ad unit ID.");
         self.loading = NO;
-        [self.delegate manager:self didFailToLoadInterstitialWithError:[MPError errorWithCode:MPErrorAdapterInvalid]];
+        [self.delegate manager:self didFailToLoadInterstitialWithError:[MOPUBError errorWithCode:MOPUBErrorAdapterInvalid]];
         return;
     }
 
@@ -222,34 +222,6 @@
 - (void)interstitialWillLeaveApplicationForAdapter:(MPBaseInterstitialAdapter *)adapter
 {
     //noop
-}
-
-#pragma mark - Legacy Custom Events
-
-- (void)customEventDidLoadAd
-{
-    // XXX: The deprecated custom event behavior is to report an impression as soon as an ad loads,
-    // rather than when the ad is actually displayed. Because of this, you may see impression-
-    // reporting discrepancies between MoPub and your custom ad networks.
-    if ([self.adapter respondsToSelector:@selector(customEventDidLoadAd)]) {
-        self.loading = NO;
-        [self.adapter performSelector:@selector(customEventDidLoadAd)];
-    }
-}
-
-- (void)customEventDidFailToLoadAd
-{
-    if ([self.adapter respondsToSelector:@selector(customEventDidFailToLoadAd)]) {
-        self.loading = NO;
-        [self.adapter performSelector:@selector(customEventDidFailToLoadAd)];
-    }
-}
-
-- (void)customEventActionWillBegin
-{
-    if ([self.adapter respondsToSelector:@selector(customEventActionWillBegin)]) {
-        [self.adapter performSelector:@selector(customEventActionWillBegin)];
-    }
 }
 
 @end

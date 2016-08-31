@@ -31,8 +31,11 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
         [self addGestureRecognizer:swipeLeft];
         
         UISwipeGestureRecognizer *swipeRight = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(didSwipeRight:)];
-        [swipeLeft setDirection:UISwipeGestureRecognizerDirectionLeft];
+        [swipeRight setDirection:UISwipeGestureRecognizerDirectionRight];
         [self addGestureRecognizer:swipeRight];
+        
+        UITapGestureRecognizer *touch = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTap:)];
+        [self addGestureRecognizer:touch];
         
         self.alpha = 0;
         
@@ -168,6 +171,13 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
 - (void)didSwipeRight:(UISwipeGestureRecognizer *)recognizer
 {
     [self removeOnDirection:recognizer.direction animated:YES];
+}
+
+- (void)didTap:(UITapGestureRecognizer *)recognizer
+{
+    if ([self.delegate respondsToSelector:@selector(minimizedDidReceiveTap:)]) {
+        [self.delegate minimizedDidReceiveTap:self];
+    }
 }
 
 #pragma mark - Private

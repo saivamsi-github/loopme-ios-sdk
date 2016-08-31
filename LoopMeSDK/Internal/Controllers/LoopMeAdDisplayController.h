@@ -21,6 +21,7 @@
 @property (nonatomic, assign, getter=isVisible) BOOL visible;
 @property (nonatomic, assign, getter=isVisibleNoJS) BOOL visibleNoJS;
 @property (nonatomic, assign) BOOL forceHidden;
+@property (nonatomic, assign) BOOL destinationIsPresented;
 
 - (instancetype)initWithDelegate:(id<LoopMeAdDisplayControllerDelegate>)delegate;
 - (void)loadConfiguration:(LoopMeAdConfiguration *)configuration;
@@ -30,7 +31,7 @@
 - (void)layoutSubviewsToFrame:(CGRect)frame;
 - (void)stopHandlingRequests;
 - (void)continueHandlingRequests;
-- (void)moveView;
+- (void)moveView:(BOOL)hideWebView;
 
 - (void)expandReporting;
 - (void)collapseReporting;

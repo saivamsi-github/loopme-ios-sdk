@@ -15,6 +15,10 @@
 #import "MPInstanceProvider.h"
 #import "MPLogging.h"
 #import "MPTimer.h"
+#import "MPRewardedVideoReward.h"
+#import "MPRewardedVideo+Internal.h"
+
+static const NSString *kRewardedVideoApiVersion = @"1";
 
 @interface MPRewardedVideoAdapter () <MPRewardedVideoCustomEventDelegate>
 
@@ -114,6 +118,18 @@
     [self.timeoutTimer invalidate];
 }
 
+- (NSURL *)rewardedVideoCompletionUrlByAppendingClientParams
+{
+    NSString *finalCompletionUrlString = self.configuration.rewardedVideoCompletionUrl;
+    if ([self.delegate respondsToSelector:@selector(rewardedVideoCustomerId)] && [self.delegate rewardedVideoCustomerId].length > 0) {
+        // self.configuration.rewardedVideoCompletionUrl is already url encoded. Only the customer_id added by the client needs url encoding.
+        NSString *urlEncodedCustomerId = [[self.delegate rewardedVideoCustomerId] mp_URLEncodedString];
+        finalCompletionUrlString = [NSString stringWithFormat:@"%@&customer_id=%@", finalCompletionUrlString, urlEncodedCustomerId];
+    }
+    finalCompletionUrlString = [NSString stringWithFormat:@"%@&nv=%@&v=%@", finalCompletionUrlString, [MP_SDK_VERSION mp_URLEncodedString], kRewardedVideoApiVersion];
+    return [NSURL URLWithString:finalCompletionUrlString];
+}
+
 #pragma mark - Metrics
 
 - (void)trackImpression
@@ -153,7 +169,7 @@
     // are reporting a timeout here.
     [self.rewardedVideoCustomEvent handleCustomEventInvalidated];
     self.rewardedVideoCustomEvent = nil;
-    
+
     [self didStopLoading];
     [self.delegate rewardedVideoDidFailToLoadForAdapter:self error:error];
 }
@@ -216,9 +232,48 @@
 
 - (void)rewardedVideoShouldRewardUserForCustomEvent:(MPRewardedVideoCustomEvent *)customEvent reward:(MPRewardedVideoReward *)reward
 {
-    if (reward) {
-        [self.delegate rewardedVideoShouldRewardUserForAdapter:self reward:reward];
+    if (self.configuration && self.configuration.rewardedVideoCompletionUrl) {
+        // server to server callback
+        [[MPRewardedVideo sharedInstance] startRewardedVideoConnectionWithUrl:[self rewardedVideoCompletionUrlByAppendingClientParams]];
+    } else {
+        // server to server not enabled. It uses client side rewarding.
+        if (self.configuration) {
+            MPRewardedVideoReward *mopubConfiguredReward = self.configuration.rewardedVideoReward;
+            // If reward is set in adConfig, use reward that's set in adConfig.
+            // Currency type has to be defined in mopubConfiguredReward in order to use mopubConfiguredReward.
+            if (mopubConfiguredReward && mopubConfiguredReward.currencyType != kMPRewardedVideoRewardCurrencyTypeUnspecified){
+                reward = mopubConfiguredReward;
+            }
+        }
+
+        if (reward) {
+            [self.delegate rewardedVideoShouldRewardUserForAdapter:self reward:reward];
+        }
     }
+}
+
+- (NSString *)customerIdForRewardedVideoCustomEvent:(MPRewardedVideoCustomEvent *)customEvent
+{
+    if ([self.delegate respondsToSelector:@selector(rewardedVideoCustomerId)]) {
+        return [self.delegate rewardedVideoCustomerId];
+    }
+
+    return nil;
+}
+
+#pragma mark - MPPrivateRewardedVideoCustomEventDelegate
+
+- (NSString *)adUnitId
+{
+    if ([self.delegate respondsToSelector:@selector(rewardedVideoAdUnitId)]) {
+        return [self.delegate rewardedVideoAdUnitId];
+    }
+    return nil;
+}
+
+- (MPAdConfiguration *)configuration
+{
+    return _configuration;
 }
 
 @end

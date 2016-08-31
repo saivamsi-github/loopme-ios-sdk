@@ -44,16 +44,20 @@ Mediation is done by inserting `LoopMe` video ad object to a `UITableView` `data
 
 * Triggering ads loading
 ```objc
-MPNativeAdRequest *adRequest = [MPNativeAdRequest requestWithAdUnitIdentifier:APP_ID];
-    [adRequest startWithCompletionHandler:^(MPNativeAdRequest *request, MPNativeAd *response, NSError *error) {
-        if (!error) {
-            response.delegate = self;
-            // Insert ad object to dataSouce at some index and reload or add `UITableViewRow`
-            [self.contentItems insertObject:response atIndex:indexPath.row];
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+MPStaticNativeAdRendererSettings *settings = [[MPStaticNativeAdRendererSettings alloc] init];
+settings.renderingViewClass = [MopubMopubLoopMeNativeAd class];
+MPNativeAdRendererConfiguration *config = [MPStaticNativeAdRenderer rendererConfigurationWithRendererSettings:settings];
+config.supportedCustomEvents = @[@"LoopMeNativeEvent"];
+MPNativeAdRequest *adRequest = [MPNativeAdRequest requestWithAdUnitIdentifier:APP_ID rendererConfigurations:@[config]];
+[adRequest startWithCompletionHandler:^(MPNativeAdRequest *request, MPNativeAd *response, NSError *error) {
+    if (!error) {
+        response.delegate = self;
+        // Insert ad object to dataSouce at some index and reload or add `UITableViewRow`
+        [self.contentItems insertObject:response atIndex:indexPath.row];
+        [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                                   withRowAnimation:UITableViewRowAnimationAutomatic];
-        }
-    }];
+    }
+}];
 ```
 * Adding `LoopMeAdView` as a subView to `UITableViewCell`.
 
@@ -64,13 +68,13 @@ Once you inserted ad object to `UITableView` dataSource and reloaded `UITableVie
   if([self isAdAtIndexPath:indexPath]) // helper method based on defining class of object at indexPath
       {
           UITableViewCell *adCell;
-          if ([self isLoopMeAdAtIndexPath:indexPath]) // Defining if object is kind of `LoopMeNativeAd` class
+          if ([self isLoopMeAdAtIndexPath:indexPath]) // Defining if object is kind of `MopubLoopMeNativeAd` class
               /*
                * return specific cell for video ad
                * IMPORTANT: make sure you are using different cell identifier since LoopMeAdView is added as a subView to cell
                */
               static NSString *adCellIdentifier;
-              LoopMeNativeAd *adObject = (LoopMeNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
+              MopubLoopMeNativeAd *adObject = (MopubLoopMeNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
               UITableViewCell *adCell = [self.tableView dequeueReusableCellWithIdentifier:adCellIdentifier];
               if (!adCell) {
                 adCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:adCellIdentifier];
@@ -125,16 +129,16 @@ In order to let `LoopMeAdView` video ad work properly you should trigger followi
 
 - (void)updateAdViewVisibility {
     for (id item in self.contentItems) {
-        if ([item isKindOfClass:[LoopMeNativeAd class]]) {
-            [[(LoopMeNativeAd *)item adView] updateAdVisibilityInScrollView];
+        if ([item isKindOfClass:[MopubLoopMeNativeAd class]]) {
+            [[(MopubLoopMeNativeAd *)item adView] updateAdVisibilityInScrollView];
         }
     }
 }
 
 - (void)setAdVisible:(BOOL)visible {
     for (id item in self.contentItems) {
-        if ([item isKindOfClass:[LoopMeNativeAd class]]) {
-            [[(LoopMeNativeAd *)item adView] setAdVisible:visible];
+        if ([item isKindOfClass:[MopubLoopMeNativeAd class]]) {
+            [[(MopubLoopMeNativeAd *)item adView] setAdVisible:visible];
         }
     }
 }

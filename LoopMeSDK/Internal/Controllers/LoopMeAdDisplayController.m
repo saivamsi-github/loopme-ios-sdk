@@ -253,10 +253,11 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     self.shouldHandleRequests = YES;
 }
 
-- (void)moveView
+- (void)moveView:(BOOL)hideWebView
 {
     [self.videoClient moveView];
     [self displayAd];
+    self.webView.hidden = hideWebView;
 }
 
 - (void)expandReporting
@@ -316,6 +317,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
 - (void)destinationDisplayControllerWillPresentModal:(LoopMeDestinationDisplayController *)destinationDisplayController
 {
     self.visible = NO;
+    self.destinationIsPresented = YES;
 }
 
 - (void)destinationDisplayControllerDidDismissModal:(LoopMeDestinationDisplayController *)destinationDisplayController
@@ -323,6 +325,7 @@ NSString * const kLoopMeShakeNotificationName = @"DeviceShaken";
     if ([self.delegate respondsToSelector:@selector(adDisplayControllerDidDismissModal:)]) {
         [self.delegate adDisplayControllerDidDismissModal:self];
     }
+    self.destinationIsPresented = NO;
 }
 
 #pragma mark - JSClientDelegate 

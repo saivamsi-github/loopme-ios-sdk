@@ -9,11 +9,12 @@
 #import "LDAdRequestViewController.h"
 #import "LDContentTableViewCell.h"
 #import "MPNativeAdRequest.h"
-#import "MPNativeAd.h"
-#import "MPTableViewAdManager.h"
 #import "LDAdTableViewCell.h"
 #import "MPNativeAdDelegate.h"
-#import "LoopMeNativeAd.h"
+#import "MPStaticNativeAdRendererSettings.h"
+#import "MPNativeAdRendererConfiguration.h"
+#import "MopubLoopMeNativeAd.h"
+#import "MPStaticNativeAdRenderer.h"
 
 const int kLDAdTableViewCell = 3;
 
@@ -87,8 +88,13 @@ NSString *const kLDLoopMeAdCellIdentifier = @"LoopMeAdCellIdentifier";
     /*
      * Trigerring ad request to Mopub
      */
-    MPNativeAdRequest *adRequest1 = [MPNativeAdRequest requestWithAdUnitIdentifier:@"8e7b584dd5bf40ab9baea14d2404ab55"];
-    [adRequest1 startWithCompletionHandler:^(MPNativeAdRequest *request, MPNativeAd *response, NSError *error) {
+    MPStaticNativeAdRendererSettings *settings = [[MPStaticNativeAdRendererSettings alloc] init];
+    settings.renderingViewClass = [MopubLoopMeNativeAd class];
+    MPNativeAdRendererConfiguration *config = [MPStaticNativeAdRenderer rendererConfigurationWithRendererSettings:settings];
+    config.supportedCustomEvents = @[@"MopubLoopMeNativeEvent"];
+    
+    MPNativeAdRequest *adRequest = [MPNativeAdRequest requestWithAdUnitIdentifier:@"04673feb805c44589fbe43380ba90f19" rendererConfigurations:@[config]];
+    [adRequest startWithCompletionHandler:^(MPNativeAdRequest *request, MPNativeAd *response, NSError *error) {
         if (!error) {
             response.delegate = self;
             [self insertAd:response atIndexPath:[NSIndexPath indexPathForRow:kLDAdTableViewCell inSection:0]];
@@ -157,16 +163,6 @@ NSString *const kLDLoopMeAdCellIdentifier = @"LoopMeAdCellIdentifier";
         return 80;
 }
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if ([self isAdAtIndexPath:indexPath])
-    {
-        MPNativeAd *adObject = (MPNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
-        [adObject displayContentWithCompletion:^(BOOL success, NSError *error) {}];
-    }
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
@@ -184,24 +180,19 @@ NSString *const kLDLoopMeAdCellIdentifier = @"LoopMeAdCellIdentifier";
 }
 
 - (BOOL)isLoopMeAdAtIndexPath:(NSIndexPath *)indexPath {
-    return [self.contentItems[indexPath.row] isKindOfClass:[LoopMeNativeAd class]] ? YES : NO;
+    return [self.contentItems[indexPath.row] isKindOfClass:[MopubLoopMeNativeAd class]] ? YES : NO;
 }
 
 - (UITableViewCell *)adCellForIndexPath:(NSIndexPath *)indexPath {
-    MPNativeAd *adObject = (MPNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
     LDAdTableViewCell *adCell = [self.tableView dequeueReusableCellWithIdentifier:kLDAdCellIdentifier];
     if (!adCell) {
         adCell = [[LDAdTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kLDAdCellIdentifier];
     }
-    // Loading assets to ad cell
-    [adObject loadTextIntoLabel:adCell.mainTextLabel];
-    [adObject loadTitleIntoLabel:adCell.titleLabel];
-    [adObject loadIconIntoImageView:adCell.iconImageView];
     return adCell;
 }
 
 - (UITableViewCell *)loopMeAdCellForIndexPath:(NSIndexPath *)indexPath {
-    LoopMeNativeAd *adObject = (LoopMeNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
+    MopubLoopMeNativeAd *adObject = (MopubLoopMeNativeAd *)[self.contentItems objectAtIndex:indexPath.row];
     UITableViewCell *adCell = [self.tableView dequeueReusableCellWithIdentifier:kLDLoopMeAdCellIdentifier];
     if (!adCell) {
         adCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kLDLoopMeAdCellIdentifier];
@@ -221,16 +212,16 @@ NSString *const kLDLoopMeAdCellIdentifier = @"LoopMeAdCellIdentifier";
 
 - (void)updateAdViewVisibility {
     for (id item in self.contentItems) {
-        if ([item isKindOfClass:[LoopMeNativeAd class]]) {
-            [[(LoopMeNativeAd *)item adView] updateAdVisibilityInScrollView];
+        if ([item isKindOfClass:[MopubLoopMeNativeAd class]]) {
+            [[(MopubLoopMeNativeAd *)item adView] updateAdVisibilityInScrollView];
         }
     }
 }
 
 - (void)setAdVisible:(BOOL)visible {
     for (id item in self.contentItems) {
-        if ([item isKindOfClass:[LoopMeNativeAd class]]) {
-            [[(LoopMeNativeAd *)item adView] setAdVisible:visible];
+        if ([item isKindOfClass:[MopubLoopMeNativeAd class]]) {
+            [[(MopubLoopMeNativeAd *)item adView] setAdVisible:visible];
         }
     }
 }

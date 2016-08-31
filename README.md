@@ -1,9 +1,10 @@
 You can find integration guide in our github [wiki](https://github.com/loopme/loopme-ios-sdk/wiki) page.
 
 ## What's new ##
-**v6.0.1**
+**v6.0.2**
 
-- fix time_out error
+- updated Mopub mediation bridges
+- fix minimized mod in AdView
 
 Please view the [changelog](CHANGELOG.md) for details.
 

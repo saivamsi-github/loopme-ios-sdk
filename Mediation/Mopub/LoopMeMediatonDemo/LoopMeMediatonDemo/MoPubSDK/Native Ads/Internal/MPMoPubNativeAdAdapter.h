@@ -6,10 +6,14 @@
 
 #import "MPNativeAdAdapter.h"
 
+@class MPAdConfiguration;
+
 @interface MPMoPubNativeAdAdapter : NSObject <MPNativeAdAdapter>
 
-@property (nonatomic, strong) NSArray *impressionTrackers;
-@property (nonatomic, strong) NSURL *engagementTrackingURL;
+@property (nonatomic, weak) id<MPNativeAdAdapterDelegate> delegate;
+@property (nonatomic, readonly) NSArray *impressionTrackerURLs;
+@property (nonatomic, readonly) NSArray *clickTrackerURLs;
+@property (nonatomic) MPAdConfiguration *adConfiguration;
 
 - (instancetype)initWithAdProperties:(NSMutableDictionary *)properties;
 
