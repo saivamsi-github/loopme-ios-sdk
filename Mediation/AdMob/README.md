@@ -48,4 +48,4 @@ AdMob SDK will automatically find LoopMe Bridge and will use it to ad showing.
 
 ### Sample project ###
 
-Check out our `AdMobAdapter` project as an integration sample.
+Check out our `AdMobAdapterDemo` project as an integration sample.
