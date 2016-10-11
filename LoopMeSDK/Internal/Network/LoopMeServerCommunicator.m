@@ -41,6 +41,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 - (void)dealloc
 {
     [self.sessionDataTask cancel];
+    [self.session finishTasksAndInvalidate];
 }
 
 - (instancetype)initWithDelegate:(id<LoopMeServerCommunicatorDelegate>)delegate
@@ -48,6 +49,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
     self = [super init];
     if (self) {
         _delegate = delegate;
+        _session = [self adSession];
     }
     return self;
 }
@@ -70,8 +72,6 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 {
     [self cancel];
     self.URL = URL;
-    
-    self.session = [self adSession];
     
     __weak LoopMeServerCommunicator *safeSelf = self;
     

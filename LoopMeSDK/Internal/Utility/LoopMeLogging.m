@@ -64,6 +64,7 @@ void LoopMeLogError(NSString *format, ...)
 @property (nonatomic) NSInteger notReadyDisplayCount;
 @property (nonatomic) NSTimer *timer;
 @property (nonatomic) NSMutableDictionary *properties;
+@property (nonatomic) NSURLSession *session;
 
 @end
 
@@ -82,6 +83,10 @@ static dispatch_once_t onceToken;
     return sender;
 }
 
+- (void)dealloc {
+    [self.session finishTasksAndInvalidate];
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -93,6 +98,10 @@ static dispatch_once_t onceToken;
             weakSelf.notReadyDisplayCount = 0;
             weakSelf.properties = [[NSMutableDictionary alloc] init];
         });
+        
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        self.session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
+
     }
     return self;
 }
@@ -143,8 +152,6 @@ static dispatch_once_t onceToken;
 
 - (void)startSendingTask
 {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
     NSURL *url = [NSURL URLWithString:@"https://loopme.me/api/errors"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
@@ -164,7 +171,7 @@ static dispatch_once_t onceToken;
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:NSJSONWritingPrettyPrinted error:nil];
     [request setHTTPBody:jsonData];
     
-    NSURLSessionDataTask *postDataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    NSURLSessionDataTask *postDataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         dispatch_semaphore_signal(sema);
         [self.properties removeAllObjects];
     }];

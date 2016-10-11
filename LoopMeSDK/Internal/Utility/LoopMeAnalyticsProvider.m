@@ -20,6 +20,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
 @property (nonatomic, strong) NSTimer *senderTimer;
 @property (nonatomic, strong) NSURL *sendURL;
 @property (nonatomic, strong) NSString *userAgent;
+@property (nonatomic, strong) NSURLSession *session;
 
 @end
 
@@ -34,10 +35,18 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
     return instance;
 }
 
+- (void)dealloc {
+    [_senderTimer invalidate];
+    _senderTimer = nil;
+    [self.session finishTasksAndInvalidate];
+}
+
 - (instancetype)init {
     if (self = [super init]) {
         _sendInterval = 900;
         _analyticURLString = @"https://loopme.me/api/v2/events";
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kLoopMeBackgroundAnalyticSessionID];
+        self.session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
         
         __block UIBackgroundTaskIdentifier bgTask = 0;
         UIApplication  *app = [UIApplication sharedApplication];
@@ -70,8 +79,6 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
 }
 
 - (void)sendData {
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kLoopMeBackgroundAnalyticSessionID];
-    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
     self.sendURL = [NSURL URLWithString:[_analyticURLString stringByAppendingString:[NSString stringWithFormat:@"?et=INFO&vt=%@", [LoopMeIdentityProvider uniqueIdentifier]]]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.sendURL
                                                            cachePolicy:NSURLRequestReloadIgnoringCacheData
@@ -84,12 +91,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
     NSString *params = [LoopMeServerURLBuilder packageIDs];
     [request setHTTPBody:[params dataUsingEncoding:NSUTF8StringEncoding]];
     
-    [[session dataTaskWithRequest:request] resume];
-}
-
-- (void)dealloc {
-    [_senderTimer invalidate];
-    _senderTimer = nil;
+    [[self.session dataTaskWithRequest:request] resume];
 }
 
 @end

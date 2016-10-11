@@ -1,3 +1,7 @@
+## Version 6.0.3 (11.10.2016)
+
+- fixed memory leaks
+
 ## Version 6.0.2 (31.08.2016)
 
 - updated Mopub mediation bridges
