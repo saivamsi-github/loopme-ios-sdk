@@ -44,7 +44,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
 - (instancetype)init {
     if (self = [super init]) {
         _sendInterval = 900;
-        _analyticURLString = @"https://loopme.me/api/v2/events";
+        _analyticURLString = @"https://track.loopme.me/api/v2/events";
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:kLoopMeBackgroundAnalyticSessionID];
         self.session = [NSURLSession sessionWithConfiguration:configuration delegate:nil delegateQueue:nil];
         
@@ -79,7 +79,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
 }
 
 - (void)sendData {
-    self.sendURL = [NSURL URLWithString:[_analyticURLString stringByAppendingString:[NSString stringWithFormat:@"?et=INFO&vt=%@", [LoopMeIdentityProvider uniqueIdentifier]]]];
+    self.sendURL = [NSURL URLWithString:[_analyticURLString stringByAppendingString:[NSString stringWithFormat:@"?et=INFO&vt=%@", [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier]]]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.sendURL
                                                            cachePolicy:NSURLRequestReloadIgnoringCacheData
                                                        timeoutInterval:60.0];

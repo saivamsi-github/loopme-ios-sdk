@@ -1,3 +1,7 @@
+## Version 6.0.4 (13.12.2016)
+
+- change links for error log
+
 ## Version 6.0.3 (11.10.2016)
 
 - fixed memory leaks

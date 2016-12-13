@@ -66,8 +66,8 @@
     self = [super init];
     if (self) {
         
-        if (SYSTEM_VERSION_LESS_THAN(@"8.0")) {
-            LoopMeLogDebug(@"Block iOS versions less then 8.0");
+        if (SYSTEM_VERSION_LESS_THAN(@"9.0")) {
+            LoopMeLogDebug(@"Block iOS versions less then 9.0");
             return nil;
         }
         

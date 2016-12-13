@@ -9,31 +9,20 @@
 #import <AdSupport/AdSupport.h>
 
 #import "LoopMeIdentityProvider.h"
-#import "LoopMeKeychain.h"
 #import "LoopMeLogging.h"
-
-static NSString * const kLoopMeKeychainServiceName = @"LoopMe";
-static NSString * const kLoopMeKeychainAccountName = @"loopme";
 
 @implementation LoopMeIdentityProvider
 
 #pragma mark - Class Methods
 
-+ (NSString *)uniqueIdentifier {
-    return ([self advertisingTrackingEnabled]) ?
-    [self advertisingTrackingDeviceIdentifier] :
-    [self loopMeUniqueIdentifier];
-}
-
 + (NSString *)advertisingTrackingDeviceIdentifier
 {
-    if ([LoopMeIdentityProvider deviceHasAdvertisingIdentifier]) {
-        NSString *identifier = nil;
-        identifier = [ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
-        return [identifier uppercaseString];
+    NSString *identifier = nil;
+    identifier = [ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
+    if (![ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled) {
+        identifier = @"00000000-0000-0000-0000-000000000000";
     }
-    
-    return nil;
+    return [identifier uppercaseString];
 }
 
 + (BOOL)advertisingTrackingEnabled
@@ -45,28 +34,6 @@ static NSString * const kLoopMeKeychainAccountName = @"loopme";
     }
 
     return enabled;
-}
-
-+ (NSString *)loopMeUniqueIdentifier
-{
-    NSError *error = nil;
-    NSString *identifier = [LoopMeKeychain passwordForService:kLoopMeKeychainServiceName account:kLoopMeKeychainAccountName error:&error];
-    
-    if (!identifier || [error code] == LoopMeKeychainErrorNotFound) {
-        identifier = [self createUUID];
-        [LoopMeKeychain setPassword:identifier forService:kLoopMeKeychainServiceName account:kLoopMeKeychainAccountName error:&error];
-        LoopMeLogDebug(@"%@", error);
-    }
-    
-    return identifier;
-}
-
-+ (NSString *)createUUID {
-    CFUUIDRef uuidObject = CFUUIDCreate(kCFAllocatorDefault);
-    NSString *uuidStr = (NSString *)CFBridgingRelease(CFUUIDCreateString(kCFAllocatorDefault, uuidObject));
-    CFRelease(uuidObject);
-    
-    return [NSString stringWithFormat:@"r_%@", uuidStr];
 }
 
 + (BOOL)deviceHasAdvertisingIdentifier

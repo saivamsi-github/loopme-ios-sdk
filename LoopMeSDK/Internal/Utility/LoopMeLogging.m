@@ -152,7 +152,7 @@ static dispatch_once_t onceToken;
 
 - (void)startSendingTask
 {
-    NSURL *url = [NSURL URLWithString:@"https://loopme.me/api/errors"];
+    NSURL *url = [NSURL URLWithString:@"https://track.loopme.me/api/errors"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:60.0];

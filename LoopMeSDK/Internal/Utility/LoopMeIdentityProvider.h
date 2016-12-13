@@ -9,6 +9,6 @@
 @interface LoopMeIdentityProvider : NSObject
 
 + (BOOL)advertisingTrackingEnabled;
-+ (NSString *)uniqueIdentifier;
-+ (NSString *)loopMeUniqueIdentifier;
++ (NSString *)advertisingTrackingDeviceIdentifier;
+
 @end

@@ -85,7 +85,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 
 + (NSString *)packageIDs {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    parameters[@"vt"] = [LoopMeIdentityProvider loopMeUniqueIdentifier];
+    parameters[@"vt"] = [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier];
     parameters[@"av"] = [self parameterForApplicationVersion];
     parameters[@"or"] = [self parameterForOrientation];
     parameters[@"tz"] = [self parameterForTimeZone];
@@ -118,7 +118,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 
 + (NSString *)parameterForUniqueIdentifier
 {
-    return [LoopMeIdentityProvider uniqueIdentifier];
+    return [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier];
 }
 
 + (NSString *)parameterForLanguage
