@@ -67,8 +67,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Life Cycle
 
-- (void)dealloc
-{
+- (void)dealloc {
     if(reachabilityRef!= NULL) {
         CFRelease(reachabilityRef);
     }
@@ -76,8 +75,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Public Class
 
-+ (LoopMeReachability *) reachabilityForLocalWiFi;
-{
++ (LoopMeReachability *) reachabilityForLocalWiFi; {
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
     localWifiAddress.sin_len = sizeof(localWifiAddress);
@@ -94,8 +92,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Private 
 
-+ (LoopMeReachability *)reachabilityWithAddress: (const struct sockaddr_in*) hostAddress;
-{
++ (LoopMeReachability *)reachabilityWithAddress: (const struct sockaddr_in*) hostAddress; {
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)hostAddress);
     LoopMeReachability* retVal = NULL;
     if(reachability!= NULL) {
@@ -110,8 +107,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark Network Flag Handling
 
-- (LoopMeReachabilityNetworkStatus)localWiFiStatusForFlags: (SCNetworkReachabilityFlags) flags
-{
+- (LoopMeReachabilityNetworkStatus)localWiFiStatusForFlags: (SCNetworkReachabilityFlags) flags {
     BOOL retVal = LoopMeReachabilityNotReachable;
     if((flags & kSCNetworkReachabilityFlagsReachable) && (flags & kSCNetworkReachabilityFlagsIsDirect)) {
         retVal = LoopMeReachabilityReachableViaWiFi;
@@ -119,8 +115,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
     return retVal;
 }
 
-- (LoopMeReachabilityNetworkStatus) networkStatusForFlags: (SCNetworkReachabilityFlags) flags
-{
+- (LoopMeReachabilityNetworkStatus) networkStatusForFlags: (SCNetworkReachabilityFlags) flags {
     if ((flags & kSCNetworkReachabilityFlagsReachable) == 0) {
         // if target host is not reachable
         return LoopMeReachabilityNotReachable;
@@ -154,8 +149,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
     return retVal;
 }
 
-- (LoopMeReachabilityNetworkStatus)currentReachabilityStatus
-{
+- (LoopMeReachabilityNetworkStatus)currentReachabilityStatus {
     NSAssert(reachabilityRef != NULL, @"currentNetworkStatus called with NULL reachabilityRef");
     LoopMeReachabilityNetworkStatus retVal = LoopMeReachabilityNotReachable;
     SCNetworkReachabilityFlags flags;
@@ -169,13 +163,11 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
     return retVal;
 }
 
-- (BOOL)hasWifi
-{
+- (BOOL)hasWifi {
     return [self currentReachabilityStatus] == LoopMeReachabilityReachableViaWiFi;
 }
 
-- (LoopMeConnectionType)connectionType
-{
+- (LoopMeConnectionType)connectionType {
     if ([self hasWifi]) {
         return LoopMeConnectionTypeWiFi;
     } else {

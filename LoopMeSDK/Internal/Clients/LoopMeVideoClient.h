@@ -31,6 +31,7 @@ extern const struct LoopMeVideoStateStruct
 @property (nonatomic, weak) UIViewController *viewController;
 
 - (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate;
+- (void)playVideo:(NSURL *)URL;
 - (LoopMe360ViewController *)viewController360;
 - (void)adjustViewToFrame:(CGRect)frame;
 - (void)cancel;
@@ -45,5 +46,7 @@ extern const struct LoopMeVideoStateStruct
 - (void)videoClient:(LoopMeVideoClient *)client setupView:(UIView *)view;
 - (void)videoClientDidReachEnd:(LoopMeVideoClient *)client;
 - (void)videoClient:(LoopMeVideoClient *)client didFailToLoadVideoWithError:(NSError *)error;
+- (UIViewController *)viewControllerForPresentation;
+- (NSString *)appKey;
 
 @end

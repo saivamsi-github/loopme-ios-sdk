@@ -31,16 +31,14 @@
 
 #pragma mark - Life Cycle
 
-- (void)dealloc
-{
+- (void)dealloc {
     [_adExpirationTimer invalidate];
     _adExpirationTimer = nil;
     
     [_communicator cancel];    
 }
 
-- (instancetype)initWithDelegate:(id<LoopMeAdManagerDelegate>)delegate
-{
+- (instancetype)initWithDelegate:(id<LoopMeAdManagerDelegate>)delegate {
     self = [super init];
     if (self) {
         _delegate = delegate;
@@ -51,8 +49,7 @@
 
 #pragma mark - Private
 
-- (void)loadAdWithURL:(NSURL *)URL
-{
+- (void)loadAdWithURL:(NSURL *)URL {
     if (self.isLoading) {
         LoopMeLogInfo(@"Interstitial is already loading an ad. Wait for previous load to finish");
         return;
@@ -64,8 +61,7 @@
     [self.communicator loadURL:URL];
 }
 
-- (void)scheduleAdExpirationIn:(NSTimeInterval)interval
-{
+- (void)scheduleAdExpirationIn:(NSTimeInterval)interval {
     self.adExpirationTimer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                             target:self
                                                           selector:@selector(adContentBecameExpired)
@@ -73,8 +69,7 @@
                                                            repeats:NO];
 }
 
-- (void)adContentBecameExpired
-{
+- (void)adContentBecameExpired {
     [self invalidateTimers];
     LoopMeLogDebug(@"Ad content is expired");
     if ([self.delegate respondsToSelector:@selector(adManagerDidExpireAd:)]) {
@@ -84,13 +79,11 @@
 
 #pragma mark - Public
 
-- (void)loadAdWithAppKey:(NSString *)appKey
-{
+- (void)loadAdWithAppKey:(NSString *)appKey {
     [self loadAdWithAppKey:appKey targeting:nil];
 }
 
-- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting
-{
+- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting {
     if (self.testServerBaseURL) {
         [self loadAdWithURL:[LoopMeServerURLBuilder URLWithAppKey:appKey
                                                         targeting:targeting
@@ -101,16 +94,14 @@
     }
 }
 
-- (void)invalidateTimers
-{
+- (void)invalidateTimers {
     [self.adExpirationTimer invalidate];
     self.adExpirationTimer = nil;
 }
 
 #pragma mark - LoopMeServerCommunicatorDelegate
 
-- (void)serverCommunicator:(LoopMeServerCommunicator *)communicator didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration
-{
+- (void)serverCommunicator:(LoopMeServerCommunicator *)communicator didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration {
     LoopMeLogDebug(@"Did receive ad configuration: %@", adConfiguration);
     
     if ([self.delegate respondsToSelector:@selector(adManager:didReceiveAdConfiguration:)]) {
@@ -120,8 +111,7 @@
     [self scheduleAdExpirationIn:adConfiguration.expirationTime];
 }
 
-- (void)serverCommunicator:(LoopMeServerCommunicator *)communicator didFailWithError:(NSError *)error
-{
+- (void)serverCommunicator:(LoopMeServerCommunicator *)communicator didFailWithError:(NSError *)error {
     self.loading = NO;
     LoopMeLogDebug(@"Ad failed to load with error: %@", error);
     

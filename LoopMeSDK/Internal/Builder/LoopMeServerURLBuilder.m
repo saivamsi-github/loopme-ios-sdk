@@ -30,23 +30,20 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 
 #pragma mark - Class Methods
 
-+ (NSURL *)URLWithAppKey:(NSString *)appKey
-{
++ (NSURL *)URLWithAppKey:(NSString *)appKey {
     return [LoopMeServerURLBuilder URLWithAppKey:appKey targeting:nil
                                          baseURL:[NSURL URLWithString:kLoopMeAPIURL]];
 }
 
 + (NSURL *)URLWithAppKey:(NSString *)appKey
-               targeting:(LoopMeTargeting *)targeting
-{
+               targeting:(LoopMeTargeting *)targeting {
     return [LoopMeServerURLBuilder URLWithAppKey:appKey targeting:targeting
                                          baseURL:[NSURL URLWithString:kLoopMeAPIURL]];
 }
 
 + (NSURL *)URLWithAppKey:(NSString *)appKey
                targeting:(LoopMeTargeting *)targeting
-                 baseURL:(NSURL *)baseURL
-{
+                 baseURL:(NSURL *)baseURL {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[@"ak"] = appKey;
     parameters[@"vt"] = [self parameterForUniqueIdentifier];
@@ -116,26 +113,22 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return [cipher base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
-+ (NSString *)parameterForUniqueIdentifier
-{
++ (NSString *)parameterForUniqueIdentifier {
     return [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier];
 }
 
-+ (NSString *)parameterForLanguage
-{
++ (NSString *)parameterForLanguage {
     return [NSLocale preferredLanguages][0];
 }
 
-+ (NSString *)parameterForOrientation
-{
++ (NSString *)parameterForOrientation {
     UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
     return UIInterfaceOrientationIsPortrait(orientation) ?
                     kLoopMeInterfaceOrientationPortrait :
                     kLoopMeInterfaceOrientationLandscape;
 }
 
-+ (NSString *)parameterForTimeZone
-{
++ (NSString *)parameterForTimeZone {
     static NSDateFormatter *formatter;
     @synchronized(self) {
         if (!formatter) {
@@ -147,28 +140,23 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return [formatter stringFromDate:today];
 }
 
-+ (NSString *)parameterForConnectionType
-{
++ (NSString *)parameterForConnectionType {
     return [NSString stringWithFormat:@"%lu", (long)[[LoopMeReachability reachabilityForLocalWiFi] connectionType]];
 }
 
-+ (NSString *)parameterForApplicationVersion
-{
++ (NSString *)parameterForApplicationVersion {
     return [[NSBundle mainBundle] infoDictionary][@"CFBundleShortVersionString"];
 }
 
-+ (NSString *)parameterForDNT
-{
++ (NSString *)parameterForDNT {
     return ([LoopMeIdentityProvider advertisingTrackingEnabled] ? @"0" : @"1");
 }
 
-+ (NSString *)parameterForWiFiName
-{
++ (NSString *)parameterForWiFiName {
     return [self fetchSSIDInfo][@"SSID"];
 }
 
-+ (NSString *)parameterForBundleIdentifier
-{
++ (NSString *)parameterForBundleIdentifier {
     NSString *bundleIdentifier = [[NSBundle mainBundle] bundleIdentifier];
     return bundleIdentifier ? [self escapeString:bundleIdentifier] : @"";
 }
@@ -186,8 +174,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return @"UNKNOWN";
 }
 
-+ (NSString *)buildParameters:(NSMutableDictionary *)parameters
-{
++ (NSString *)buildParameters:(NSMutableDictionary *)parameters {
     NSMutableString *parametersString = [[NSMutableString alloc] init];
     [parameters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
         [parametersString appendFormat:@"%@=%@&", [self escapeString:key], [self escapeString:value]];
@@ -195,8 +182,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return  [@"?" stringByAppendingString:[parametersString substringToIndex:[parametersString length]-1]];
 }
 
-+ (NSString *)escapeString:(NSString*)string
-{
++ (NSString *)escapeString:(NSString*)string {
     CFStringRef urlString = CFURLCreateStringByAddingPercentEscapes(NULL,
                                                                     (CFStringRef)string,
                                                                     NULL,
@@ -205,8 +191,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     return (__bridge_transfer NSString *)urlString;
 }
 
-+ (NSDictionary *)fetchSSIDInfo
-{
++ (NSDictionary *)fetchSSIDInfo {
     NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
     LoopMeLogDebug(@"%s: Supported interfaces: %@", __func__, interfaceNames);
     

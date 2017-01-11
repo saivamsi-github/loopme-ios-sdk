@@ -67,6 +67,7 @@ extern const struct LoopMeWebViewStateStruct
 - (void)JSClientDidReceiveCloseCommand:(LoopMeJSClient *)client;
 - (void)JSClientDidReceiveVibrateCommand:(LoopMeJSClient *)client;
 - (void)JSClientDidReceiveFulLScreenCommand:(LoopMeJSClient *)client fullScreen:(BOOL)expand;
+- (UIViewController *)viewControllerForPresentation;
 
 @end
 

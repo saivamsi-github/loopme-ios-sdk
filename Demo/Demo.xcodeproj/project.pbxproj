@@ -43,6 +43,9 @@
 		01980CFF1ABB39F900513556 /* LDInterstitialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CE71ABB39F900513556 /* LDInterstitialViewController.m */; };
 		01980D001ABB39F900513556 /* LDScrollableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CE91ABB39F900513556 /* LDScrollableViewController.m */; };
 		01980D011ABB39F900513556 /* LDViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 01980CEB1ABB39F900513556 /* LDViewController.m */; };
+		4705E9641E265434000B795F /* LoopMeMRAIDClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705E9631E265434000B795F /* LoopMeMRAIDClient.m */; };
+		4705E9671E265442000B795F /* LoopMeCloseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705E9661E265442000B795F /* LoopMeCloseButton.m */; };
+		4705E96B1E2667E1000B795F /* mraid.js in Resources */ = {isa = PBXBuildFile; fileRef = 4705E96A1E2667E1000B795F /* mraid.js */; };
 		477789101D2F8805003533BC /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4777890F1D2F8805003533BC /* GLKit.framework */; };
 		477789121D2F880B003533BC /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 477789111D2F880B003533BC /* OpenGLES.framework */; };
 		477789141D2F8862003533BC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 477789131D2F8862003533BC /* CoreMotion.framework */; };
@@ -71,7 +74,6 @@
 		4777898E1D2F8EC5003533BC /* LoopMeGeoLocationProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 477789501D2F8EC4003533BC /* LoopMeGeoLocationProvider.m */; };
 		4777898F1D2F8EC5003533BC /* LoopMeGlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 477789521D2F8EC4003533BC /* LoopMeGlobalSettings.m */; };
 		477789901D2F8EC5003533BC /* LoopMeIdentityProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 477789541D2F8EC4003533BC /* LoopMeIdentityProvider.m */; };
-		477789911D2F8EC5003533BC /* LoopMeKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 477789561D2F8EC5003533BC /* LoopMeKeychain.m */; };
 		477789921D2F8EC5003533BC /* LoopMeLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 477789581D2F8EC5003533BC /* LoopMeLogging.m */; };
 		477789931D2F8EC5003533BC /* LoopMe360ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 4777895C1D2F8EC5003533BC /* LoopMe360ViewController.m */; };
 		477789941D2F8EC5003533BC /* LoopMeGLProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 4777895F1D2F8EC5003533BC /* LoopMeGLProgram.m */; };
@@ -185,6 +187,11 @@
 		01980CE91ABB39F900513556 /* LDScrollableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LDScrollableViewController.m; sourceTree = "<group>"; };
 		01980CEA1ABB39F900513556 /* LDViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LDViewController.h; sourceTree = "<group>"; };
 		01980CEB1ABB39F900513556 /* LDViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LDViewController.m; sourceTree = "<group>"; };
+		4705E9621E265434000B795F /* LoopMeMRAIDClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeMRAIDClient.h; sourceTree = "<group>"; };
+		4705E9631E265434000B795F /* LoopMeMRAIDClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeMRAIDClient.m; sourceTree = "<group>"; };
+		4705E9651E265442000B795F /* LoopMeCloseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeCloseButton.h; sourceTree = "<group>"; };
+		4705E9661E265442000B795F /* LoopMeCloseButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeCloseButton.m; sourceTree = "<group>"; };
+		4705E96A1E2667E1000B795F /* mraid.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = mraid.js; sourceTree = "<group>"; };
 		4777890F1D2F8805003533BC /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		477789111D2F880B003533BC /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		477789131D2F8862003533BC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
@@ -238,8 +245,6 @@
 		477789521D2F8EC4003533BC /* LoopMeGlobalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeGlobalSettings.m; sourceTree = "<group>"; };
 		477789531D2F8EC4003533BC /* LoopMeIdentityProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeIdentityProvider.h; sourceTree = "<group>"; };
 		477789541D2F8EC4003533BC /* LoopMeIdentityProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeIdentityProvider.m; sourceTree = "<group>"; };
-		477789551D2F8EC4003533BC /* LoopMeKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeKeychain.h; sourceTree = "<group>"; };
-		477789561D2F8EC5003533BC /* LoopMeKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeKeychain.m; sourceTree = "<group>"; };
 		477789571D2F8EC5003533BC /* LoopMeLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeLogging.h; sourceTree = "<group>"; };
 		477789581D2F8EC5003533BC /* LoopMeLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeLogging.m; sourceTree = "<group>"; };
 		4777895B1D2F8EC5003533BC /* LoopMe360ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMe360ViewController.h; sourceTree = "<group>"; };
@@ -447,6 +452,14 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		4705E9691E2667E1000B795F /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				4705E96A1E2667E1000B795F /* mraid.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		477789151D2F8EC4003533BC /* LoopMeSDK */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,6 +475,7 @@
 		477789161D2F8EC4003533BC /* Internal */ = {
 			isa = PBXGroup;
 			children = (
+				4705E9691E2667E1000B795F /* Resources */,
 				477789171D2F8EC4003533BC /* AdView */,
 				4777891F1D2F8EC4003533BC /* Builder */,
 				477789221D2F8EC4003533BC /* Clients */,
@@ -516,6 +530,8 @@
 		477789221D2F8EC4003533BC /* Clients */ = {
 			isa = PBXGroup;
 			children = (
+				4705E9621E265434000B795F /* LoopMeMRAIDClient.h */,
+				4705E9631E265434000B795F /* LoopMeMRAIDClient.m */,
 				477789231D2F8EC4003533BC /* LoopMeJSClient.h */,
 				477789241D2F8EC4003533BC /* LoopMeJSClient.m */,
 				477789251D2F8EC4003533BC /* LoopMeVideoClient.h */,
@@ -597,8 +613,6 @@
 				477789521D2F8EC4003533BC /* LoopMeGlobalSettings.m */,
 				477789531D2F8EC4003533BC /* LoopMeIdentityProvider.h */,
 				477789541D2F8EC4003533BC /* LoopMeIdentityProvider.m */,
-				477789551D2F8EC4003533BC /* LoopMeKeychain.h */,
-				477789561D2F8EC5003533BC /* LoopMeKeychain.m */,
 				477789571D2F8EC5003533BC /* LoopMeLogging.h */,
 				477789581D2F8EC5003533BC /* LoopMeLogging.m */,
 			);
@@ -670,6 +684,8 @@
 		477789681D2F8EC5003533BC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				4705E9651E265442000B795F /* LoopMeCloseButton.h */,
+				4705E9661E265442000B795F /* LoopMeCloseButton.m */,
 				477789691D2F8EC5003533BC /* LoopMeBackView.h */,
 				4777896A1D2F8EC5003533BC /* LoopMeBackView.m */,
 				4777896B1D2F8EC5003533BC /* LoopMeCancelView.h */,
@@ -887,6 +903,7 @@
 				0120CD3F19BDD99000C7F0D8 /* icon_72x72.png in Resources */,
 				0120CD4119BDD99000C7F0D8 /* icon_144x144.png in Resources */,
 				0120CD4919BDDA8200C7F0D8 /* Default-568h@2x.png in Resources */,
+				4705E96B1E2667E1000B795F /* mraid.js in Resources */,
 				0120CD5519BDDCA100C7F0D8 /* bg_iPad@2x.png in Resources */,
 				EFDF656C1AA4A60A0084EF54 /* Main.storyboard in Resources */,
 				0120CD5A19BDDD3B00C7F0D8 /* bg_new.png in Resources */,
@@ -920,9 +937,9 @@
 				477789941D2F8EC5003533BC /* LoopMeGLProgram.m in Sources */,
 				477789781D2F8EC5003533BC /* LoopMeAdView.m in Sources */,
 				477789991D2F8EC5003533BC /* LoopMeBackView.m in Sources */,
+				4705E9671E265442000B795F /* LoopMeCloseButton.m in Sources */,
 				01980CEE1ABB39F900513556 /* NSData+ImageContentType.m in Sources */,
 				4777898E1D2F8EC5003533BC /* LoopMeGeoLocationProvider.m in Sources */,
-				477789911D2F8EC5003533BC /* LoopMeKeychain.m in Sources */,
 				4777898C1D2F8EC5003533BC /* LoopMeError.m in Sources */,
 				477789861D2F8EC5003533BC /* LoopMeVideoManager.m in Sources */,
 				01980CF71ABB39F900513556 /* UIImage+GIF.m in Sources */,
@@ -959,6 +976,7 @@
 				01980CFF1ABB39F900513556 /* LDInterstitialViewController.m in Sources */,
 				01980CEF1ABB39F900513556 /* SDImageCache.m in Sources */,
 				01980D011ABB39F900513556 /* LDViewController.m in Sources */,
+				4705E9641E265434000B795F /* LoopMeMRAIDClient.m in Sources */,
 				477789881D2F8EC5003533BC /* NSData+LoopMeAES128.m in Sources */,
 				01980CFB1ABB39F900513556 /* UIImageView+WebCache.m in Sources */,
 				477789871D2F8EC5003533BC /* LoopMeTargeting.m in Sources */,

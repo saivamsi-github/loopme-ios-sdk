@@ -12,8 +12,7 @@
 
 #pragma mark - Life Cycle
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
@@ -23,16 +22,14 @@
 
 #pragma mark - Properties
 
-- (void)setActive:(BOOL)active
-{
+- (void)setActive:(BOOL)active {
     _active = active;
     [self setNeedsDisplay];
 }
 
 #pragma mark - Drawing
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     UIColor *backgroundColor;
     if (self.isActive) {
         backgroundColor = [UIColor colorWithRed:0.278 green:0.529 blue:0.933 alpha:1]; //#4787ee

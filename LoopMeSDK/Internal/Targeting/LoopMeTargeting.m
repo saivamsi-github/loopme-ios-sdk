@@ -14,18 +14,15 @@
 
 #pragma mark - Initialiation
 
-- (instancetype)init
-{
+- (instancetype)init {
     return [self initWithKeywords:nil yearOfBirth:nil gender:LoopMeGenderUnknown];
 }
 
-- (instancetype)initWithGender:(LoopMeGender)gender
-{
+- (instancetype)initWithGender:(LoopMeGender)gender {
     return [self initWithKeywords:nil yearOfBirth:nil gender:gender];
 }
 
-- (instancetype)initWithKeywords:(NSString *)keywords
-{
+- (instancetype)initWithKeywords:(NSString *)keywords {
     return [self initWithKeywords:keywords yearOfBirth:nil gender:LoopMeGenderUnknown];
 }
 
@@ -35,8 +32,7 @@
 
 - (instancetype)initWithKeywords:(NSString *)keywords
            yearOfBirth:(NSNumber *)yob
-                gender:(LoopMeGender)gender
-{
+                gender:(LoopMeGender)gender {
     self = [super init];
     if (self) {
         _keywords = keywords;

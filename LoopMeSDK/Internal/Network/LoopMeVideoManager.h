@@ -28,5 +28,6 @@
 
 - (void)videoManager:(LoopMeVideoManager *)videoManager didLoadVideo:(NSURL *)videoURL;
 - (void)videoManager:(LoopMeVideoManager *)videoManager didFailLoadWithError:(NSError *)error;
+- (NSString *)appKey;
 
 @end

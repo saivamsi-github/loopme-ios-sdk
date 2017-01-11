@@ -27,6 +27,8 @@
 @property (nonatomic, strong) SKStoreProductViewController *storeKitController;
 @property (nonatomic, strong) LoopMeBrowserViewController *browserController;
 
+@property (nonatomic, strong) NSURL *resorvingURL;
+
 - (void)presentStoreKitControllerWithItemIdentifier:(NSString *)identifier
                                         fallbackURL:(NSURL *)URL;
 - (void)hideOverlay;
@@ -38,8 +40,7 @@
 
 #pragma mark - Class Methods
 
-+ (LoopMeDestinationDisplayController *)controllerWithDelegate:(id<LoopMeDestinationDisplayControllerDelegate>)delegate
-{
++ (LoopMeDestinationDisplayController *)controllerWithDelegate:(id<LoopMeDestinationDisplayControllerDelegate>)delegate {
     LoopMeDestinationDisplayController *controller = [[LoopMeDestinationDisplayController alloc] init];
     controller.delegate = delegate;
     controller.resolver = [LoopMeURLResolver resolver];
@@ -48,14 +49,12 @@
 
 #pragma mark - Private
 
-- (void)hideOverlay
-{
+- (void)hideOverlay {
     [LoopMeProgressOverlayView dismissOverlayFromWindow:[UIApplication sharedApplication].keyWindow
                                                animated:YES];
 }
 
-- (void)presentStoreKitControllerWithItemIdentifier:(NSString *)identifier fallbackURL:(NSURL *)URL
-{
+- (void)presentStoreKitControllerWithItemIdentifier:(NSString *)identifier fallbackURL:(NSURL *)URL {
     self.storeKitController = [[SKStoreProductViewController alloc] init];
     self.storeKitController.delegate = self;
     
@@ -74,8 +73,7 @@
     }
 }
 
-- (void)dismissStoreKitController
-{
+- (void)dismissStoreKitController {
     [self.storeKitController.presentingViewController dismissViewControllerAnimated:YES completion:^{
         [self.delegate destinationDisplayControllerDidDismissModal:self];
                 UIViewController *presenting = [self.delegate viewControllerForPresentingModalView].presentingViewController;
@@ -87,8 +85,7 @@
 
 #pragma mark - Public
 
-- (void)displayDestinationWithURL:(NSURL *)URL
-{
+- (void)displayDestinationWithURL:(NSURL *)URL {
     if (self.isLoadingDestination || ![self.delegate viewControllerForPresentingModalView]) {
         return;
     }
@@ -97,11 +94,11 @@
 
     [self.delegate destinationDisplayControllerWillPresentModal:self];
     [LoopMeProgressOverlayView presentOverlayInWindow:[UIApplication sharedApplication].keyWindow animated:YES delegate:self];
+    self.resorvingURL = URL;
     [self.resolver startResolvingWithURL:URL delegate:self];
 }
 
-- (void)cancel
-{
+- (void)cancel {
     if (self.isLoadingDestination) {
         self.loadingDestination = NO;
         [self.resolver cancel];
@@ -113,8 +110,7 @@
 #pragma mark - LoopMeURLResolverDelegate
 
 - (void)showWebViewWithHTMLString:(NSString *)HTMLString
-                          baseURL:(NSURL *)URL
-{
+                          baseURL:(NSURL *)URL {
     [self hideOverlay];
     self.browserController = [[LoopMeBrowserViewController alloc] initWithURL:URL
                                                                    HTMLString:HTMLString
@@ -126,8 +122,7 @@
                                                                      }];    
 }
 
-- (void)showStoreKitProductWithParameter:(NSString *)parameter fallbackURL:(NSURL *)URL
-{
+- (void)showStoreKitProductWithParameter:(NSString *)parameter fallbackURL:(NSURL *)URL {
     if (!!NSClassFromString(@"SKStoreProductViewController")) {
         [self presentStoreKitControllerWithItemIdentifier:parameter fallbackURL:URL];
     } else {
@@ -135,8 +130,7 @@
     }
 }
 
-- (void)openURLInApplication:(NSURL *)URL
-{
+- (void)openURLInApplication:(NSURL *)URL {
     [self hideOverlay];
     [self.delegate destinationDisplayControllerWillLeaveApplication:self];
 
@@ -144,27 +138,24 @@
     self.loadingDestination = NO;
 }
 
-- (void)failedToResolveURLWithError:(NSError *)error
-{
+- (void)failedToResolveURLWithError:(NSError *)error {
     self.loadingDestination = NO;
     [self hideOverlay];
-    [LoopMeErrorEventSender sendEventTo:[[LoopMeGlobalSettings sharedInstance] errorLinkFormat] withError:LoopMeEventErrorTypeWrongRedirect];
+    [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeCustom errorMessage:[NSString stringWithFormat:@"Wrong redirect: %@", self.resorvingURL.absoluteString] appkey:self.delegate.appKey];
     [self.delegate destinationDisplayControllerDidDismissModal:self];
 }
 
 
 #pragma mark - LoopMeStoreProductViewControllerDelegate
 
-- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController
-{
+- (void)productViewControllerDidFinish:(SKStoreProductViewController *)viewController {
     self.loadingDestination = NO;
     [self dismissStoreKitController];
 }
 
 #pragma mark - LoopMeBrowserControllerDelegate
 
-- (void)dismissBrowserController:(LoopMeBrowserViewController *)browserController animated:(BOOL)animated
-{
+- (void)dismissBrowserController:(LoopMeBrowserViewController *)browserController animated:(BOOL)animated {
     self.loadingDestination = NO;
     [[self.delegate viewControllerForPresentingModalView] dismissViewControllerAnimated:NO completion:^{
         [self.delegate destinationDisplayControllerDidDismissModal:self];
@@ -173,8 +164,7 @@
 
 #pragma mark - LoopMeProgressOverlayViewDelegate
 
-- (void)overlayCancelButtonPressed:(LoopMeProgressOverlayView *)overlay
-{
+- (void)overlayCancelButtonPressed:(LoopMeProgressOverlayView *)overlay {
     [self cancel];
 }
 

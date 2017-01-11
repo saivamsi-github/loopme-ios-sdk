@@ -49,8 +49,7 @@
 
 #pragma mark - Properties
 
-- (UIWebView *)webView
-{
+- (UIWebView *)webView {
     if (!_webView) {
         _webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 44)];
         _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth |
@@ -67,8 +66,7 @@
 
 - (instancetype)initWithURL:(NSURL *)URL
        HTMLString:(NSString *)HTMLString
-         delegate:(id<LoopMeBrowserControllerDelegate>)delegate
-{
+         delegate:(id<LoopMeBrowserControllerDelegate>)delegate {
     if (self = [super init]) {
         [self view];
         _delegate = delegate;
@@ -82,30 +80,26 @@
     return self;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     [self refreshBackButtonState];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
-{
+- (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     [self dismissActionSheetAnimated:NO];
 }
 
 #pragma mark - Private
 
-- (void)cleanUp
-{
+- (void)cleanUp {
     [self.webView stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML = \"\";"];
     [self.webView removeFromSuperview];
     self.webView.delegate = nil;
     [self.webView stopLoading];
 }
 
-- (void)refreshBackButtonState
-{
+- (void)refreshBackButtonState {
     if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         LoopMeBackView *backView = (LoopMeBackView *)self.backButton.customView;
         backView.active = self.webView.canGoBack;
@@ -125,15 +119,13 @@
 
 #pragma mark Hidding status bar (iOS 7 and above)
 
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden {
     return YES;
 }
 
 #pragma mark Navigation
 
-- (void)refresh
-{
+- (void)refresh {
     [self dismissActionSheetAnimated:YES];
     
     if (!self.webView.request.URL.absoluteString || [self.webView.request.URL.absoluteString isEqualToString:@"about:blank"]) {
@@ -143,8 +135,7 @@
     }
 }
 
-- (void)done
-{
+- (void)done {
     [self dismissActionSheetAnimated:YES];
 
     [self cleanUp];
@@ -156,8 +147,7 @@
     }
 }
 
-- (void)back:(id)sender
-{
+- (void)back:(id)sender {
     if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
         UIButton *b = (UIButton *)sender;
         b.highlighted = NO;
@@ -177,8 +167,7 @@
     }
 }
 
-- (void)safari
-{
+- (void)safari {
     if (self.actionSheet) {
         [self dismissActionSheetAnimated:YES];
     } else {
@@ -196,13 +185,11 @@
     }
 }
 
-- (void)dismissActionSheetAnimated:(BOOL)animated
-{
+- (void)dismissActionSheetAnimated:(BOOL)animated {
     [self.actionSheet dismissWithClickedButtonIndex:0 animated:animated];
 }
 
-- (BOOL)canHandleURL:(NSURL *)URL
-{
+- (BOOL)canHandleURL:(NSURL *)URL {
     if ([LoopMeURLResolver storeItemIdentifierForURL:URL]) {
         return YES;
     } else if ([LoopMeURLResolver mailToForURL:URL]) {
@@ -214,8 +201,7 @@
     return NO;
 }
 
-- (void)handleURL:(NSURL *)URL
-{
+- (void)handleURL:(NSURL *)URL {
     if  ([LoopMeURLResolver storeItemIdentifierForURL:URL]) {
         LoopMeDestinationDisplayController *displayController = (LoopMeDestinationDisplayController *)self.delegate;
         [displayController showStoreKitProductWithParameter:[LoopMeURLResolver storeItemIdentifierForURL:URL] fallbackURL:URL];
@@ -227,20 +213,13 @@
 }
 #pragma mark Orientation
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskAll;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return YES;
 }
 
 #pragma mark - Public
 
-- (void)layoutBrowseToolbar
-{
+- (void)layoutBrowseToolbar {
     self.spinner = [[UIActivityIndicatorView alloc] initWithFrame:CGRectZero];
     [self.spinner sizeToFit];
     self.spinner.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
@@ -300,8 +279,7 @@
 
 #pragma mark - UIActionSheetDelegate
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
-{
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
     self.actionSheet = nil;
     if (buttonIndex == 0) {
         LoopMeDestinationDisplayController *displayController = (LoopMeDestinationDisplayController *)self.delegate;
@@ -312,8 +290,7 @@
 #pragma mark - UIWebViewDelegate
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
- navigationType:(UIWebViewNavigationType)navigationType
-{
+ navigationType:(UIWebViewNavigationType)navigationType {
     LoopMeLogDebug(@"Ad browser loads URL: %@", request.URL.absoluteString);
     
     if (navigationType == UIWebViewNavigationTypeLinkClicked) {
@@ -332,8 +309,7 @@
     return YES;
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView
-{
+- (void)webViewDidStartLoad:(UIWebView *)webView {
     self.refreshButton.enabled = YES;
     self.safariButton.enabled = YES;
  
@@ -342,8 +318,7 @@
     self.webViewLoadCount++;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
-{
+- (void)webViewDidFinishLoad:(UIWebView *)webView {
     self.webViewLoadCount--;
     [self refreshBackButtonState];
 
@@ -355,8 +330,7 @@
     [self.spinner stopAnimating];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
-{
+- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
     self.webViewLoadCount--;
 
     self.refreshButton.enabled = YES;
@@ -378,8 +352,7 @@
 #pragma mark - MailComposerDelegates
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
-          didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
-{
+          didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

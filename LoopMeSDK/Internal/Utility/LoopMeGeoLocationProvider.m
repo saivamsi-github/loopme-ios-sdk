@@ -33,8 +33,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 #pragma mark - Properties
 
-- (void)setLocationUpdateEnabled:(BOOL)enabled
-{
+- (void)setLocationUpdateEnabled:(BOOL)enabled {
     _locationUpdateEnabled = enabled;
     
     if (!_locationUpdateEnabled) {
@@ -45,8 +44,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
     }
 }
 
-- (void)setAuthorizedForLocationServices:(BOOL)authorizedForLocationServices
-{
+- (void)setAuthorizedForLocationServices:(BOOL)authorizedForLocationServices {
     _authorizedForLocationServices = authorizedForLocationServices;
     
     if (_authorizedForLocationServices && [CLLocationManager locationServicesEnabled]) {
@@ -59,14 +57,12 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 #pragma mark - Life Cylce
 
-- (void)dealloc
-{
+- (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
         self.locationUpdateEnabled = YES;
@@ -88,8 +84,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 #pragma mark - Class Methods
 
-+ (LoopMeGeoLocationProvider *)sharedProvider
-{
++ (LoopMeGeoLocationProvider *)sharedProvider {
     static LoopMeGeoLocationProvider *sharedProvider = nil;
     
     static dispatch_once_t onceToken;
@@ -102,8 +97,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 #pragma mark - Private
 
-- (void)startLocationUpdate
-{
+- (void)startLocationUpdate {
     if (!self.isLocationUpdateEnabled) {
         return;
     }
@@ -125,8 +119,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 }
 
-- (void)finishUpdateLocation
-{
+- (void)finishUpdateLocation {
     [self.updateLocationTimer invalidate];
     self.updateLocationTimer = nil;
     [self.locationManager stopUpdatingLocation];
@@ -138,22 +131,19 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
     }
 }
 
-- (void)scheduleNextLocationUpdateAfterDelay:(NSTimeInterval)delay
-{
+- (void)scheduleNextLocationUpdateAfterDelay:(NSTimeInterval)delay {
     [self.updateLocationTimer invalidate];
     self.updateLocationTimer = nil;
     self.updateLocationTimer = [NSTimer scheduledTimerWithTimeInterval:delay target:self selector:@selector(startLocationUpdate) userInfo:nil repeats:NO];
 }
 
-- (void)stopLocationUpdate
-{
+- (void)stopLocationUpdate {
     [self.updateLocationTimer invalidate];
     self.updateLocationTimer = nil;
     [self.locationManager stopUpdatingLocation];
 }
 
-- (void)resumeLocationUpdate
-{
+- (void)resumeLocationUpdate {
     if (_locationUpdateEnabled) {
         NSTimeInterval timeSinceLastUpdate = [[NSDate date] timeIntervalSinceDate:self.timeOfLastLocationUpdate];
         
@@ -168,13 +158,11 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
     }
 }
 
-- (BOOL)isValidLocation:(CLLocation *)inputLocation
-{
+- (BOOL)isValidLocation:(CLLocation *)inputLocation {
     return inputLocation && inputLocation.horizontalAccuracy > 0;
 }
 
-- (BOOL)isAuthorizedStatus:(CLAuthorizationStatus)status
-{
+- (BOOL)isAuthorizedStatus:(CLAuthorizationStatus)status {
     return (status == kCLAuthorizationStatusAuthorizedAlways) || (status == kCLAuthorizationStatusAuthorizedWhenInUse);
 }
 
@@ -186,8 +174,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
 
 #pragma mark - CLLocation Helpers
 
-- (BOOL)isLocation:(CLLocation *)location betterThanLocation:(CLLocation *)otherLocation
-{
+- (BOOL)isLocation:(CLLocation *)location betterThanLocation:(CLLocation *)otherLocation {
     if (!otherLocation) {
         return YES;
     }
@@ -204,20 +191,17 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
     return YES;
 }
 
-- (BOOL)locationHasValidCoordinates:(CLLocation *)location
-{
+- (BOOL)locationHasValidCoordinates:(CLLocation *)location {
     return location && location.horizontalAccuracy > 0;
 }
 
-- (BOOL)isLocation:(CLLocation *)location olderThanLocation:(CLLocation *)otherLocation
-{
+- (BOOL)isLocation:(CLLocation *)location olderThanLocation:(CLLocation *)otherLocation {
     return [location.timestamp timeIntervalSinceDate:otherLocation.timestamp] < 0;
 }
 
 #pragma mark - CLLocationManagerDelegate
 
-- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status
-{
+- (void)locationManager:(CLLocationManager *)manager didChangeAuthorizationStatus:(CLAuthorizationStatus)status {
     switch (status) {
         case kCLAuthorizationStatusNotDetermined:
         case kCLAuthorizationStatusDenied:
@@ -234,8 +218,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
     }
 }
  
- - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations
- {
+- (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
      for (CLLocation *location in locations) {
          if ([self isLocation:location betterThanLocation:self.location]) {
              self.location = location;
@@ -243,8 +226,7 @@ const NSTimeInterval kLoopMeLocationUpdateLength = 15;
      }
 }
  
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error
-{
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     if (error.code == kCLErrorDenied) {
         [self stopLocationUpdate];
     }

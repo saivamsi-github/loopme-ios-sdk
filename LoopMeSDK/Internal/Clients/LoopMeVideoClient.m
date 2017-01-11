@@ -2,11 +2,12 @@
 //  LoopMeVideoClient.m
 //  LoopMeSDK
 //
-//  Created by Kogda Bogdan on 10/20/14.
+//  Created by Korda Bogdan on 10/20/14.
 //
 //
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
+#import <AVKit/AVKit.h>
 
 #import "LoopMeVideoClient.h"
 #import "LoopMeDefinitions.h"
@@ -86,8 +87,7 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark - Properties
 
-- (UIView *)videoView
-{
+- (UIView *)videoView {
     if (_videoView == nil) {
         if (!self.player) {
             return nil;
@@ -114,18 +114,15 @@ const CGFloat kOneFrameDuration = 0.03;
     return _videoView;
 }
 
-- (LoopMe360ViewController *)viewController360
-{
+- (LoopMe360ViewController *)viewController360 {
     return self.glkViewController;
 }
 
-- (id<LoopMeJSCommunicatorProtocol>)JSClient
-{
+- (id<LoopMeJSCommunicatorProtocol>)JSClient {
     return [self.delegate JSCommunicator];
 }
 
-- (void)setPlayerItem:(AVPlayerItem *)playerItem
-{
+- (void)setPlayerItem:(AVPlayerItem *)playerItem {
     if (_playerItem != playerItem) {
         if (_playerItem) {
             [_playerItem removeObserver:self forKeyPath:kLoopMeVideoStatusKey context:VideoControllerStatusObservationContext];
@@ -172,15 +169,13 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)playbackStalled:(NSNotification *)n
-{
+- (void)playbackStalled:(NSNotification *)n {
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         [self play];
     });
 }
 
-- (void)setPlayer:(AVPlayer *)player
-{
+- (void)setPlayer:(AVPlayer *)player {
     if(_player != player) {
         self.statusSent = NO;
         [self.playerLayer removeFromSuperlayer];
@@ -202,14 +197,12 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark - Life Cycle
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self unregisterObservers];
     [self cancel];
 }
 
-- (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate
-{
+- (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate {
     if (self = [super init]) {
         _delegate = delegate;
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -227,8 +220,7 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark - Private
 
-- (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player
-{
+- (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player {
     AVAsset *currentPlayerAsset = player.currentItem.asset;
     if (![currentPlayerAsset isKindOfClass:AVURLAsset.class]) {
         return nil;
@@ -236,14 +228,12 @@ const CGFloat kOneFrameDuration = 0.03;
     return [(AVURLAsset *)currentPlayerAsset URL];
 }
 
-- (void)setupPlayerWithFileURL:(NSURL *)URL
-{
+- (void)setupPlayerWithFileURL:(NSURL *)URL {
     self.playerItem = [AVPlayerItem playerItemWithURL:URL];
     self.player = [AVPlayer playerWithPlayerItem:self.playerItem];
 }
 
-- (BOOL)playerHasBufferedURL:(NSURL *)URL
-{
+- (BOOL)playerHasBufferedURL:(NSURL *)URL {
     if (!self.videoPath) {
         return NO;
     }
@@ -258,8 +248,7 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark Observers & Timers
 
-- (void)unregisterObservers
-{
+- (void)unregisterObservers {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVAudioSessionRouteChangeNotification
                                                   object:nil];
@@ -268,8 +257,7 @@ const CGFloat kOneFrameDuration = 0.03;
                                                   object:nil];
 }
 
-- (void)addTimerForCurrentTime
-{
+- (void)addTimerForCurrentTime {
     CMTime interval = CMTimeMakeWithSeconds(0.1, NSEC_PER_USEC);
     __weak LoopMeVideoClient *selfWeak = self;
     self.playbackTimeObserver =
@@ -283,8 +271,7 @@ const CGFloat kOneFrameDuration = 0.03;
                                          }];
 }
 
-- (void)routeChange:(NSNotification*)notification
-{
+- (void)routeChange:(NSNotification*)notification {
     NSDictionary *interuptionDict = notification.userInfo;
     NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
     switch (routeChangeReason) {
@@ -299,30 +286,26 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)willEnterForeground:(NSNotification*)notification
-{
+- (void)willEnterForeground:(NSNotification*)notification {
     if (!self.isStatusSent && self.player) {
         [self setupPlayerWithFileURL:[self currentAssetURLForPlayer:self.player]];
     }
 }
 #pragma mark Player state notification
 
-- (void)playerItemDidReachEnd:(id)object
-{
+- (void)playerItemDidReachEnd:(id)object {
     [self.JSClient setVideoState:LoopMeVideoState.completed];
     self.shouldPlay = NO;
     [self.delegate videoClientDidReachEnd:self];
 }
 
-- (void)playerItemDidFailedToPlayToEndTime:(id)object
-{
+- (void)playerItemDidFailedToPlayToEndTime:(id)object {
     [self pause];
     [self.JSClient setVideoState:LoopMeVideoState.paused];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object
-                        change:(NSDictionary *)change context:(void *)context
-{
+                        change:(NSDictionary *)change context:(void *)context {
     if (object == self.playerItem ) {
         if ([keyPath isEqualToString:kLoopMeVideoStatusKey]) {
             if (self.playerItem.status == AVPlayerItemStatusFailed) {
@@ -330,7 +313,7 @@ const CGFloat kOneFrameDuration = 0.03;
                     [self.videoManager failedInitPlayer: self.videoURL];
                 } else {
                     [self.JSClient setVideoState:LoopMeVideoState.broken];
-                    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
+                    [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeBadAsset errorMessage:[NSString stringWithFormat:@"Video player could not init file: %@", self.videoURL] appkey:self.delegate.appKey];
                     self.statusSent = YES;
                 }
             } else if (self.playerItem.status == AVPlayerItemStatusReadyToPlay) {
@@ -368,8 +351,27 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark - Public
 
-- (void)adjustViewToFrame:(CGRect)frame
-{
+- (void)playVideo:(NSURL *)URL {
+    if (!URL) {
+        [self.delegate videoClient:self didFailToLoadVideoWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeURLResolve]];
+        return;
+    }
+    
+
+    // ImageContext used to avoid CGErrors
+    // http://stackoverflow.com/questions/13203336/iphone-mpmovieplayerviewcontroller-cgcontext-errors/14669166#14669166
+    AVPlayer *player = [AVPlayer playerWithURL:URL];
+    UIGraphicsBeginImageContext(CGSizeMake(1,1));
+    AVPlayerViewController *playerViewController = [AVPlayerViewController new];
+    playerViewController.player = player;
+    UIGraphicsEndImageContext();
+    
+    [[self.delegate viewControllerForPresentation] presentViewController:playerViewController animated:YES completion:^{
+        [playerViewController.player play];
+    }];
+}
+
+- (void)adjustViewToFrame:(CGRect)frame {
     self.videoView.frame = frame;
     if (self.playerLayer) {
         self.playerLayer.frame = frame;
@@ -393,8 +395,7 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)cancel
-{
+- (void)cancel {
     [self.videoManager cancel];
     [self.playerLayer removeFromSuperlayer];
     [self.videoView removeFromSuperview];
@@ -403,20 +404,17 @@ const CGFloat kOneFrameDuration = 0.03;
     self.shouldPlay = NO;
 }
 
-- (void)moveView
-{
+- (void)moveView {
     [self.delegate videoClient:self setupView:self.videoView];
 }
 
-- (void)willAppear
-{
+- (void)willAppear {
     [self.glkViewController viewWillAppear:YES];
 }
 
 #pragma mark - LoopMeJSVideoTransportProtocol
 
-- (void)loadWithURL:(NSURL *)URL
-{
+- (void)loadWithURL:(NSURL *)URL {
     self.videoPath = URL.lastPathComponent;
     self.videoManager = [[LoopMeVideoManager alloc] initWithVideoPath:self.videoPath delegate:self];
     if ([self playerHasBufferedURL:URL]) {
@@ -447,13 +445,11 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)setMute:(BOOL)mute
-{
+- (void)setMute:(BOOL)mute {
     self.player.volume = (mute) ? 0.0f : 1.0f;
 }
 
-- (void)seekToTime:(double)time
-{
+- (void)seekToTime:(double)time {
     if (time >= 0) {
         CMTime timeStruct = CMTimeMake(time, 1000);
         [self.player seekToTime:timeStruct
@@ -462,41 +458,37 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)playFromTime:(double)time
-{
+- (void)playFromTime:(double)time {
     //if time is negative, dont seek. Hack for setVisibleNoJS property in LoopMeAdDisplaycontroller.
     if (time >= 0) {
         [self seekToTime:time];
     }
+    
     self.shouldPlay = YES;
     [self.JSClient setVideoState:LoopMeVideoState.playing];
     [self.player play];
 }
 
-- (void)play
-{
+- (void)play {
     if (![self playerReachedEnd]) {
         self.shouldPlay = YES;
         [self.player play];
     }
 }
 
-- (void)pause
-{
+- (void)pause {
     self.shouldPlay = NO;
     [self.player pause];
 }
 
-- (void)pauseOnTime:(double)time
-{
+- (void)pauseOnTime:(double)time {
     [self seekToTime:time];
     self.shouldPlay = NO;
     [self.JSClient setVideoState:LoopMeVideoState.paused];
     [self.player pause];
 }
 
-- (void)setGravity:(NSString *)gravity
-{
+- (void)setGravity:(NSString *)gravity {
     self.layerGravity = gravity;
     if (self.playerLayer) {
         self.playerLayer.videoGravity = gravity;
@@ -541,22 +533,21 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark - LoopMeVideoManagerDelegate
 
-- (void)videoManager:(LoopMeVideoManager *)videoManager didLoadVideo:(NSURL *)videoURL
-{
-    NSTimeInterval secondsFromVideoLoadStart = [self.loadingVideoStartDate timeIntervalSinceNow];
-    [LoopMeLoggingSender sharedInstance].videoLoadingTimeInterval = fabs(secondsFromVideoLoadStart);
-    
+- (void)videoManager:(LoopMeVideoManager *)videoManager didLoadVideo:(NSURL *)videoURL {
     if (![LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
         [self setupPlayerWithFileURL:videoURL];
     }
 }
 
-- (void)videoManager:(LoopMeVideoManager *)videoManager didFailLoadWithError:(NSError *)error
-{
+- (void)videoManager:(LoopMeVideoManager *)videoManager didFailLoadWithError:(NSError *)error {
     if (![LoopMeGlobalSettings sharedInstance].isPreload25Enabled) {
         [self.JSClient setVideoState:LoopMeVideoState.broken];
         [self.delegate videoClient:self didFailToLoadVideoWithError:error];
     }
+}
+
+- (NSString *)appKey {
+    return self.delegate.appKey;
 }
 
 @end

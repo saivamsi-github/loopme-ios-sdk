@@ -8,8 +8,7 @@
 
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, LoopMeImageType)
-{
+typedef NS_ENUM(NSInteger, LoopMeImageType) {
     LoopMeImageTypeBrowserBack,
     LoopMeImageTypeBrowserBackActive
 } ;

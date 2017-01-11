@@ -30,16 +30,14 @@ NSString * const _kLoopMeEnableStretchCommand = @"enableStretching";
 NSString * const _kLoopMeDisableStretchCommand = @"disableStretching";
 NSString * const _kLoopMeFullScreenCommand = @"fullscreenMode";
 
-typedef NS_ENUM(NSUInteger, LoopMeJSParamType)
-{
+typedef NS_ENUM(NSUInteger, LoopMeJSParamType) {
     LoopMeJSParamTypeNumber,
     LoopMeJSParamTypeString,
     LoopMeJSParamTypeBoolean
 };
 
 // Events
-const struct LoopMeEventStruct LoopMeEvent =
-{
+const struct LoopMeEventStruct LoopMeEvent = {
     .isVisible = @"isVisible",
     .state = @"state",
     .duration = @"duration",
@@ -49,8 +47,7 @@ const struct LoopMeEventStruct LoopMeEvent =
     .fullscreenMode = @"fullscreenMode"
 };
 
-const struct LoopMe360EventStruct LoopMe360Event =
-{
+const struct LoopMe360EventStruct LoopMe360Event = {
     .swipe = @"swipe",
     .gyro = @"gyro",
     .front = @"front",
@@ -60,8 +57,7 @@ const struct LoopMe360EventStruct LoopMe360Event =
     .zoom = @"zoom"
 };
 
-const struct LoopMeWebViewStateStruct LoopMeWebViewState =
-{
+const struct LoopMeWebViewStateStruct LoopMeWebViewState = {
     .visible = @"VISIBLE",
     .hidden = @"HIDDEN",
     .closed = @"CLOSED"
@@ -83,8 +79,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark - Life Cycle
 
-- (instancetype)initWithDelegate:(id<LoopMeJSClientDelegate>)deleagate
-{
+- (instancetype)initWithDelegate:(id<LoopMeJSClientDelegate>)deleagate {
     if (self = [super init]) {
         _delegate = deleagate;
         _events360 = [[NSMutableSet alloc] init];
@@ -94,40 +89,34 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark - Properties
 
-- (id<LoopMeVideoCommunicatorProtocol>)videoClient
-{
+- (id<LoopMeVideoCommunicatorProtocol>)videoClient {
     return [self.delegate videoCommunicator];
 }
 
-- (UIWebView *)webViewClient
-{
+- (UIWebView *)webViewClient {
     return [self.delegate webViewTransport];
 }
 
 #pragma mark - Private
 
-- (void)loadVideoWithParams:(NSDictionary *)params
-{
+- (void)loadVideoWithParams:(NSDictionary *)params {
     NSString *videoSource = params[@"src"];
-    [self.videoClient loadWithURL:[NSURL URLWithString:[videoSource stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+    [self.videoClient loadWithURL:[NSURL URLWithString:[videoSource stringByRemovingPercentEncoding]]];
 }
 
-- (void)playVideoWithParams:(NSDictionary *)params
-{
+- (void)playVideoWithParams:(NSDictionary *)params {
     NSString *time = params[@"currentTime"];
     double timeToPlay = (time) ? [time doubleValue] : -1;
     [self.videoClient playFromTime:timeToPlay];
 }
 
-- (void)pauseVideoWithParams:(NSDictionary *)params
-{
+- (void)pauseVideoWithParams:(NSDictionary *)params {
     NSString *time = params[@"currentTime"];
     double timeToPause = (time) ? [time doubleValue] : -1;
     [self.videoClient pauseOnTime:timeToPause];
 }
 
-- (void)muteVideoWithParams:(NSDictionary *)params
-{
+- (void)muteVideoWithParams:(NSDictionary *)params {
     NSString *muteString = params[@"mute"];
     BOOL mute = [muteString isEqual:@"true"] ? YES : NO;
     [self.videoClient setMute:mute];
@@ -135,8 +124,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark JS Commands
 
-- (void)processCommand:(NSString *)command forNamespace:(NSString *)ns withParams:(NSDictionary *)params
-{
+- (void)processCommand:(NSString *)command forNamespace:(NSString *)ns withParams:(NSDictionary *)params {
     LoopMeLogDebug(@"JS command: %@", command);
 
     if ([ns isEqualToString:kLoopMeNamespaceWebview]) {
@@ -148,8 +136,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
     }
 }
 
-- (void)processWebViewCommand:(NSString *)command withParams:(NSDictionary *)params
-{
+- (void)processWebViewCommand:(NSString *)command withParams:(NSDictionary *)params {
     if ([command isEqualToString:_kLoopMeSuccessCommand]) {
         [self.delegate JSClientDidReceiveSuccessCommand:self];
     } else if ([command isEqualToString:_kLoopMeFailLoadCommand]) {
@@ -165,8 +152,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
     }
 }
 
-- (void)processVideoCommand:(NSString *)command withParams:(NSDictionary *)params
-{
+- (void)processVideoCommand:(NSString *)command withParams:(NSDictionary *)params {
     if ([command isEqualToString:_kLoopMeLoadCommand]) {
         [self loadVideoWithParams:params];
     } else if ([command isEqualToString:_kLoopMePlayCommand]) {
@@ -186,8 +172,7 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark JS Events
 
-- (NSString *)makeEventStringForEvent:(NSString *)event namespace:(NSString *)ns withParam:(NSObject *)param paramBOOL:(BOOL)isBOOL
-{
+- (NSString *)makeEventStringForEvent:(NSString *)event namespace:(NSString *)ns withParam:(NSObject *)param paramBOOL:(BOOL)isBOOL {
     if (isBOOL == YES) {
         param = [(NSNumber *)param boolValue] == YES ? @"true" : @"false";
     } else if ([param isKindOfClass:[NSString class]]) {
@@ -200,7 +185,6 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 #pragma mark - Public
 
 - (void)executeInteractionCustomEvent:(NSString *)customEventName {
-    
     if (![self.events360 containsObject:customEventName]) {
         NSString *eventString = [NSString stringWithFormat:@"L.track({eventType:\"INTERACTION\", customEventName: \"video360&mode=%@\"})", customEventName];
         [self.webViewClient stringByEvaluatingJavaScriptFromString:eventString];
@@ -209,24 +193,20 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
     }
 }
 
-- (void)executeEvent:(NSString *)event forNamespace:(NSString *)ns param:(NSObject *)param
-{
+- (void)executeEvent:(NSString *)event forNamespace:(NSString *)ns param:(NSObject *)param {
     [self executeEvent:event forNamespace:ns param:param paramBOOL:NO];
 }
 
-- (void)executeEvent:(NSString *)event forNamespace:(NSString *)ns param:(NSObject *)param paramBOOL:(BOOL)isBOOL
-{
+- (void)executeEvent:(NSString *)event forNamespace:(NSString *)ns param:(NSObject *)param paramBOOL:(BOOL)isBOOL {
     NSString *eventString = [self makeEventStringForEvent:event namespace:ns withParam:param paramBOOL:isBOOL];
     [self.webViewClient stringByEvaluatingJavaScriptFromString:eventString];
 }
 
-- (BOOL)shouldInterceptURL:(NSURL *)URL
-{
+- (BOOL)shouldInterceptURL:(NSURL *)URL {
     return [URL.scheme.lowercaseString isEqualToString:_kLoopMeURLScheme];
 }
 
-- (void)processURL:(NSURL *)URL
-{
+- (void)processURL:(NSURL *)URL {
     NSString *ns = URL.host;
     NSString *command = URL.lastPathComponent;
     NSDictionary *params = [URL lm_toDictionary];
@@ -236,33 +216,27 @@ const struct LoopMeWebViewStateStruct LoopMeWebViewState =
 
 #pragma mark - LoopMeJSTransportProtocol
 
-- (void)setVideoState:(NSString *)state
-{
+- (void)setVideoState:(NSString *)state {
     [self executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceVideo param:state];
 }
 
-- (void)setWebViewState:(NSString *)state
-{
+- (void)setWebViewState:(NSString *)state {
     [self executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:state];
 }
 
-- (void)setDuration:(CGFloat)fullDuration
-{
+- (void)setDuration:(CGFloat)fullDuration {
     [self executeEvent:LoopMeEvent.duration forNamespace:kLoopMeNamespaceVideo param:[NSNumber numberWithFloat:fullDuration]];
 }
 
-- (void)setCurrentTime:(CGFloat)currentTime
-{
+- (void)setCurrentTime:(CGFloat)currentTime {
     [self executeEvent:LoopMeEvent.currentTime forNamespace:kLoopMeNamespaceVideo param:[NSNumber numberWithFloat:currentTime]];
 }
 
-- (void)setShake
-{
+- (void)setShake {
     [self executeEvent:LoopMeEvent.shake forNamespace:kLoopMeNamespaceWebview param:@YES paramBOOL:YES];
 }
 
-- (void)setFullScreenModeEnabled:(BOOL)enabled
-{
+- (void)setFullScreenModeEnabled:(BOOL)enabled {
     [self executeEvent:LoopMeEvent.fullscreenMode forNamespace:kLoopMeNamespaceWebview param:@(enabled) paramBOOL:YES];
 }
 

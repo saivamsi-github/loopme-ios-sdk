@@ -7,64 +7,66 @@
 //
 
 #import <UIKit/UIKit.h>
-
 #import "LoopMeLogging.h"
+#import "LoopMeDefinitions.h"
 #import "LoopMeServerURLBuilder.h"
 #import "LoopMeGlobalSettings.h"
+#import "LoopMeIdentityProvider.h"
+
+@class LoopMeLoggingSender;
 
 static NSString *kLoopMeUserDefaultsDateKey = @"loopMeLogWriteDate";
 static LoopMeLogLevel logLevel = LoopMeLogLevelOff;
 
-LoopMeLogLevel getLoopMeLogLevel()
-{
+LoopMeLogLevel getLoopMeLogLevel() {
     return logLevel;
 }
 
-void setLoopMeLogLevel(LoopMeLogLevel level)
-{
+void setLoopMeLogLevel(LoopMeLogLevel level) {
     logLevel = level;
 }
 
-void LoopMeLogDebug(NSString *format, ...)
-{
+void LoopMeLogDebug(NSString *format, ...) {
     if (logLevel <= LoopMeLogLevelDebug) {
         format = [NSString stringWithFormat:@"LoopMe: %@", format];
         va_list args;
         va_start(args, format);
-        NSLogv(format, args);
+        NSString *logStr = [[NSString alloc] initWithFormat:format arguments:args];
+        [[LoopMeLoggingSender sharedInstance] writeLog:logStr];
+        NSLog(@"%@", logStr);
         va_end(args);
     }
 }
 
-void LoopMeLogInfo(NSString *format, ...)
-{
+void LoopMeLogInfo(NSString *format, ...) {
     if (logLevel <= LoopMeLogLevelInfo) {
         format = [NSString stringWithFormat:@"LoopMe: %@", format];
         va_list args;
         va_start(args, format);
-        NSLogv(format, args);
+        NSString *logStr = [[NSString alloc] initWithFormat:format arguments:args];
+        [[LoopMeLoggingSender sharedInstance] writeLog:logStr];
+        NSLog(@"%@", logStr);
         va_end(args);
     }
 }
 
-void LoopMeLogError(NSString *format, ...)
-{
+void LoopMeLogError(NSString *format, ...) {
     if (logLevel <= LoopMeLogLevelError) {
         format = [NSString stringWithFormat:@"LoopMe: %@", format];
         va_list args;
         va_start(args, format);
-        NSLogv(format, args);
+        NSString *logStr = [[NSString alloc] initWithFormat:format arguments:args];
+        [[LoopMeLoggingSender sharedInstance] writeLog:logStr];
+        NSLog(@"%@", logStr);
         va_end(args);
     }
 }
 
 @interface LoopMeLoggingSender ()
 
-@property (nonatomic) NSString *userAgent;
-@property (nonatomic) NSInteger notReadyDisplayCount;
-@property (nonatomic) NSTimer *timer;
-@property (nonatomic) NSMutableDictionary *properties;
+@property (nonatomic) NSFileHandle *logHandle;
 @property (nonatomic) NSURLSession *session;
+@property (nonatomic) NSString *logFilePath;
 
 @end
 
@@ -73,8 +75,7 @@ void LoopMeLogError(NSString *format, ...)
 static dispatch_semaphore_t sema; // The semaphore
 static dispatch_once_t onceToken;
 
-+ (LoopMeLoggingSender *)sharedInstance
-{
++ (LoopMeLoggingSender *)sharedInstance {
     static LoopMeLoggingSender *sender = nil;
     if (!sender) {
         sender = [[LoopMeLoggingSender alloc] init];
@@ -87,16 +88,12 @@ static dispatch_once_t onceToken;
     [self.session finishTasksAndInvalidate];
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [super init];
     if (self) {
-        __weak LoopMeLoggingSender *weakSelf = self;
         dispatch_once(&onceToken, ^{
             // Initialize with count=1 (this is executed only once):
             sema = dispatch_semaphore_create(1);
-            weakSelf.notReadyDisplayCount = 0;
-            weakSelf.properties = [[NSMutableDictionary alloc] init];
         });
         
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -106,34 +103,54 @@ static dispatch_once_t onceToken;
     return self;
 }
 
-- (NSString *)userAgent
-{
-    if (_userAgent == nil) {
-        __weak LoopMeLoggingSender *weakSelf = self;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakSelf.userAgent = [[[UIWebView alloc] init] stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-        });
+- (NSFileHandle *)logHandle {
+    if (!_logHandle) {
+        if (![[NSFileManager defaultManager] fileExistsAtPath:self.logFilePath]) {
+            [[NSFileManager defaultManager] createFileAtPath:self.logFilePath contents:nil attributes:nil];
+        }
+        _logHandle = [NSFileHandle fileHandleForWritingAtPath:self.logFilePath];
     }
-    return _userAgent;
+    return _logHandle;
 }
 
-- (void)propertyTriggered:(NSString *)name value:(id)value {
-    self.properties[@"name"] = value;
+- (NSString *)logs {
+    if ([[NSFileManager defaultManager] fileExistsAtPath:self.logFilePath]) {
+        NSString *logString = [[NSString alloc] initWithContentsOfFile:self.logFilePath encoding:NSUTF8StringEncoding error:nil];
+        logString = [logString stringByReplacingOccurrencesOfString:@"=" withString:@"equal"];
+        logString = [logString stringByReplacingOccurrencesOfString:@"&" withString:@"and"];
+        return logString;
+    }
+    
+    return @"";
 }
 
-- (void)notReadyDisplay {
-    _notReadyDisplayCount ++;
-    [self sendLog];
+- (NSString *)logFilePath {
+    if (!_logFilePath) {
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        _logFilePath = [documentsDirectory stringByAppendingPathComponent:@"loopmelog.lm"];
+    }
+    return _logFilePath;
 }
 
-- (void)setVideoLoadingTimeInterval:(NSTimeInterval)videoLoad
-{
-    _videoLoadingTimeInterval = videoLoad;
-    [self sendLog];
+- (void)writeLog:(NSString *)msg {
+    if (![LoopMeGlobalSettings sharedInstance].isLiveDebugEnabled) {
+        return;
+    }
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSString *adjustedMsg = [NSString stringWithFormat:@"\n%@", msg];
+        [self.logHandle writeData:[adjustedMsg dataUsingEncoding:NSUTF8StringEncoding]];
+        [self sendLog];
+    });
 }
 
-- (void)sendLog
-{
+- (void)removeLogs {
+    [[NSFileManager defaultManager] removeItemAtPath:self.logFilePath error:nil];
+    self.logHandle = nil;
+}
+
+- (void)sendLog {
     if (![LoopMeGlobalSettings sharedInstance].isLiveDebugEnabled) {
         return;
     }
@@ -141,55 +158,35 @@ static dispatch_once_t onceToken;
     int intervall = (int) [lastDate timeIntervalSinceNow] / 60;
     if (abs(intervall) >= 3) {
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:kLoopMeUserDefaultsDateKey];
-        if (dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER) == 0) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                
-                [self startSendingTask];
-            });
+        if (dispatch_semaphore_wait(sema, DISPATCH_TIME_NOW) == 0) {
+            [self startSendingTask];
         }
     }
 }
 
-- (void)startSendingTask
-{
+- (void)startSendingTask {
     NSURL *url = [NSURL URLWithString:@"https://track.loopme.me/api/errors"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
                                                            cachePolicy:NSURLRequestUseProtocolCachePolicy
                                                        timeoutInterval:60.0];
     
-    
     [request setHTTPMethod:@"POST"];
-    [request setValue:self.userAgent forHTTPHeaderField:@"User-Agent"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+    [request setValue:@"UTF-8" forHTTPHeaderField:@"Content-Encoding"];
     
-    NSDictionary *logs = @{@"loadingVideoTime" : @(self.videoLoadingTimeInterval), @"amountOfStoredVideos" : @([self storedVideos]), @"notReadyDisplay" : @(self.notReadyDisplayCount), @"doNotLoadVideoWithoutWiFi" : @([LoopMeGlobalSettings sharedInstance].isDoNotLoadVideoWithoutWiFi)};
     
-    [self.properties addEntriesFromDictionary:logs];
+    NSString *params = [NSString stringWithFormat:@"device_os=ios&sdk_type=loopme&sdk_version=%@&device_id=%@&package=%@&app_key=%@&msg=sdk_debug&debug_logs=%@", LOOPME_SDK_VERSION, [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier], [NSBundle mainBundle].bundleIdentifier, [LoopMeGlobalSettings sharedInstance].appKeyForLiveDebug, [self logs]];
     
-    NSDictionary *params = @{@"msg" : @"sdk_debug", @"token" : [LoopMeServerURLBuilder parameterForUniqueIdentifier], @"package" : [LoopMeServerURLBuilder parameterForBundleIdentifier], @"debug_logs" : self.properties};
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:params options:NSJSONWritingPrettyPrinted error:nil];
-    [request setHTTPBody:jsonData];
+    [request setHTTPBody:[params dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSURLSessionDataTask *postDataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+
+        [self removeLogs];
         dispatch_semaphore_signal(sema);
-        [self.properties removeAllObjects];
+        
     }];
-    
+
     [postDataTask resume];
-}
-
-- (NSInteger)storedVideos
-{
-    return [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self assetsDirectory] error:nil].count;
-}
-
-- (NSString *)assetsDirectory
-{
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = paths[0];
-    documentsDirectory = [documentsDirectory stringByAppendingPathComponent:@"lm_assets/"];
-    return documentsDirectory;
 }
 
 @end

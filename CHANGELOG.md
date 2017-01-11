@@ -1,3 +1,9 @@
+## Version 6.2.0 (11.01.2017)
+
+- Support MRAID 2.0 spec
+- Enhanced logging of errors to speed up troubleshooting
+- bug fixed
+
 ## Version 6.0.4 (13.12.2016)
 
 - change links for error log

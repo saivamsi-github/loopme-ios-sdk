@@ -10,8 +10,7 @@
 
 @implementation LoopMeGlobalSettings
 
-+ (instancetype)sharedInstance
-{
++ (instancetype)sharedInstance {
     static LoopMeGlobalSettings *instance = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{

@@ -12,8 +12,7 @@
 
 #pragma mark - Life Cycle
 
-- (id)initWithFrame:(CGRect)frame
-{
+- (id)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         self.backgroundColor = [UIColor clearColor];
@@ -23,12 +22,11 @@
 
 #pragma mark - Private
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     UIBezierPath* bezierPath = [UIBezierPath bezierPath];  
     [bezierPath moveToPoint: CGPointMake(0, 0)];
 
-    [bezierPath addCurveToPoint: CGPointMake(rect.size.width, rect.size.height) controlPoint1: CGPointMake(rect.size.width, rect.size.height) controlPoint2: CGPointMake(rect.size.width, rect.size.height)];
+    [bezierPath addLineToPoint: CGPointMake(rect.size.width, rect.size.height)];
     [[UIColor redColor] setStroke];
     bezierPath.lineWidth = 1;
     [bezierPath stroke];

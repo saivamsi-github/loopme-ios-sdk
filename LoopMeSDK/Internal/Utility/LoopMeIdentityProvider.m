@@ -15,8 +15,7 @@
 
 #pragma mark - Class Methods
 
-+ (NSString *)advertisingTrackingDeviceIdentifier
-{
++ (NSString *)advertisingTrackingDeviceIdentifier {
     NSString *identifier = nil;
     identifier = [ASIdentifierManager sharedManager].advertisingIdentifier.UUIDString;
     if (![ASIdentifierManager sharedManager].isAdvertisingTrackingEnabled) {
@@ -25,8 +24,7 @@
     return [identifier uppercaseString];
 }
 
-+ (BOOL)advertisingTrackingEnabled
-{
++ (BOOL)advertisingTrackingEnabled {
     BOOL enabled = YES;
 
     if ([self deviceHasAdvertisingIdentifier]) {
@@ -36,8 +34,7 @@
     return enabled;
 }
 
-+ (BOOL)deviceHasAdvertisingIdentifier
-{
++ (BOOL)deviceHasAdvertisingIdentifier {
     return !!NSClassFromString(@"ASIdentifierManager");
 }
 

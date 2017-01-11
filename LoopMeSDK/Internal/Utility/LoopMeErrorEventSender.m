@@ -5,41 +5,54 @@
 //  Copyright © 2015 LoopMe. All rights reserved.
 //
 
+#import <UIKit/UIKit.h>
 #import "LoopMeErrorEventSender.h"
-#import "LoopMeGlobalSettings.h"
 #import "LoopMeDefinitions.h"
+#import "LoopMeGlobalSettings.h"
+#import "LoopMeIdentityProvider.h"
 
 @implementation LoopMeErrorEventSender
 
-+ (void)sendEventTo:(NSString *)url withError:(LoopMeEventErrorType)errorType {
++ (void)sendError:(LoopMeEventErrorType)errorType errorMessage:(NSString *)errorMessage appkey:(NSString *)appkey {
     NSString *errorTypeParameter;
     switch (errorType) {
-        case LoopMeEventErrorType504:
-            errorTypeParameter = @"504";
+        case LoopMeEventErrorTypeJS:
+            errorTypeParameter = @"js";
             break;
             
-        case LoopMeEventErrorTypeBadAssets:
+        case LoopMeEventErrorTypeBadAsset:
             errorTypeParameter = @"bad_asset";
             break;
             
-        case LoopMeEventErrorTypeTimeOut:
-            errorTypeParameter = @"time_out";
+        case LoopMeEventErrorTypeServer:
+            errorTypeParameter = @"server";
             break;
             
-        case LoopMeEventErrorTypeWrongRedirect:
-            errorTypeParameter = @"wrong_redirect";
+        case LoopMeEventErrorTypeCustom:
+            errorTypeParameter = @"custom";
             break;
             
         default:
             break;
     }
     
-    if (!url) {
-        url = @"https://track.loopme.me/sj/tr?et=ERROR&id=3fcdd1c4f102b8b8&sv=%@&error_type=%@";
-    }
+    NSURL *url = [NSURL URLWithString:@"https://track.loopme.me/api/errors"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url
+                                                           cachePolicy:NSURLRequestUseProtocolCachePolicy
+                                                       timeoutInterval:60.0];
     
-    NSString *finalURL = [NSString stringWithFormat:url, LOOPME_SDK_VERSION, errorTypeParameter];
-    [[[NSURLSession sharedSession] dataTaskWithURL:[NSURL URLWithString:finalURL]] resume];
+    
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
+
+    
+    NSString *params = [NSString stringWithFormat:@"device_os=ios&sdk_type=loopme&sdk_version=%@&device_id=%@&package=%@&app_key=%@&msg=sdk_error&error_type=%@&error_msg=\"%@\"", LOOPME_SDK_VERSION, [LoopMeIdentityProvider advertisingTrackingDeviceIdentifier], [NSBundle mainBundle].bundleIdentifier, appkey, errorTypeParameter, errorMessage];
+
+    [request setHTTPBody:[params dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSURLSessionDataTask *postDataTask = [[NSURLSession sharedSession] dataTaskWithRequest:request];
+    
+    [postDataTask resume];
 }
 
 @end

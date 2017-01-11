@@ -8,7 +8,6 @@
 #import <CoreLocation/CoreLocation.h>
 #import <UIKit/UIKit.h>
 #import "LoopMeAnalyticsProvider.h"
-#import "LoopMeKeychain.h"
 #import "LoopMeLogging.h"
 #import "LoopMeServerURLBuilder.h"
 #import "LoopMeIdentityProvider.h"
@@ -67,8 +66,7 @@ static NSString * const kLoopMeBackgroundAnalyticSessionID = @"com.loopme.backgr
     return self;
 }
 
-- (NSString *)userAgent
-{
+- (NSString *)userAgent {
     if (_userAgent == nil) {
         __weak LoopMeAnalyticsProvider *weakSelf = self;
         dispatch_async(dispatch_get_main_queue(), ^{

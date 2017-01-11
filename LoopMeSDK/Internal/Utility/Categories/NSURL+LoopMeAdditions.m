@@ -10,15 +10,12 @@
 
 @implementation NSURL (LoopMeAdditions)
 
-- (NSDictionary *)lm_toDictionary
-{
+- (NSDictionary *)lm_toDictionary {
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     NSArray *elements = [self.query componentsSeparatedByString:@"&"];
-    for (NSString *element in elements)
-    {
+    for (NSString *element in elements) {
         NSArray *keyVal = [element componentsSeparatedByString:@"="];
-        if (keyVal.count >= 2)
-        {
+        if (keyVal.count >= 2) {
             NSString *key = keyVal[0];
             NSString *value = keyVal[1];
             dictionary[key] = [value stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];

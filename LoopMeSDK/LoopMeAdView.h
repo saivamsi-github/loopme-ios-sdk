@@ -74,8 +74,8 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 /**
  * Returns new `LoopMeAdView` object with the given appKey
- * @param NSString appKey - unique identifier in LoopMe ad network.
- * @param id delegate
+ * @param appKey - unique identifier in LoopMe ad network.
+ * @param delegate - delegate
  */
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
                              frame:(CGRect)frame
@@ -84,9 +84,9 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 /**
  * Returns new `LoopMeAdView` object with the given appKey.
  * Use this method if adView will be added to scrollable content.
- * @param NSString appKey - unique identifier in LoopMe ad network.
- * @param UIScrollView scrollView - scrollView to be used to calculate ad area visibility and manage ad activity
- * @param id delegate
+ * @param appKey - unique identifier in LoopMe ad network.
+ * @param scrollView scrollView to be used to calculate ad area visibility and manage ad activity
+ * @param delegate - delegate
  */
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
                              frame:(CGRect)frame
@@ -101,7 +101,7 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 
 /**
  * See `loadAd` method
- * @param LoopMeTargeting targeting - represents `LoopMeTargeting` class to be used to get more relevant advertisement
+ * @param targeting - represents `LoopMeTargeting` class to be used to get more relevant advertisement
  */
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting;
 
@@ -136,7 +136,7 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
  * Triggered when the interstitial has successfully loaded the ad content
  * It is recommended not to add adView as subview untill you recieve this notification
  * or alternatively you may check `isReady` property.
- * @param LoopMeAdView adView - sender
+ * @param adView - sender
  */
 - (void)loopMeAdViewDidLoadAd:(LoopMeAdView *)adView;
 
@@ -144,14 +144,14 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
  * Triggered when adView failed to load ad.
  * If adView was already added as subview, you should remove it in implementation of this message
  * to avoid having empty view content
- * @param LoopMeAdView adView - sender
- * @param NSError error - error of unsuccesful ad loading attempt
+ * @param adView - sender
+ * @param error - error of unsuccesful ad loading attempt
  */
 - (void)loopMeAdView:(LoopMeAdView *)adView didFailToLoadAdWithError:(NSError *)error;
 
 /**
  * Triggered only when adView's video was played until the end.
- * @param LoopMeAdView adView - sender
+ * @param adView - sender
  */
 - (void)loopMeAdViewVideoDidReachEnd:(LoopMeAdView *)adView;
 
@@ -159,21 +159,21 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
  * Triggered when the adView's loaded ad content is expired.
  * Expiration happens when loaded ad content wasn't displayed during some period of time, approximately one hour.
  * Once the adView is presented on the screen, the expiration is no longer tracked and delegate won't receive this message
- * @param LoopMeAdView adView - sender
+ * @param adView - sender
  */
 - (void)loopMeAdViewDidExpire:(LoopMeAdView *)adView;
 
 /**
  * Triggered when the user taps the ad and it is about to perform extra actions
  * Those actions may lead to displaying a modal browser or storeKit view controller or leaving your application.
- * @param LoopMeAdView adView - sender
+ * @param adView - sender
  */
 - (void)loopMeAdViewDidReceiveTap:(LoopMeAdView *)adView;
 
 /**
  * Triggered when your application is about to go to the background, initiated by the SDK.
  * This may happen in various ways, f.e if user wants open the SDK's browser web page in native browser or clicks on `mailto:` links...
- * @param LoopMeAdView adView - sender
+ * @param adView - sender
  */
 - (void)loopMeAdViewWillLeaveApplication:(LoopMeAdView *)adView;
 

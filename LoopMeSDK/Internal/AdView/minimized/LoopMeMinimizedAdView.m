@@ -21,8 +21,7 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
 
 #pragma mark - Services
 
-- (instancetype)initWithDelegate:(id<LoopMeMinimizedAdViewDelegate>)delegate
-{
+- (instancetype)initWithDelegate:(id<LoopMeMinimizedAdViewDelegate>)delegate {
     self = [super init];
     if (self) {
         _delegate = delegate;
@@ -56,8 +55,7 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
     return (self.superview) ? YES : NO;
 }
 
-- (void)rotateToInterfaceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated
-{
+- (void)rotateToInterfaceOrientation:(UIInterfaceOrientation)orientation animated:(BOOL)animated {
     float angle = 0;
     if (UIInterfaceOrientationIsPortrait(orientation)) {
         if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
@@ -80,8 +78,7 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
     }
 }
 
-- (void)show
-{
+- (void)show {
     [self rotateToInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation animated:NO];
     [self adjustFrame];
     self.alpha = 0;
@@ -91,16 +88,14 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
     [UIView commitAnimations];
 }
 
-- (void)hide
-{
+- (void)hide {
     [UIView beginAnimations:@"minimizeAnimationHide" context:nil];
     [UIView setAnimationDuration:kLoopMeFlyAwayAnimationDuration/2];
     self.alpha = 0;
     [UIView commitAnimations];
 }
 
-- (void)adjustFrame
-{
+- (void)adjustFrame {
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     
     if (SYSTEM_VERSION_GREATER_THAN(@"8.0")) {
@@ -163,18 +158,15 @@ const float kLoopMeMinimizedAdHeight = 90.0f;
 
 #pragma mark - Gestures 
 
-- (void)didSwipeLeft:(UISwipeGestureRecognizer *)recognizer
-{
+- (void)didSwipeLeft:(UISwipeGestureRecognizer *)recognizer {
     [self removeOnDirection:recognizer.direction animated:YES];
 }
 
-- (void)didSwipeRight:(UISwipeGestureRecognizer *)recognizer
-{
+- (void)didSwipeRight:(UISwipeGestureRecognizer *)recognizer {
     [self removeOnDirection:recognizer.direction animated:YES];
 }
 
-- (void)didTap:(UITapGestureRecognizer *)recognizer
-{
+- (void)didTap:(UITapGestureRecognizer *)recognizer {
     if ([self.delegate respondsToSelector:@selector(minimizedDidReceiveTap:)]) {
         [self.delegate minimizedDidReceiveTap:self];
     }

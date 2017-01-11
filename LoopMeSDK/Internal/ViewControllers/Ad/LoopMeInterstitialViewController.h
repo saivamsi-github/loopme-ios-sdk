@@ -13,6 +13,8 @@
 
 @property (nonatomic, weak) id<LoopMeInterstitialViewControllerDelegate> delegate;
 - (void)setOrientation:(LoopMeAdOrientation)orientation;
+- (void)setAllowOrientationChange:(BOOL)autorotate;
+- (void)forceChangeOrientation;
 
 @end
 

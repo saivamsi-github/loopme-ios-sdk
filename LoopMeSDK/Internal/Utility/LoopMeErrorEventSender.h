@@ -8,15 +8,14 @@
 #import <Foundation/Foundation.h>
 
 typedef NS_ENUM(NSUInteger, LoopMeEventErrorType) {
-    LoopMeEventErrorTypeBadAssets,
-    LoopMeEventErrorType504,
-    LoopMeEventErrorTypeTimeOut,
-    LoopMeEventErrorTypeWrongRedirect,
+    LoopMeEventErrorTypeServer,
+    LoopMeEventErrorTypeBadAsset,
+    LoopMeEventErrorTypeJS,
+    LoopMeEventErrorTypeCustom,
 };
-
 
 @interface LoopMeErrorEventSender : NSObject
 
-+ (void)sendEventTo:(NSString *)url withError:(LoopMeEventErrorType)errorType;
++ (void)sendError:(LoopMeEventErrorType)errorType errorMessage:(NSString *)errorMessage appkey:(NSString *)appkey;
 
 @end

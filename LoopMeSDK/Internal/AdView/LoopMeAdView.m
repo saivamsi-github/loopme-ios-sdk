@@ -37,6 +37,7 @@
 @property (nonatomic, assign, getter = isMinimized) BOOL minimized;
 @property (nonatomic, assign, getter = isNeedsToBeDisplayedWhenReady) BOOL needsToBeDisplayedWhenReady;
 @property (nonatomic, strong) NSTimer *timeoutTimer;
+@property (nonatomic, strong) LoopMeAdConfiguration *adConfiguration;
 
 /*
  * Update webView "visible" state is required on JS first time when ad appears on the screen,
@@ -49,8 +50,7 @@
 
 #pragma mark - Initialization
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self unRegisterObservers];
     [_minimizedView removeFromSuperview];
     [_maximizedController hide];
@@ -60,9 +60,7 @@
 - (instancetype)initWithAppKey:(NSString *)appKey
                          frame:(CGRect)frame
                     scrollView:(UIScrollView *)scrollView
-                      delegate:(id<LoopMeAdViewDelegate>)delegate
-
-{
+                      delegate:(id<LoopMeAdViewDelegate>)delegate {
     self = [super init];
     if (self) {
         
@@ -89,7 +87,6 @@
 
 - (void)setMinimizedModeEnabled:(BOOL)minimizedModeEnabled {
     if (_minimizedModeEnabled != minimizedModeEnabled) {
-        [[LoopMeLoggingSender sharedInstance] propertyTriggered:NSStringFromSelector(@selector(isMinimizedModeEnabled)) value:@(_minimizedModeEnabled)];
         _minimizedModeEnabled = minimizedModeEnabled;
         if (_minimizedModeEnabled) {
             _minimizedView = [[LoopMeMinimizedAdView alloc] initWithDelegate:self];
@@ -102,15 +99,16 @@
     }
 }
 
-- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi
-{
+- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi {
     [LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi = doNotLoadVideoWithoutWiFi;
 }
 
-- (void)expand
-{
-    BOOL isMaximized = [self.maximizedController isBeingPresented];
+- (void)expand {
+    BOOL isMaximized = [self.maximizedController presentingViewController] != nil;
     if (!isMaximized) {
+        if (self.adConfiguration.isMraid) {
+            [self.adDisplayController setExpandProperties:self.adConfiguration];
+        }
         [self.maximizedController show];
         [self.adDisplayController moveView:NO];
         [self.adDisplayController expandReporting];
@@ -122,29 +120,25 @@
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
                              frame:(CGRect)frame
                         scrollView:(UIScrollView *)scrollView
-                          delegate:(id<LoopMeAdViewDelegate>)delegate
-{
+                          delegate:(id<LoopMeAdViewDelegate>)delegate {
     return [[self alloc] initWithAppKey:appKey frame:frame scrollView:scrollView delegate:delegate];
 }
 
 + (LoopMeAdView *)adViewWithAppKey:(NSString *)appKey
                              frame:(CGRect)frame
-                          delegate:(id<LoopMeAdViewDelegate>)delegate
-{
+                          delegate:(id<LoopMeAdViewDelegate>)delegate {
     return [LoopMeAdView adViewWithAppKey:appKey frame:frame scrollView:nil delegate:delegate];
 }
 
 #pragma mark - LifeCycle
 
-- (void)willMoveToSuperview:(UIView *)newSuperview
-{
+- (void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
     
     if (!newSuperview) {
         [self closeAd];
     } else {
         if (!self.isReady) {
-            [[LoopMeLoggingSender sharedInstance] notReadyDisplay];
             self.needsToBeDisplayedWhenReady = YES;
         }
     }
@@ -159,15 +153,13 @@
 
 #pragma mark - Observering
 
-- (void)unRegisterObservers
-{
+- (void)unRegisterObservers {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
-- (void)registerObservers
-{
+- (void)registerObservers {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didBecomeActive:)
                                                  name:UIApplicationDidBecomeActiveNotification
@@ -183,8 +175,7 @@
     
 }
 
-- (void)didBecomeActive:(NSNotification *)notification
-{
+- (void)didBecomeActive:(NSNotification *)notification {
     if (self.superview) {
         self.visibilityUpdated = NO;
         [self updateVisibility];
@@ -193,18 +184,15 @@
 
 #pragma mark - Public
 
-- (void)setServerBaseURL:(NSURL *)URL
-{
+- (void)setServerBaseURL:(NSURL *)URL {
     self.adManager.testServerBaseURL = URL;
 }
 
-- (void)loadAd
-{
+- (void)loadAd {
     [self loadAdWithTargeting:nil];
 }
 
-- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting
-{
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
     if (self.isLoading) {
         LoopMeLogInfo(@"Wait for previous loading ad process finish");
         return;
@@ -219,8 +207,7 @@
     [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
 }
 
-- (void)setAdVisible:(BOOL)visible
-{
+- (void)setAdVisible:(BOOL)visible {
     if (self.isReady) {
 
         self.adDisplayController.forceHidden = !visible;
@@ -239,8 +226,7 @@
 /*
  * Don't set visible/hidden state during scrolling, causes issues on iOS 8.0 and up
  */
-- (void)updateAdVisibilityInScrollView
-{
+- (void)updateAdVisibilityInScrollView {
     if (!self.superview) {
         return;
     }
@@ -277,24 +263,21 @@
     }
 }
 
-- (void)deviceOrientationDidChange:(NSNotification *)notification
-{
+- (void)deviceOrientationDidChange:(NSNotification *)notification {
     [self.minimizedView rotateToInterfaceOrientation:[UIApplication sharedApplication].statusBarOrientation animated:YES];
     [self.minimizedView adjustFrame];
 }
 
 #pragma mark - Private
 
-- (void)willResignActive:(NSNotification *)n
-{
+- (void)willResignActive:(NSNotification *)n {
     self.adDisplayController.visible = NO;
     if ([self.maximizedController isBeingPresented]) {
         [self removeMaximizedView];
     }
 }
 
-- (void)minimize
-{
+- (void)minimize {
     if (!self.isMinimized && self.adDisplayController.isVisible) {
         self.minimized = YES;
         [self.minimizedView show];
@@ -302,8 +285,7 @@
     }
 }
 
-- (void)toOriginalSize
-{
+- (void)toOriginalSize {
     if (self.isMinimized) {
         self.minimized = NO;
         [self.minimizedView hide];
@@ -322,18 +304,15 @@
     [self.adDisplayController collapseReporting];
 }
 
-- (BOOL)moreThenHalfOfRect:(CGRect)rect visibleInRect:(CGRect)visibleRect
-{
+- (BOOL)moreThenHalfOfRect:(CGRect)rect visibleInRect:(CGRect)visibleRect {
     return (CGRectContainsPoint(visibleRect, CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect))));
 }
 
-- (BOOL)isRect:(CGRect)rect outOfRect:(CGRect)visibleRect
-{
+- (BOOL)isRect:(CGRect)rect outOfRect:(CGRect)visibleRect {
     return CGRectIntersectsRect(rect, visibleRect);
 }
 
-- (void)failedLoadingAdWithError:(NSError *)error
-{
+- (void)failedLoadingAdWithError:(NSError *)error {
     self.loading = NO;
     self.ready = NO;
     [self invalidateTimer];
@@ -342,8 +321,7 @@
     }
 }
 
-- (void)updateVisibility
-{
+- (void)updateVisibility {
     if (!self.scrollView) {
         self.adDisplayController.visible = YES;
     } else {
@@ -360,16 +338,14 @@
     }
 }
 
-- (void)closeAd
-{
+- (void)closeAd {
     [self.minimizedView removeFromSuperview];
     [self.adDisplayController closeAd];
     self.ready = NO;
     self.loading = NO;
 }
 
-- (void)displayAd
-{
+- (void)displayAd {
     [self.adDisplayController displayAd];
     [self.adManager invalidateTimers];
     if ([[UIApplication sharedApplication] applicationState] != UIApplicationStateActive) {
@@ -378,9 +354,13 @@
     [self updateVisibility];
 }
 
+- (BOOL)isMaximizedControllerIsPresented {
+    return self.maximizedController.isViewLoaded && self.maximizedController.view.window;
+}
+
 - (void)timeOut {
     [self.adDisplayController stopHandlingRequests];
-    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeServer errorMessage:@"Time out" appkey:self.appKey];
     [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeHTMLRequestTimeOut]];
 }
 
@@ -391,26 +371,24 @@
 
 #pragma mark - LoopMeAdManagerDelegate
 
-- (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration
-{
+- (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration {
     if (!adConfiguration || adConfiguration.format != LoopMeAdFormatBanner) {
         NSString *errorMessage = @"Could not process ad: interstitial format expected.";
         LoopMeLogDebug(errorMessage);
         [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeIncorrectFormat]];
         return;
     }
-    [self.adDisplayController loadConfiguration:adConfiguration];
+    self.adConfiguration = adConfiguration;
+    [self.adDisplayController loadConfiguration:self.adConfiguration];
 }
 
-- (void)adManager:(LoopMeAdManager *)manager didFailToLoadAdWithError:(NSError *)error
-{
+- (void)adManager:(LoopMeAdManager *)manager didFailToLoadAdWithError:(NSError *)error {
     self.ready = NO;
     self.loading = NO;
     [self failedLoadingAdWithError:error];
 }
 
-- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager
-{
+- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager {
     self.ready = NO;
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidExpire:)]) {
         [self.delegate loopMeAdViewDidExpire:self];
@@ -433,21 +411,18 @@
 
 #pragma mark - LoopMeMaximizedAdViewDelegate
 
-- (void)maximizedAdViewDidPresent:(LoopMeMaximizedViewController *)maximizedViewController
-{
+- (void)maximizedAdViewDidPresent:(LoopMeMaximizedViewController *)maximizedViewController {
     [self.adDisplayController layoutSubviews];
     [self setAdVisible:YES];
 }
 
-- (void)maximizedViewControllerShouldRemove:(LoopMeMaximizedViewController *)maximizedViewController
-{
+- (void)maximizedViewControllerShouldRemove:(LoopMeMaximizedViewController *)maximizedViewController {
     [self.adDisplayController moveView:NO];
 }
 
 #pragma mark - LoopMeAdDisplayControllerDelegate
 
-- (UIView *)containerView
-{
+- (UIView *)containerView {
     BOOL isMaximized = [self.maximizedController isBeingPresented];
     
     if (self.isMinimized) {
@@ -459,13 +434,11 @@
     }
 }
 
-- (UIViewController *)viewControllerForPresentation
-{
+- (UIViewController *)viewControllerForPresentation {
     return self.delegate.viewControllerForPresentation;
 }
 
-- (void)adDisplayControllerDidFinishLoadingAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerDidFinishLoadingAd:(LoopMeAdDisplayController *)adDisplayController {
     self.loading = NO;
     self.ready = YES;
     if (self.isNeedsToBeDisplayedWhenReady) {
@@ -479,14 +452,12 @@
     }
 }
 
-- (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
-{
+- (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error {
     [self failedLoadingAdWithError:error];
 }
 
-- (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController
-{
-    if ([self.maximizedController isBeingPresented]) {
+- (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController {
+    if ([self isMaximizedControllerIsPresented]) {
         [self removeMaximizedView];
     }
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidReceiveTap:)]) {
@@ -494,15 +465,13 @@
     }
 }
 
-- (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewWillLeaveApplication:)]) {
         [self.delegate loopMeAdViewWillLeaveApplication:self];
     }
 }
 
-- (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController {
     [self performSelector:@selector(removeMinimizedView) withObject:nil afterDelay:1.0];
     
     if ([self.maximizedController isBeingPresented]) {
@@ -514,24 +483,25 @@
     }
 }
 
-- (void)adDisplayControllerDidDismissModal:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerDidDismissModal:(LoopMeAdDisplayController *)adDisplayController {
     self.visibilityUpdated = NO;
     [self updateVisibility];
 }
 
-- (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController {
+    if (self.adConfiguration.isMraid && [self.maximizedController presentingViewController]) {
+        [self removeMaximizedView];
+        return;
+    }
     [self closeAd];
+    [self removeFromSuperview];
 }
 
-- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController {
     [self expand];
 }
 
-- (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController {
     [self removeMaximizedView];
 }
 @end

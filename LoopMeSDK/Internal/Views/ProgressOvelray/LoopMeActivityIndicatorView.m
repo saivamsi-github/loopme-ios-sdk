@@ -26,8 +26,7 @@
 
 #pragma mark - Life Cycle
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         // Initialization code
@@ -37,16 +36,14 @@
     return self;
 }
 
-- (instancetype)init
-{
+- (instancetype)init {
     self = [self initWithFrame:CGRectMake(0, 0, 20, 10)];
     return self;
 }
 
 #pragma mark - Private
 
-- (void)setDefaultProperty
-{
+- (void)setDefaultProperty {
     _currentStep = 0;
     _dotCount = 3;
     _animating = NO;
@@ -58,8 +55,7 @@
 
 #pragma mark - Private
 
-- (UIColor*)currentBorderColor:(NSInteger)index
-{
+- (UIColor*)currentBorderColor:(NSInteger)index {
     if (self.currentStep == index) {
         return [UIColor whiteColor];
     } else if (self.currentStep < index) {
@@ -76,8 +72,7 @@
     }
 }
 
-- (UIColor*)currentInnerColor:(NSInteger)index
-{
+- (UIColor*)currentInnerColor:(NSInteger)index {
     if (self.currentStep == index) {
         return [UIColor colorWithRed:244.0f/255.0f
                                green:246.0f/255.0f
@@ -99,8 +94,7 @@
     }
 }
 
-- (CGRect)currentRect:(NSInteger)index
-{
+- (CGRect)currentRect:(NSInteger)index {
     if (self.currentStep == index) {
         return CGRectMake(self.bounds.size.width/(_dotCount*2),
                           2,
@@ -126,8 +120,7 @@
     }
 }
 
-- (void)repeatAnimation
-{
+- (void)repeatAnimation {
     self.currentStep = ++self.currentStep % (self.dotCount);
     
     if (self.currentStep == 0) {
@@ -140,8 +133,7 @@
 
 #pragma mark Drawing
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     
     if (self.isReverse) {
@@ -185,8 +177,7 @@
 
 #pragma mark - Public
 
-- (void)startAnimating
-{
+- (void)startAnimating {
     if (self.isAnimating) {
         return;
     }
@@ -204,8 +195,7 @@
     }
 }
 
-- (void)stopAnimating
-{
+- (void)stopAnimating {
     if (self.timer) {
         [self.timer invalidate];
         self.timer = nil;

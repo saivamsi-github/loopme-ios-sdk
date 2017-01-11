@@ -25,6 +25,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 @property (nonatomic, strong) NSMutableData *videoData;
 @property (nonatomic, strong) NSTimer *videoLoadingTimeout;
 
+@property (nonatomic, strong) NSURL *videoURL;
 @property (nonatomic, strong) NSString *videoPath;
 @property (nonatomic, assign) long long contentLength;
 @property (nonatomic, assign, getter=isDidLoadSent) BOOL didLoadSent;
@@ -37,8 +38,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 #pragma mark - Life Cycle
 
-- (instancetype)initWithVideoPath:(NSString *)videoPath delegate:(id<LoopMeVideoManagerDelegate>)delegate
-{
+- (instancetype)initWithVideoPath:(NSString *)videoPath delegate:(id<LoopMeVideoManagerDelegate>)delegate {
     self = [super init];
     if (self) {
         _videoPath = videoPath;
@@ -50,8 +50,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 #pragma mark - Private
 
-- (NSString *)assetsDirectory
-{
+- (NSString *)assetsDirectory {
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *documentsDirectory = paths[0];
     return [documentsDirectory stringByAppendingPathComponent:@"lm_assets/"];
@@ -64,15 +63,14 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 #pragma mark - Public
 
-- (void)loadVideoWithURL:(NSURL *)URL
-{
+- (void)loadVideoWithURL:(NSURL *)URL {
+    self.videoURL = URL;
     self.videoLoadingTimeout = [NSTimer scheduledTimerWithTimeInterval:videoLoadTimeOutInterval target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
     self.request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:videoLoadTimeOutInterval];
     self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self];
 }
 
-- (void)cancel
-{
+- (void)cancel {
     [self.connection cancel];
     self.connection = nil;
     [self invalidateTimers];
@@ -84,7 +82,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
     NSString *directoryPath = self.assetsDirectory;
     NSDirectoryEnumerator* enumerator = [fm enumeratorAtPath:directoryPath];
     
-    NSString* file;
+    NSString *file;
     while (file = [enumerator nextObject]) {
 
         NSDate *creationDate = [[fm attributesOfItemAtPath:[directoryPath stringByAppendingPathComponent:file] error:nil] fileCreationDate];
@@ -97,8 +95,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 }
 
 
-- (void)cacheVideoData:(NSData *)data
-{
+- (void)cacheVideoData:(NSData *)data {
     NSString *directoryPath = self.assetsDirectory;
     
     [[NSFileManager defaultManager] createDirectoryAtPath:directoryPath
@@ -119,8 +116,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
     }
 }
 
-- (BOOL)hasCachedURL:(NSURL *)URL
-{
+- (BOOL)hasCachedURL:(NSURL *)URL {
     if (!self.videoPath) {
         return NO;
     }
@@ -129,15 +125,13 @@ NSInteger const videoLoadTimeOutInterval = 180;
     return [[NSFileManager defaultManager] fileExistsAtPath:videoPath];
 }
 
-- (NSURL *)videoFileURL
-{
+- (NSURL *)videoFileURL {
     NSString *dataPath = [[self assetsDirectory] stringByAppendingPathComponent:self.videoPath];
     NSURL *URL = [NSURL fileURLWithPath:dataPath];
     return URL;
 }
 
-- (void)failedInitPlayer: (NSURL *)url
-{
+- (void)failedInitPlayer: (NSURL *)url {
     self.didLoadSent = NO;
     [self loadVideoWithURL:url];
 }
@@ -151,15 +145,14 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 - (void)timeOut {
     [self cancel];
-     [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeBadAsset errorMessage:[NSString stringWithFormat:@"Time out for video: %@", self.videoURL.absoluteString] appkey:self.delegate.appKey];
     NSError *error = [LoopMeError errorForStatusCode:LoopMeErrorCodeVideoDownloadTimeout];
     [self.delegate videoManager:self didFailLoadWithError:error];
 }
 
 #pragma mark - NSURLConnectionDelegate
 
-- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
-{
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
     if ([response respondsToSelector:@selector(statusCode)]) {
         NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
         if (statusCode == 200) {
@@ -169,41 +162,34 @@ NSInteger const videoLoadTimeOutInterval = 180;
             return;
         }
         if (statusCode != 206) {
-            if (statusCode == 504) {
-                [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorType504];
-            }
-            [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
-            [connection cancel];
+            [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeBadAsset errorMessage:[NSString stringWithFormat:@"response code %ld: %@",(long)statusCode, self.videoURL.absoluteString] appkey:self.delegate.appKey];
+    
             [self.delegate videoManager:self didFailLoadWithError:[LoopMeError errorForStatusCode:statusCode]];
         }
     }
 }
 
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data {
     [self.videoData appendData:data];
 }
 
-- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
-{
+- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error {
     if (error.code == -1005) {
         [self reconect];
         return;
     }
 
     if (error.code == NSURLErrorTimedOut) {
-        [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+        [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeBadAsset errorMessage:[NSString stringWithFormat:@"Time out for: %@", self.videoURL.absoluteString] appkey:self.delegate.appKey];
+    } else {
+        [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeBadAsset errorMessage:[NSString stringWithFormat:@"Response code %ld: %@", (long)error.code, self.videoURL.absoluteString] appkey:self.delegate.appKey];
     }
     
-    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeBadAssets];
-
-
     [self.delegate videoManager:self didFailLoadWithError:error];
     [self invalidateTimers];
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection
-{
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection {
     [self cacheVideoData:[NSData dataWithData:self.videoData]];
     self.videoData = nil;
     self.connection = nil;
@@ -212,8 +198,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 - (NSURLRequest *)connection: (NSURLConnection *)connection
              willSendRequest: (NSURLRequest *)request
-            redirectResponse: (NSURLResponse *)redirectResponse;
-{
+            redirectResponse: (NSURLResponse *)redirectResponse; {
     if (redirectResponse) {
         NSURL *newURL = [request URL];
         NSMutableURLRequest *newRequest = [self.request mutableCopy];

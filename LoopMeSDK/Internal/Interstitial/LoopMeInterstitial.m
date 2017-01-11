@@ -40,8 +40,7 @@
 
 #pragma mark - Life Cycle
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self unRegisterObserver];
     [_adManager invalidateTimers];
     [_adDisplayController stopHandlingRequests];
@@ -49,8 +48,7 @@
 }
 
 - (instancetype)initWithAppKey:(NSString *)appKey
-            delegate:(id<LoopMeInterstitialDelegate>)delegate
-{
+            delegate:(id<LoopMeInterstitialDelegate>)delegate {
     if (!appKey) {
         LoopMeLogError(@"AppKey cann't be nil");
         return nil;
@@ -76,39 +74,18 @@
     return self;
 }
 
-- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi
-{
+- (void)setDoNotLoadVideoWithoutWiFi:(BOOL)doNotLoadVideoWithoutWiFi {
     [LoopMeGlobalSettings sharedInstance].doNotLoadVideoWithoutWiFi = doNotLoadVideoWithoutWiFi;
 }
 
 #pragma mark - Class Methods
 
 + (LoopMeInterstitial *)interstitialWithAppKey:(NSString *)appKey
-                                      delegate:(id<LoopMeInterstitialDelegate>)delegate
-{
-    NSMutableArray *interstitials = [[self class] sharedInterstitials];
-    @synchronized(self) {
-        // Look for existing interstitial based on the appKey
-        LoopMeInterstitial *returnableInterstitial = nil;
-        for (LoopMeInterstitial *currentInterstitial in interstitials) {
-            if ([currentInterstitial.appKey isEqualToString:appKey]) {
-                returnableInterstitial = currentInterstitial;
-                returnableInterstitial.delegate = delegate;
-                break;
-            }
-        }
-        // Create a new interstitial instance for this appKey if one doesn't already exist.
-        if (!returnableInterstitial) {
-            returnableInterstitial = [[[self class] alloc] initWithAppKey:appKey
-                                                                 delegate:delegate];
-            [interstitials addObject:returnableInterstitial];
-        }
-        return returnableInterstitial;
-    }
+                                      delegate:(id<LoopMeInterstitialDelegate>)delegate {
+    return [[LoopMeInterstitial alloc] initWithAppKey:appKey delegate:delegate];
 }
 
-+ (NSMutableArray *)sharedInterstitials
-{
++ (NSMutableArray *)sharedInterstitials {
     static NSMutableArray *sharedInterstitials;
     
     @synchronized(self) {
@@ -119,8 +96,7 @@
     return sharedInterstitials;
 }
 
-+ (void)removeSharedInterstitial:(LoopMeInterstitial *)interstitial
-{
++ (void)removeSharedInterstitial:(LoopMeInterstitial *)interstitial {
     if ([[[self class] sharedInterstitials] containsObject:interstitial]) {
         [interstitial dismissAnimated:NO];
         LoopMeLogInfo(@"Removing interstitial ad for appKey:%@", interstitial.appKey);
@@ -132,21 +108,18 @@
 
 #pragma mark - Private
 
-- (void)unRegisterObserver
-{
+- (void)unRegisterObserver {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
 }
 
-- (void)registerObserver
-{
+- (void)registerObserver {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willResignActive:)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
 }
 
-- (void)willResignActive:(NSNotification *)n
-{
+- (void)willResignActive:(NSNotification *)n {
     [self dismissAnimated:NO];
 }
 
@@ -162,7 +135,7 @@
 
 - (void)timeOut {
     [self.adDisplayController stopHandlingRequests];
-    [LoopMeErrorEventSender sendEventTo:[LoopMeGlobalSettings sharedInstance].errorLinkFormat withError:LoopMeEventErrorTypeTimeOut];
+    [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeServer errorMessage:@"Time out" appkey:self.appKey];
     [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeHTMLRequestTimeOut]];
 }
 
@@ -173,18 +146,15 @@
 
 #pragma mark - Public Mehtods
 
-- (void)setServerBaseURL:(NSURL *)URL
-{
+- (void)setServerBaseURL:(NSURL *)URL {
     self.adManager.testServerBaseURL = URL;
 }
 
-- (void)loadAd
-{
+- (void)loadAd {
     [self loadAdWithTargeting:nil];
 }
 
-- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting
-{
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
     if (self.isLoading) {
         LoopMeLogInfo(@"Wait for previous loading ad process finish");
         return;
@@ -199,11 +169,9 @@
     [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
 }
 
-- (void)showFromViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
+- (void)showFromViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if (!self.isReady) {
         LoopMeLogInfo(@"Ad isn't ready to be displayed");
-        [[LoopMeLoggingSender sharedInstance] notReadyDisplay];
         return;
     }
 
@@ -213,6 +181,7 @@
     }
     [self.adManager invalidateTimers];
     [self.adInterstitialViewController setOrientation:self.adConfiguration.orientation];
+    [self.adInterstitialViewController setAllowOrientationChange:self.adConfiguration.allowOrientationChange];
     [self.adDisplayController displayAd];
     self.adDisplayController.visible = YES;
     [viewController presentViewController:self.adInterstitialViewController animated:animated completion:^{
@@ -224,8 +193,7 @@
     }];
 }
 
-- (void)dismissAnimated:(BOOL)animated
-{
+- (void)dismissAnimated:(BOOL)animated {
     if (!self.adInterstitialViewController.presentingViewController) {
         return;
     }
@@ -248,7 +216,6 @@
 #pragma mark - LoopMeAdManagerDelegate
 
 - (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration {
-    
     if (!adConfiguration || adConfiguration.format != LoopMeAdFormatInterstitial) {
         NSString *errorMessage = @"Could not process ad: interstitial format expected.";
         LoopMeLogDebug(errorMessage);
@@ -257,16 +224,18 @@
         return;
     }
     self.adConfiguration = adConfiguration;
-    [self.adDisplayController loadConfiguration:adConfiguration];
+    
+    if ([LoopMeGlobalSettings sharedInstance].liveDebugEnabled ) {
+        [LoopMeGlobalSettings sharedInstance].appKeyForLiveDebug = self.appKey;
+    }
+    [self.adDisplayController loadConfiguration:self.adConfiguration];
 }
 
-- (void)adManager:(LoopMeAdManager *)manager didFailToLoadAdWithError:(NSError *)error
-{
+- (void)adManager:(LoopMeAdManager *)manager didFailToLoadAdWithError:(NSError *)error {
     [self failedLoadingAdWithError:error];
 }
 
-- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager
-{
+- (void)adManagerDidExpireAd:(LoopMeAdManager *)manager {
     self.ready = NO;
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidExpire:)]) {
         [self.delegate loopMeInterstitialDidExpire:self];
@@ -277,22 +246,20 @@
 
 - (void)viewWillTransitionToSize:(CGSize)size {
     [self.adDisplayController layoutSubviewsToFrame:CGRectMake(0, 0, size.width, size.height)];
+    [self.adDisplayController resizeTo:size];
 }
 
 #pragma mark - LoopMeAdDisplayControllerDelegate
 
-- (UIViewController *)viewControllerForPresentation
-{
+- (UIViewController *)viewControllerForPresentation {
     return self.adInterstitialViewController;
 }
 
-- (UIView *)containerView
-{
+- (UIView *)containerView {
     return self.adInterstitialViewController.view;
 }
 
-- (void)adDisplayControllerDidFinishLoadingAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerDidFinishLoadingAd:(LoopMeAdDisplayController *)adDisplayController {
     self.loading = NO;
     self.ready = YES;
     [self invalidateTimer];
@@ -301,39 +268,33 @@
     }
 }
 
-- (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error
-{
+- (void)adDisplayController:(LoopMeAdDisplayController *)adDisplayController didFailToLoadAdWithError:(NSError *)error {
     [self failedLoadingAdWithError:error];
 }
 
-- (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidReceiveTap:)]) {
         [self.delegate loopMeInterstitialDidReceiveTap:self];
     }
 }
 
-- (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialWillLeaveApplication:)]) {
         [self.delegate loopMeInterstitialWillLeaveApplication:self];
     }
 }
 
-- (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialVideoDidReachEnd:)]) {
         [self.delegate loopMeInterstitialVideoDidReachEnd:self];
     }
 }
 
-- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerWillExpandAd:(LoopMeAdDisplayController *)adDisplayController {
     
 }
 
-- (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController
-{
+- (void)adDisplayControllerShouldCloseAd:(LoopMeAdDisplayController *)adDisplayController {
     [self dismissAnimated:NO];
 }
 

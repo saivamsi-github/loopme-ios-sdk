@@ -16,8 +16,7 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
 
 #pragma mark - Life Cycle
 
-- (instancetype)initWithData:(NSData *)data
-{
+- (instancetype)initWithData:(NSData *)data {
     self = [super init];
     if (self) {
         NSError *error = nil;
@@ -37,13 +36,7 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
 
 #pragma mark - Private
 
-- (void)mapAdConfigurationFromDictionary:(NSDictionary *)dictionary
-{
-    NSDictionary *tracking = dictionary[@"tracking"];
-    NSString *errorLink = tracking[@"error"][0];
-    errorLink = [errorLink stringByReplacingOccurrencesOfString:@"{error_type}" withString:@"%@"];
-    [LoopMeGlobalSettings sharedInstance].errorLinkFormat = errorLink;
-    
+- (void)mapAdConfigurationFromDictionary:(NSDictionary *)dictionary {
     NSDictionary *settings = dictionary[@"settings"];
     
     if ([settings[@"format"] isEqualToString:@"banner"]) {
@@ -51,6 +44,8 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     } else if ([settings[@"format"] isEqualToString:@"interstitial"]) {
         _format = LoopMeAdFormatInterstitial;
     }
+    
+    self.mraid = [[settings objectForKey:@"mraid"] boolValue];
     
     [[LoopMeGlobalSettings sharedInstance] setPreload25:[[settings objectForKey:@"preload25"] boolValue]];
     [[LoopMeGlobalSettings sharedInstance] setV360:[[settings objectForKey:@"v360"] boolValue]];

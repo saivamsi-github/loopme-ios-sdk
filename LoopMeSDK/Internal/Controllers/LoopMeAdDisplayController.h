@@ -22,6 +22,7 @@
 @property (nonatomic, assign, getter=isVisibleNoJS) BOOL visibleNoJS;
 @property (nonatomic, assign) BOOL forceHidden;
 @property (nonatomic, assign) BOOL destinationIsPresented;
+@property (nonatomic, strong) NSString *appKey;
 
 - (instancetype)initWithDelegate:(id<LoopMeAdDisplayControllerDelegate>)delegate;
 - (void)loadConfiguration:(LoopMeAdConfiguration *)configuration;
@@ -35,6 +36,9 @@
 
 - (void)expandReporting;
 - (void)collapseReporting;
+
+- (void)resizeTo:(CGSize)size;
+- (void)setExpandProperties:(LoopMeAdConfiguration *)configuration;
 
 @end
 
@@ -51,5 +55,6 @@
 - (void)adDisplayControllerWillCollapse:(LoopMeAdDisplayController *)adDisplayController;
 - (UIViewController *)viewControllerForPresentation;
 - (UIView *)containerView;
+- (NSString *)appKey;
 
 @end

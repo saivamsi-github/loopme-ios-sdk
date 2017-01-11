@@ -17,8 +17,7 @@
 
 @implementation LoopMeMaximizedViewController
 
-- (instancetype)initWithDelegate:(id<LoopMeMaximizedViewControllerDelegate, LoopMeAdDisplayControllerDelegate>)delegate
-{
+- (instancetype)initWithDelegate:(id<LoopMeMaximizedViewControllerDelegate, LoopMeAdDisplayControllerDelegate>)delegate {
     self = [super init];
     if (self) {
         _delegate = delegate;
@@ -54,15 +53,13 @@
 
 #pragma mark -- Public methods
 
-- (void)show
-{
+- (void)show {
     [[self.delegate viewControllerForPresentation] presentViewController:self animated:NO completion:^{
         [self.delegate maximizedAdViewDidPresent:self];
     }];
 }
 
-- (void)hide
-{
+- (void)hide {
     [self dismissViewControllerAnimated:NO completion:^{
         [self.delegate maximizedViewControllerShouldRemove:self];
     }];
@@ -70,23 +67,12 @@
 
 #pragma mark - Gestures
 
-- (void)didPinch:(UIPinchGestureRecognizer *)recognizer
-{
+- (void)didPinch:(UIPinchGestureRecognizer *)recognizer {
     if (recognizer.scale < 1) {
         [self dismissViewControllerAnimated:NO completion:^{
             [self.delegate maximizedViewControllerShouldRemove:self];
         }];
     }
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

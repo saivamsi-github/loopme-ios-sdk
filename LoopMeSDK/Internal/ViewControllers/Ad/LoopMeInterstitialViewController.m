@@ -12,14 +12,14 @@
 @interface LoopMeInterstitialViewController ()
 @property (nonatomic, assign, getter = isApplicationHasStatusBar) BOOL applicationHasStatusBar;
 @property (nonatomic, assign) LoopMeAdOrientation adOrientation;
+@property (nonatomic, assign) BOOL allowOrientationChange;
 @end
 
 @implementation LoopMeInterstitialViewController
 
 #pragma mark - Life Cycle
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
 }
@@ -39,23 +39,18 @@
 
 #pragma mark - Private
 
-- (void)setApplicationStatusBarHidden:(BOOL)hidden
-{
-    UIStatusBarAnimation animation = hidden ?
-        UIStatusBarAnimationFade : UIStatusBarAnimationNone;
-    [[UIApplication sharedApplication] setStatusBarHidden:hidden withAnimation:animation];
+- (void)setApplicationStatusBarHidden:(BOOL)hidden {
+    [self prefersStatusBarHidden];
 }
 
-- (BOOL)prefersStatusBarHidden
-{
+- (BOOL)prefersStatusBarHidden {
     return YES;
 }
 
 #pragma mark Orientation handling
 
-- (BOOL)shouldAutorotate
-{
-    return NO;
+- (BOOL)shouldAutorotate {
+    return self.allowOrientationChange;
 }
 
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
@@ -69,8 +64,7 @@
     }
 }
 
-- (UIInterfaceOrientationMask)supportedInterfaceOrientations
-{
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     UIInterfaceOrientationMask applicationSupportedOrientations =
     [[UIApplication sharedApplication] supportedInterfaceOrientationsForWindow:[UIApplication sharedApplication].keyWindow];
     UIInterfaceOrientationMask interstitialSupportedOrientations = applicationSupportedOrientations;
@@ -88,18 +82,27 @@
 #pragma mark - Public
 
 - (void)setOrientation:(LoopMeAdOrientation)orientation {
-    self.adOrientation = orientation;
+    _adOrientation = orientation;
+}
+
+- (void)setAllowOrientationChange:(BOOL)autorotate {
+    _allowOrientationChange = autorotate;
+}
+
+- (void)forceChangeOrientation {
+    UIViewController *presentingVC = self.presentingViewController;
+    [self dismissViewControllerAnimated:NO completion:^{
+        [presentingVC presentViewController:self animated:NO completion:nil];
+    }];
 }
 
 #pragma mark Notifications
 
-- (BOOL)canBecomeFirstResponder
-{
+- (BOOL)canBecomeFirstResponder {
     return YES;
 }
 
-- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event
-{
+- (void)motionEnded:(UIEventSubtype)motion withEvent:(UIEvent *)event {
     if (motion == UIEventSubtypeMotionShake) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"DeviceShaken" object:self];
     }
@@ -107,8 +110,7 @@
 
 #pragma mark - Public
 
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     if ([self.delegate respondsToSelector:@selector(viewWillTransitionToSize:)]) {
         [self.delegate viewWillTransitionToSize:size];
     }

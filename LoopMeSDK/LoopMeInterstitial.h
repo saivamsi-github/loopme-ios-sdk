@@ -68,8 +68,8 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
  * OR existing one from shared pool if it was previously created for given appKey (see `sharedInterstitials` method).
  * It guarantees that only one `LoopMeInterstitial` object per appKey can be initialized.
  * Use `removeSharedInterstitial` method to remove it completely from shared pool.
- * @param NSString appKey - unique identifier in LoopMe ad network.
- * @param id delegate
+ * @param appKey - unique identifier in LoopMe ad network.
+ * @param delegate - delegate
  */
 + (LoopMeInterstitial *)interstitialWithAppKey:(NSString *)appKey
                                       delegate:(id<LoopMeInterstitialDelegate>)delegate;
@@ -94,22 +94,22 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
 
 /**
  * See `loadAd` method
- * @param LoopMeTargeting targeting - represents `LoopMeTargeting` class to be used to get more relevant advertisement
+ * @param targeting - represents `LoopMeTargeting` class to be used to get more relevant advertisement
  */
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting;
 
 /**
  * Presents an interstitial ad modally.
  * This method presents interstitial ad if `ready` property is set to YES, otherwise this method does nothing
- * @param UIViewController viewController - view controller from which interstitial ad will be presented.
- * @param BOOL animated - animate presenting
+ * @param viewController view controller from which interstitial ad will be presented.
+ * @param animated - animate presenting
  */
 - (void)showFromViewController:(UIViewController *)viewController
                       animated:(BOOL)animated;
 /**
  * Dismisses an interstitial ad.
  * This method dismisses an interstitial ad and only if it is currently presented.
- * @param BOOL animated - animate dismissing
+ * @param animated - animate dismissing
  */
 - (void)dismissAnimated:(BOOL)animated;
 
@@ -120,14 +120,14 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
 
 /**
  * Triggered when the interstitial has successfully loaded the ad content
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialDidLoadAd:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when interstitial ad failed to load ad content
- * @param LoopMeInterstitial - interstitial object - the sender of message
- * @param NSError error - error of unsuccesful ad loading attempt
+ * @param  interstitial object - the sender of message
+ * @param error - error of unsuccesful ad loading attempt
  */
 - (void)loopMeInterstitial:(LoopMeInterstitial *)interstitial
   didFailToLoadAdWithError:(NSError *)error;
@@ -135,7 +135,7 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
 /**
  * Triggered only when interstitial's video was played until the end.
  * It won't be sent if the video was skipped or the interstitial was dissmissed during the displaying process
- * @param LoopMeInterstitial - interstitial object - the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialVideoDidReachEnd:(LoopMeInterstitial *)interstitial;
 
@@ -143,46 +143,46 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
  * Triggered when the interstitial's loaded ad content is expired.
  * Expiration happens when loaded ad content wasn't displayed during some period of time, approximately one hour.
  * Once the interstitial is presented on the screen, the expiration is no longer tracked and delegate won't receive this message
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialDidExpire:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when the interstitial ad will appear on the screen
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialWillAppear:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when the interstitial ad did appear on the screen
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialDidAppear:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when the interstitial ad will disappear from the screen
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialWillDisappear:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when the interstitial ad will disappear from the screen
  * Interstitial's `ready` property is set to NO
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialDidDisappear:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when the user taps the interstitial ad and the interstitial is about to perform extra actions
  * Those actions may lead to displaying a modal browser or storeKit view controller or leaving your application.
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialDidReceiveTap:(LoopMeInterstitial *)interstitial;
 
 /**
  * Triggered when your application is about to go to the background, initiated by the SDK.
  * This may happen in various ways, f.e if user wants open the SDK's browser web page in native browser or clicks on `mailto:` links...
- * @param LoopMeInterstitial - interstitial object the sender of message
+ * @param interstitial - object the sender of message
  */
 - (void)loopMeInterstitialWillLeaveApplication:(LoopMeInterstitial *)interstitial;
 

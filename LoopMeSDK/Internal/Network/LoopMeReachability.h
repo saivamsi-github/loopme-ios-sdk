@@ -58,8 +58,7 @@ typedef NS_ENUM(NSUInteger, LoopMeConnectionType) {
 
 #import <SystemConfiguration/SystemConfiguration.h>
 
-@interface LoopMeReachability: NSObject
-{
+@interface LoopMeReachability: NSObject {
     BOOL localWiFiRef;
     SCNetworkReachabilityRef reachabilityRef;
 }

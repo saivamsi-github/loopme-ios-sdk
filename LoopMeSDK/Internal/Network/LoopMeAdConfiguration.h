@@ -18,12 +18,21 @@ typedef NS_ENUM (NSInteger, LoopMeAdFormat) {
     LoopMeAdFormatBanner
 };
 
+struct LoopMeMRAIDExpandProperties {
+    int width;
+    int height;
+    BOOL useCustomClose;
+};
+
 @interface LoopMeAdConfiguration : NSObject
 
 - (instancetype)initWithData:(NSData *)data;
 
+@property (nonatomic, assign) BOOL allowOrientationChange;
 @property (nonatomic, assign) LoopMeAdFormat format;
 @property (nonatomic, assign) LoopMeAdOrientation orientation;
+@property (nonatomic, assign) struct LoopMeMRAIDExpandProperties expandProperties;
+@property (nonatomic, assign, getter=isMraid) BOOL mraid;
 @property (nonatomic, assign) NSInteger expirationTime;
 @property (nonatomic, strong) NSString *adResponseHTMLString;
 

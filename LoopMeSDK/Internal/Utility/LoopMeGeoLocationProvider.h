@@ -18,4 +18,5 @@
 
 + (LoopMeGeoLocationProvider *)sharedProvider;
 - (BOOL)isValidLocation;
+
 @end

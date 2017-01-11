@@ -7,8 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, LoopMeLogLevel)
-{
+typedef NS_ENUM(NSInteger, LoopMeLogLevel) {
     LoopMeLogLevelError  = 0,
     LoopMeLogLevelDebug  = 10,
     LoopMeLogLevelInfo   = 20,
@@ -27,7 +26,6 @@ void LoopMeLogError(NSString *format, ...);
 @property (nonatomic) NSTimeInterval videoLoadingTimeInterval;
 
 + (LoopMeLoggingSender *)sharedInstance;
-- (void)notReadyDisplay;
-- (void)propertyTriggered:(NSString *)name value:(id)value;
+- (void)writeLog:(NSString *)msg;
 
 @end

@@ -11,8 +11,7 @@
 
 @implementation LoopMeError
 
-+ (NSError *)errorForStatusCode:(NSInteger)statusCode
-{
++ (NSError *)errorForStatusCode:(NSInteger)statusCode {
     NSString *errorMessage;
     // Server returns 404 status code for incorrect appKey
     if (statusCode == 404) {
@@ -33,6 +32,8 @@
         errorMessage = @"Can not load video without Wi-Fi connection";
     } else if (statusCode == LoopMeErrorCodeVideoDownloadTimeout) {
         errorMessage = @"Video download timeout";
+    } else if (statusCode == LoopMeErrorCodeNoMraidJS) {
+        errorMessage = @"mraid.js does not exist in the project";
     } else {
         errorMessage = [NSString stringWithFormat:@"API returned status code %ld.", (long)statusCode];
     }

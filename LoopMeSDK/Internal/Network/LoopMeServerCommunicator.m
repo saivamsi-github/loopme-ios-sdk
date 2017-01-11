@@ -21,6 +21,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 @property (nonatomic, strong) NSURLSessionDataTask *sessionDataTask;
 @property (nonatomic, strong) NSURLSession *session;
 @property (nonatomic, strong) NSString *userAgent;
+@property (nonatomic, strong) NSString *appKey;
 
 @end
 
@@ -28,8 +29,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 #pragma mark - Properties
 
-- (NSString *)userAgent
-{
+- (NSString *)userAgent {
     if (_userAgent == nil) {
         _userAgent = [[[UIWebView alloc] init] stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
     }
@@ -38,14 +38,12 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 #pragma mark - Life Cycle
 
-- (void)dealloc
-{
+- (void)dealloc {
     [self.sessionDataTask cancel];
     [self.session finishTasksAndInvalidate];
 }
 
-- (instancetype)initWithDelegate:(id<LoopMeServerCommunicatorDelegate>)delegate
-{
+- (instancetype)initWithDelegate:(id<LoopMeServerCommunicatorDelegate>)delegate {
     self = [super init];
     if (self) {
         _delegate = delegate;
@@ -56,8 +54,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
 
 #pragma mark - Private
 
-- (NSURLSession *)adSession
-{
+- (NSURLSession *)adSession {
     NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     configuration.requestCachePolicy = NSURLRequestReloadIgnoringCacheData;
     configuration.timeoutIntervalForRequest = kLoopMeAdRequestTimeOutInterval;
@@ -66,22 +63,34 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
     return session;
 }
 
+- (NSString *)appKey {
+    if (!_appKey) {
+        if (!self.URL) {
+            return nil;
+        }
+        NSString *urlString = [self.URL absoluteString];
+        NSRange startRange = [urlString rangeOfString:@"ak="];
+        NSString *substringAppKey = [urlString substringFromIndex:startRange.location];
+        NSRange finishRange = [substringAppKey rangeOfString:@"&"];
+        
+        _appKey = [[substringAppKey substringToIndex:finishRange.location] substringFromIndex:3];
+    }
+    return _appKey;
+}
+
 #pragma mark - Public
 
-- (void)loadURL:(NSURL *)URL
-{
+- (void)loadURL:(NSURL *)URL {
     [self cancel];
     self.URL = URL;
-    
+
     __weak LoopMeServerCommunicator *safeSelf = self;
     
     self.sessionDataTask = [self.session dataTaskWithURL:URL completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
         if ([response respondsToSelector:@selector(statusCode)]) {
             NSInteger statusCode = [(NSHTTPURLResponse *)response statusCode];
             if (statusCode != 200) {
-                if (statusCode == 504) {
-                    [LoopMeErrorEventSender sendEventTo:nil withError:LoopMeEventErrorType504];
-                }
+                [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeServer errorMessage:[NSString stringWithFormat:@"Response code: %ld", (long)error.code] appkey:[self appKey]];
                 safeSelf.loading = NO;
                 [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:[LoopMeError errorForStatusCode:statusCode]];
                 return;
@@ -91,7 +100,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
         if (error) {
             safeSelf.loading = NO;
             if (error.code == NSURLErrorTimedOut) {
-                [LoopMeErrorEventSender sendEventTo:nil withError:LoopMeEventErrorTypeTimeOut];
+                [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeServer errorMessage:@"Time out" appkey:[self appKey]];
             }
             
             [safeSelf.delegate serverCommunicator:safeSelf didFailWithError:error];
@@ -107,8 +116,7 @@ const NSTimeInterval kLoopMeAdRequestTimeOutInterval = 20.0;
     self.loading = YES;
 }
 
-- (void)cancel
-{
+- (void)cancel {
     self.loading = NO;
     [self.sessionDataTask cancel];
     self.sessionDataTask = nil;

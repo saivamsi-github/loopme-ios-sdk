@@ -33,8 +33,11 @@
 
 #pragma mark - LifeCycle
 
-- (instancetype)initWithFrame:(CGRect)frame
-{
+- (void)dealloc {
+    
+}
+
+- (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
         self.alpha = 0.0;
@@ -107,34 +110,25 @@
         self.clipsToBounds = NO;
         
         [container addSubview:_cancelView];
-        [self registerForDeviceOrientationNotifications];
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [self unregisterForDeviceOrientationNotifications];
 }
 
 #pragma mark - Public Class Methods
 
 + (void)presentOverlayInWindow:(UIWindow *)window animated:(BOOL)animated
-                      delegate:(id<LoopMeProgressOverlayViewDelegate>)delegate
-{
+                      delegate:(id<LoopMeProgressOverlayViewDelegate>)delegate {
     if ([self windowHasExistingOverlay:window]) {
         return;
     }
 
     LoopMeProgressOverlayView *overlay = [[LoopMeProgressOverlayView alloc] initWithFrame:window.bounds];
     overlay.delegate = delegate;
-    [overlay setTransformForCurrentOrientationAnimated:NO];
     [window addSubview:overlay];
     [overlay displayUsingAnimation:animated];
 }
 
-+ (void)dismissOverlayFromWindow:(UIWindow *)window animated:(BOOL)animated
-{
++ (void)dismissOverlayFromWindow:(UIWindow *)window animated:(BOOL)animated {
     LoopMeProgressOverlayView *overlay = [self overlayForWindow:window];
     [overlay.activityIndicator stopAnimating];
     [overlay hideUsingAnimation:animated];
@@ -142,13 +136,11 @@
 
 #pragma mark - Internal Class Methods
 
-+ (BOOL)windowHasExistingOverlay:(UIWindow *)window
-{
++ (BOOL)windowHasExistingOverlay:(UIWindow *)window {
     return !![self overlayForWindow:window];
 }
 
-+ (LoopMeProgressOverlayView *)overlayForWindow:(UIWindow *)window
-{
++ (LoopMeProgressOverlayView *)overlayForWindow:(UIWindow *)window {
     NSArray *subviews = window.subviews;
     for (UIView *view in subviews) {
         if ([view isKindOfClass:[LoopMeProgressOverlayView class]]) {
@@ -160,8 +152,7 @@
 
 #pragma mark - Drawing and Layout
 
-- (void)drawRect:(CGRect)rect
-{
+- (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGColorSpaceRef colSp = CGColorSpaceCreateDeviceRGB();
     
@@ -173,32 +164,9 @@
     CGGradientRelease(gradient);
 }
 
-#pragma mark - Observing
-
-- (void)registerForDeviceOrientationNotifications
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(deviceOrientationDidChange:)
-                                                 name:UIDeviceOrientationDidChangeNotification
-                                               object:nil];
-}
-
-- (void)unregisterForDeviceOrientationNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:UIDeviceOrientationDidChangeNotification
-                                                  object:nil];
-}
-
-- (void)deviceOrientationDidChange:(NSNotification *)notification
-{
-    [self setTransformForCurrentOrientationAnimated:YES];
-}
-
 #pragma mark - Private
 
-- (void)displayUsingAnimation:(BOOL)animated
-{
+- (void)displayUsingAnimation:(BOOL)animated {
     if (animated) {
         [UIView beginAnimations:nil context:nil];
         self.alpha = 1.0;
@@ -212,23 +180,20 @@
                afterDelay:kProgressOverlayCloseButtonDelay];
 }
 
-- (void)enableCloseButton
-{
+- (void)enableCloseButton {
     self.cancelView.alpha = 0.1;
     [UIView beginAnimations:nil context:nil];
     self.cancelView.alpha = 0.7;
     [UIView commitAnimations];
 }
 
-- (void)closeButtonPressed
-{
+- (void)closeButtonPressed {
     if ([self.delegate respondsToSelector:@selector(overlayCancelButtonPressed:)]) {
         [self.delegate overlayCancelButtonPressed:self];
     }
 }
 
-- (void)hideUsingAnimation:(BOOL)animated
-{
+- (void)hideUsingAnimation:(BOOL)animated {
     if (animated) {
         [UIView beginAnimations:nil context:nil];
         [UIView setAnimationDelegate:self];
@@ -242,39 +207,8 @@
 }
 
 - (void)hideAnimationDidStop:(NSString *)animationID finished:(NSNumber *)finished 
-                     context:(void *)context
-{
+                     context:(void *)context {
     [self removeFromSuperview];
-}
-
-- (void)setTransformForCurrentOrientationAnimated:(BOOL)animated
-{
-    if (SYSTEM_VERSION_GREATER_THAN(@"8.0")) {
-        return;
-    }
-    
-    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
-    float angle = 0;
-    
-    if (UIInterfaceOrientationIsPortrait(orientation)) {
-        if (orientation == UIInterfaceOrientationPortraitUpsideDown) {
-            angle = M_PI;
-        }
-    } else {
-        if (orientation == UIInterfaceOrientationLandscapeLeft) {
-            angle = -M_PI_2;
-        } else {
-            angle = M_PI_2;
-        }
-    }
-    
-    if (animated) {
-        [UIView beginAnimations:nil context:nil];
-        [self setTransformForAllSubviews:CGAffineTransformMakeRotation(angle)];
-        [UIView commitAnimations];
-    } else {
-        [self setTransformForAllSubviews:CGAffineTransformMakeRotation(angle)];
-    }
 }
 
 - (void)setTransformForAllSubviews:(CGAffineTransform)transform
