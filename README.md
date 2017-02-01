@@ -3,7 +3,7 @@ You can find integration guide in our github [wiki](https://github.com/loopme/lo
 ## What's new ##
 **v6.2.0**
 
-- Support MRAID 2.0 spec
+- Improved compliancy with MRAID 2.0 spec
 - Enhanced logging of errors to speed up troubleshooting
 - bug fixed
 
