@@ -129,7 +129,9 @@
     self.ready = NO;
     [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitial:didFailToLoadAdWithError:)]) {
-        [self.delegate loopMeInterstitial:self didFailToLoadAdWithError:error];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitial:self didFailToLoadAdWithError:error];
+        });
     }
 }
 
@@ -177,7 +179,9 @@
 
     LoopMeLogDebug(@"Interstitial ad will appear");
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialWillAppear:)]) {
-        [self.delegate loopMeInterstitialWillAppear:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialWillAppear:self];
+        });
     }
     [self.adManager invalidateTimers];
     [self.adInterstitialViewController setOrientation:self.adConfiguration.orientation];
@@ -188,7 +192,9 @@
         [self.adDisplayController layoutSubviews];
         LoopMeLogDebug(@"Interstitial ad did appear");
         if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidAppear:)]) {
-            [self.delegate loopMeInterstitialDidAppear:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                 [self.delegate loopMeInterstitialDidAppear:self];
+            });
         }
     }];
 }
@@ -200,7 +206,9 @@
     self.ready = NO;
     LoopMeLogDebug(@"Interstitial ad will disappear");
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialWillDisappear:)]) {
-        [self.delegate loopMeInterstitialWillDisappear:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialWillDisappear:self];
+        });
     }
     
     [self.adDisplayController closeAd];
@@ -208,7 +216,9 @@
     [self.adInterstitialViewController.presentingViewController dismissViewControllerAnimated:animated completion:^{
         LoopMeLogDebug(@"Interstitial ad did disappear");
         if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidDisappear:)]) {
-            [self.delegate loopMeInterstitialDidDisappear:self];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                [self.delegate loopMeInterstitialDidDisappear:self];
+            });
         }
     }];
 }
@@ -232,13 +242,17 @@
 }
 
 - (void)adManager:(LoopMeAdManager *)manager didFailToLoadAdWithError:(NSError *)error {
-    [self failedLoadingAdWithError:error];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self failedLoadingAdWithError:error];
+    });
 }
 
 - (void)adManagerDidExpireAd:(LoopMeAdManager *)manager {
     self.ready = NO;
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidExpire:)]) {
-        [self.delegate loopMeInterstitialDidExpire:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialDidExpire:self];
+        });
     }
 }
 
@@ -264,7 +278,9 @@
     self.ready = YES;
     [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidLoadAd:)]) {
-        [self.delegate loopMeInterstitialDidLoadAd:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialDidLoadAd:self];
+        });
     }
 }
 
@@ -274,19 +290,25 @@
 
 - (void)adDisplayControllerDidReceiveTap:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialDidReceiveTap:)]) {
-        [self.delegate loopMeInterstitialDidReceiveTap:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialDidReceiveTap:self];
+        });
     }
 }
 
 - (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialWillLeaveApplication:)]) {
-        [self.delegate loopMeInterstitialWillLeaveApplication:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialWillLeaveApplication:self];
+        });
     }
 }
 
 - (void)adDisplayControllerVideoDidReachEnd:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeInterstitialVideoDidReachEnd:)]) {
-        [self.delegate loopMeInterstitialVideoDidReachEnd:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeInterstitialVideoDidReachEnd:self];
+        });
     }
 }
 

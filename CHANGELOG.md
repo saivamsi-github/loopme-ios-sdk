@@ -1,3 +1,7 @@
+## Version 6.2.1 (20.01.2017)
+
+- call delegate callbacks in main thread
+
 ## Version 6.2.0 (11.01.2017)
 
 - Support MRAID 2.0 spec

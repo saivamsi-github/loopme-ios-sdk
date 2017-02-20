@@ -60,8 +60,6 @@
 		474EC5421CEAF6BF0033C849 /* LoopMeGlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4ED1CEAF6BF0033C849 /* LoopMeGlobalSettings.m */; };
 		474EC5431CEAF6BF0033C849 /* LoopMeIdentityProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4EE1CEAF6BF0033C849 /* LoopMeIdentityProvider.h */; };
 		474EC5441CEAF6BF0033C849 /* LoopMeIdentityProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4EF1CEAF6BF0033C849 /* LoopMeIdentityProvider.m */; };
-		474EC5451CEAF6BF0033C849 /* LoopMeKeychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F01CEAF6BF0033C849 /* LoopMeKeychain.h */; };
-		474EC5461CEAF6BF0033C849 /* LoopMeKeychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4F11CEAF6BF0033C849 /* LoopMeKeychain.m */; };
 		474EC5471CEAF6BF0033C849 /* LoopMeLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F21CEAF6BF0033C849 /* LoopMeLogging.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		474EC5481CEAF6BF0033C849 /* LoopMeLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4F31CEAF6BF0033C849 /* LoopMeLogging.m */; };
 		474EC5491CEAF6BF0033C849 /* LoopMe360ViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F61CEAF6BF0033C849 /* LoopMe360ViewController.h */; };
@@ -143,8 +141,6 @@
 		474EC4ED1CEAF6BF0033C849 /* LoopMeGlobalSettings.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeGlobalSettings.m; sourceTree = "<group>"; };
 		474EC4EE1CEAF6BF0033C849 /* LoopMeIdentityProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeIdentityProvider.h; sourceTree = "<group>"; };
 		474EC4EF1CEAF6BF0033C849 /* LoopMeIdentityProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeIdentityProvider.m; sourceTree = "<group>"; };
-		474EC4F01CEAF6BF0033C849 /* LoopMeKeychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeKeychain.h; sourceTree = "<group>"; };
-		474EC4F11CEAF6BF0033C849 /* LoopMeKeychain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeKeychain.m; sourceTree = "<group>"; };
 		474EC4F21CEAF6BF0033C849 /* LoopMeLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeLogging.h; sourceTree = "<group>"; };
 		474EC4F31CEAF6BF0033C849 /* LoopMeLogging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeLogging.m; sourceTree = "<group>"; };
 		474EC4F61CEAF6BF0033C849 /* LoopMe360ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMe360ViewController.h; sourceTree = "<group>"; };
@@ -338,8 +334,6 @@
 				474EC4ED1CEAF6BF0033C849 /* LoopMeGlobalSettings.m */,
 				474EC4EE1CEAF6BF0033C849 /* LoopMeIdentityProvider.h */,
 				474EC4EF1CEAF6BF0033C849 /* LoopMeIdentityProvider.m */,
-				474EC4F01CEAF6BF0033C849 /* LoopMeKeychain.h */,
-				474EC4F11CEAF6BF0033C849 /* LoopMeKeychain.m */,
 				474EC4F21CEAF6BF0033C849 /* LoopMeLogging.h */,
 				474EC4F31CEAF6BF0033C849 /* LoopMeLogging.m */,
 			);
@@ -514,7 +508,6 @@
 				474EC53F1CEAF6BF0033C849 /* LoopMeGeoLocationProvider.h in Headers */,
 				474EC51F1CEAF6BF0033C849 /* LoopMeVideoCommunicatorProtocol.h in Headers */,
 				474EC52D1CEAF6BF0033C849 /* LoopMeURLResolver.h in Headers */,
-				474EC5451CEAF6BF0033C849 /* LoopMeKeychain.h in Headers */,
 				474EC5271CEAF6BF0033C849 /* LoopMeAdManager.h in Headers */,
 				474EC5551CEAF6BF0033C849 /* LoopMeActivityIndicatorView.h in Headers */,
 				474EC5361CEAF6BF0033C849 /* UIImage+LoopMeBinaryImage.h in Headers */,
@@ -623,7 +616,6 @@
 				474EC5441CEAF6BF0033C849 /* LoopMeIdentityProvider.m in Sources */,
 				474EC5421CEAF6BF0033C849 /* LoopMeGlobalSettings.m in Sources */,
 				474EC5481CEAF6BF0033C849 /* LoopMeLogging.m in Sources */,
-				474EC5461CEAF6BF0033C849 /* LoopMeKeychain.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

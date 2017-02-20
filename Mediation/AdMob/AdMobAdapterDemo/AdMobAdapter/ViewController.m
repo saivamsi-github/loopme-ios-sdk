@@ -31,7 +31,8 @@
     self.interstitial =
     [[GADInterstitial alloc] initWithAdUnitID:@"ca-app-pub-1429938838258792/7046510669"];
     self.interstitial.delegate = self;
-    GADRequest *request = [GADRequest request];;
+    GADRequest *request = [GADRequest request];
+    
     [self.interstitial loadRequest:request];
 }
 

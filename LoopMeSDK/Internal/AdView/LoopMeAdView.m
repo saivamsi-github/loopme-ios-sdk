@@ -317,7 +317,9 @@
     self.ready = NO;
     [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeAdView:didFailToLoadAdWithError:)]) {
-        [self.delegate loopMeAdView:self didFailToLoadAdWithError:error];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdView:self didFailToLoadAdWithError:error];
+        });
     }
 }
 
@@ -391,7 +393,9 @@
 - (void)adManagerDidExpireAd:(LoopMeAdManager *)manager {
     self.ready = NO;
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidExpire:)]) {
-        [self.delegate loopMeAdViewDidExpire:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdViewDidExpire:self];
+        });
     }
 }
 
@@ -448,7 +452,9 @@
     
     [self invalidateTimer];
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidLoadAd:)]) {
-        [self.delegate loopMeAdViewDidLoadAd:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdViewDidLoadAd:self];
+        });
     }
 }
 
@@ -461,13 +467,17 @@
         [self removeMaximizedView];
     }
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewDidReceiveTap:)]) {
-        [self.delegate loopMeAdViewDidReceiveTap:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdViewDidReceiveTap:self];
+        });
     }
 }
 
 - (void)adDisplayControllerWillLeaveApplication:(LoopMeAdDisplayController *)adDisplayController {
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewWillLeaveApplication:)]) {
-        [self.delegate loopMeAdViewWillLeaveApplication:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdViewWillLeaveApplication:self];
+        });
     }
 }
 
@@ -479,7 +489,9 @@
     }
     
     if ([self.delegate respondsToSelector:@selector(loopMeAdViewVideoDidReachEnd:)]) {
-        [self.delegate loopMeAdViewVideoDidReachEnd:self];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.delegate loopMeAdViewVideoDidReachEnd:self];
+        });
     }
 }
 
