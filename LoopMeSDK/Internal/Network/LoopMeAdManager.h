@@ -13,6 +13,15 @@
 @class LoopMeAdManager;
 @class LoopMeTargeting;
 
+extern const struct LoopMeIntegrationTypeStruct {
+    __unsafe_unretained NSString *normal;
+    __unsafe_unretained NSString *mopub;
+    __unsafe_unretained NSString *admob;
+    __unsafe_unretained NSString *fyber;
+    __unsafe_unretained NSString *unity;
+    __unsafe_unretained NSString *adobeAir;
+} LoopMeIntegrationType;
+
 @protocol LoopMeAdManagerDelegate;
 
 @interface LoopMeAdManager : NSObject
@@ -22,8 +31,7 @@
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
 
 - (instancetype)initWithDelegate:(id<LoopMeAdManagerDelegate>)delegate;
-- (void)loadAdWithAppKey:(NSString *)appKey;
-- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting;
+- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType;
 - (void)invalidateTimers;
 
 @end

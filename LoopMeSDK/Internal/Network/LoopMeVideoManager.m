@@ -12,7 +12,8 @@
 #import "LoopMeErrorEventSender.h"
 #import "LoopMeGlobalSettings.h"
 
-NSInteger const videoLoadTimeOutInterval = 180;
+NSInteger const kLoopMeVideoLoadTimeOutInterval = 180;
+NSTimeInterval const kLoopMeVideoCacheExpiredTime = (-1*32*60*60);
 
 @interface LoopMeVideoManager ()
 <
@@ -65,8 +66,8 @@ NSInteger const videoLoadTimeOutInterval = 180;
 
 - (void)loadVideoWithURL:(NSURL *)URL {
     self.videoURL = URL;
-    self.videoLoadingTimeout = [NSTimer scheduledTimerWithTimeInterval:videoLoadTimeOutInterval target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
-    self.request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:videoLoadTimeOutInterval];
+    self.videoLoadingTimeout = [NSTimer scheduledTimerWithTimeInterval:kLoopMeVideoLoadTimeOutInterval target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
+    self.request = [NSMutableURLRequest requestWithURL:URL cachePolicy:NSURLRequestReloadIgnoringCacheData timeoutInterval:kLoopMeVideoLoadTimeOutInterval];
     self.connection = [NSURLConnection connectionWithRequest:self.request delegate:self];
 }
 
@@ -86,7 +87,7 @@ NSInteger const videoLoadTimeOutInterval = 180;
     while (file = [enumerator nextObject]) {
 
         NSDate *creationDate = [[fm attributesOfItemAtPath:[directoryPath stringByAppendingPathComponent:file] error:nil] fileCreationDate];
-        NSDate *yesterDay = [[NSDate date] dateByAddingTimeInterval:(-1*32*60*60)];
+        NSDate *yesterDay = [[NSDate date] dateByAddingTimeInterval:kLoopMeVideoCacheExpiredTime];
         
         if ([creationDate compare:yesterDay] == NSOrderedAscending) {
             [fm removeItemAtPath:[directoryPath stringByAppendingPathComponent:file] error:nil];

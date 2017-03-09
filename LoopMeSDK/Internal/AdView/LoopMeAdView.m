@@ -139,6 +139,7 @@
         [self closeAd];
     } else {
         if (!self.isReady) {
+            [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeCustom errorMessage:@"Banner added to view, but wasn't ready to be displayed" appkey:self.appKey];
             self.needsToBeDisplayedWhenReady = YES;
         }
     }
@@ -189,10 +190,14 @@
 }
 
 - (void)loadAd {
-    [self loadAdWithTargeting:nil];
+    [self loadAdWithTargeting:nil integrationType:LoopMeIntegrationType.normal];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
+    [self loadAdWithTargeting:targeting integrationType:LoopMeIntegrationType.normal];
+}
+
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
     if (self.isLoading) {
         LoopMeLogInfo(@"Wait for previous loading ad process finish");
         return;
@@ -204,7 +209,7 @@
     self.ready = NO;
     self.loading = YES;
     self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
-    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
+    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType];
 }
 
 - (void)setAdVisible:(BOOL)visible {

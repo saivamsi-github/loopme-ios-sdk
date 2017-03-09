@@ -7,6 +7,8 @@
 //
 
 #import <AdSupport/AdSupport.h>
+#import <UIKit/UIKit.h>
+#import <sys/utsname.h>
 
 #import "LoopMeIdentityProvider.h"
 #import "LoopMeLogging.h"
@@ -36,6 +38,26 @@
 
 + (BOOL)deviceHasAdvertisingIdentifier {
     return !!NSClassFromString(@"ASIdentifierManager");
+}
+
++ (NSString *)deviceType {
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
+        return @"phone";
+    } else if([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        return @"tablet";
+    }
+    
+    return @"unknown";
+}
+
++ (NSString *)deviceModel {
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    NSString *currentModel = [NSString stringWithCString:systemInfo.machine
+                                         encoding:NSUTF8StringEncoding];
+    
+    return currentModel;
 }
 
 @end

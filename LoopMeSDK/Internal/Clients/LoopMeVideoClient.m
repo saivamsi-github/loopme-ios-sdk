@@ -205,15 +205,7 @@ const CGFloat kOneFrameDuration = 0.03;
 - (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate {
     if (self = [super init]) {
         _delegate = delegate;
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(routeChange:)
-                                                     name:AVAudioSessionRouteChangeNotification
-                                                   object:nil];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(willEnterForeground:)
-                                                     name:UIApplicationWillEnterForegroundNotification
-                                                   object:nil];
-
+        [self registerObservers];
     }
     return self;
 }
@@ -248,12 +240,31 @@ const CGFloat kOneFrameDuration = 0.03;
 
 #pragma mark Observers & Timers
 
+- (void)registerObservers {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(routeChange:)
+                                                 name:AVAudioSessionRouteChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(willEnterForeground:)
+                                                 name:UIApplicationWillEnterForegroundNotification
+                                               object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didBecomeAcive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
+}
+
 - (void)unregisterObservers {
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:AVAudioSessionRouteChangeNotification
                                                   object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:UIApplicationWillEnterForegroundNotification
+                                                  object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:UIApplicationDidBecomeActiveNotification
                                                   object:nil];
 }
 
@@ -271,7 +282,7 @@ const CGFloat kOneFrameDuration = 0.03;
                                          }];
 }
 
-- (void)routeChange:(NSNotification*)notification {
+- (void)routeChange:(NSNotification *)notification {
     NSDictionary *interuptionDict = notification.userInfo;
     NSInteger routeChangeReason = [[interuptionDict valueForKey:AVAudioSessionRouteChangeReasonKey] integerValue];
     switch (routeChangeReason) {
@@ -286,11 +297,16 @@ const CGFloat kOneFrameDuration = 0.03;
     }
 }
 
-- (void)willEnterForeground:(NSNotification*)notification {
+- (void)willEnterForeground:(NSNotification *)notification {
     if (!self.isStatusSent && self.player) {
         [self setupPlayerWithFileURL:[self currentAssetURLForPlayer:self.player]];
     }
 }
+
+- (void)didBecomeAcive:(NSNotification *)notification {
+    [self.delegate videoClientDidBecomeActive:self];
+}
+
 #pragma mark Player state notification
 
 - (void)playerItemDidReachEnd:(id)object {

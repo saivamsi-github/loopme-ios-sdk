@@ -110,6 +110,7 @@
 
 - (void)unRegisterObserver {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
 }
 
 - (void)registerObserver {
@@ -117,12 +118,20 @@
                                              selector:@selector(willResignActive:)
                                                  name:UIApplicationWillResignActiveNotification
                                                object:nil];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didBecomeActive:)
+                                                 name:UIApplicationDidBecomeActiveNotification
+                                               object:nil];
 }
 
 - (void)willResignActive:(NSNotification *)n {
-    [self dismissAnimated:NO];
+    self.adDisplayController.visible = NO;
 }
 
+- (void)didBecomeActive:(NSNotification *)n {
+    self.adDisplayController.visible = YES;
+}
 
 - (void)failedLoadingAdWithError:(NSError *)error {
     self.loading = NO;
@@ -157,6 +166,10 @@
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
+    [self loadAdWithTargeting:targeting integrationType:LoopMeIntegrationType.normal];
+}
+
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
     if (self.isLoading) {
         LoopMeLogInfo(@"Wait for previous loading ad process finish");
         return;
@@ -168,12 +181,13 @@
     self.loading = YES;
     self.ready = NO;
     self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
-    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting];
+    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType];
 }
 
 - (void)showFromViewController:(UIViewController *)viewController animated:(BOOL)animated {
     if (!self.isReady) {
         LoopMeLogInfo(@"Ad isn't ready to be displayed");
+        [LoopMeErrorEventSender sendError:LoopMeEventErrorTypeCustom errorMessage:@"Ad isn't ready to be displayed" appkey:self.appKey];
         return;
     }
 

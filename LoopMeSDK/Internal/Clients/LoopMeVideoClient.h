@@ -46,6 +46,7 @@ extern const struct LoopMeVideoStateStruct
 - (void)videoClient:(LoopMeVideoClient *)client setupView:(UIView *)view;
 - (void)videoClientDidReachEnd:(LoopMeVideoClient *)client;
 - (void)videoClient:(LoopMeVideoClient *)client didFailToLoadVideoWithError:(NSError *)error;
+- (void)videoClientDidBecomeActive:(LoopMeVideoClient *)client;
 - (UIViewController *)viewControllerForPresentation;
 - (NSString *)appKey;
 

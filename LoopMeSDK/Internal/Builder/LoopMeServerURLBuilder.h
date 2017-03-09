@@ -10,9 +10,8 @@
 
 @interface LoopMeServerURLBuilder : NSObject
 
-+ (NSURL *)URLWithAppKey:(NSString *)appKey;
-+ (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting;
-+ (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting baseURL:(NSURL *)baseURL;
++ (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType;
++ (NSURL *)URLWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting baseURL:(NSURL *)baseURL integrationType:(NSString *)integrationType;
 
 + (NSString *)packageIDs;
 

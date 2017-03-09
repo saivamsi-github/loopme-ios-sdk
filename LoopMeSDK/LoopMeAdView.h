@@ -106,6 +106,12 @@ static NSString * const TEST_APP_KEY_MPU = @"test_mpu";
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting;
 
 /**
+ * See `loadAd` method. 
+ * Not for use by the publisher.
+ */
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType;
+
+/**
  * Manages the ad visibility inside the scrollable content aka UITableView/UICollectionView scrollViews
  * It automatically calculates the ad area visibility and pauses any activity currently happening inside the ad 
  * (whether it's a video or animations) if the ad is less than 50% visible, otherwise resumes

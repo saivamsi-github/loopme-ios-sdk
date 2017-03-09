@@ -10,5 +10,7 @@
 
 + (BOOL)advertisingTrackingEnabled;
 + (NSString *)advertisingTrackingDeviceIdentifier;
++ (NSString *)deviceModel;
++ (NSString *)deviceType;
 
 @end

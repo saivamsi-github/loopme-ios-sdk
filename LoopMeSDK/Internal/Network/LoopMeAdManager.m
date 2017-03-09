@@ -15,6 +15,15 @@
 #import "LoopMeAdDisplayController.h"
 #import "LoopMeLogging.h"
 
+const struct LoopMeIntegrationTypeStruct LoopMeIntegrationType = {
+    .normal = @"normal",
+    .mopub = @"mopub",
+    .admob = @"admob",
+    .fyber = @"fyber",
+    .unity = @"unity",
+    .adobeAir = @"adobe_air"
+};
+
 @interface LoopMeAdManager ()
 <
     LoopMeServerCommunicatorDelegate
@@ -79,18 +88,14 @@
 
 #pragma mark - Public
 
-- (void)loadAdWithAppKey:(NSString *)appKey {
-    [self loadAdWithAppKey:appKey targeting:nil];
-}
-
-- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting {
+- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
     if (self.testServerBaseURL) {
         [self loadAdWithURL:[LoopMeServerURLBuilder URLWithAppKey:appKey
                                                         targeting:targeting
-                                                          baseURL:self.testServerBaseURL]];
+                                                          baseURL:self.testServerBaseURL integrationType:integrationType]];
     } else {
         [self loadAdWithURL:[LoopMeServerURLBuilder URLWithAppKey:appKey
-                                                        targeting:targeting]];
+                                                        targeting:targeting integrationType:integrationType]];
     }
 }
 

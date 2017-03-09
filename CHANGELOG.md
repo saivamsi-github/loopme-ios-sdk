@@ -1,3 +1,7 @@
+## Version 6.2.2 (09.02.2017)
+
+- ads delivery performance improvements
+
 ## Version 6.2.1 (20.01.2017)
 
 - call delegate callbacks in main thread

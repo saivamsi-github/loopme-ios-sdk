@@ -30,20 +30,15 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 
 #pragma mark - Class Methods
 
-+ (NSURL *)URLWithAppKey:(NSString *)appKey {
-    return [LoopMeServerURLBuilder URLWithAppKey:appKey targeting:nil
-                                         baseURL:[NSURL URLWithString:kLoopMeAPIURL]];
-}
-
 + (NSURL *)URLWithAppKey:(NSString *)appKey
-               targeting:(LoopMeTargeting *)targeting {
+               targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
     return [LoopMeServerURLBuilder URLWithAppKey:appKey targeting:targeting
-                                         baseURL:[NSURL URLWithString:kLoopMeAPIURL]];
+                                         baseURL:[NSURL URLWithString:kLoopMeAPIURL] integrationType:integrationType];
 }
 
 + (NSURL *)URLWithAppKey:(NSString *)appKey
-               targeting:(LoopMeTargeting *)targeting
-                 baseURL:(NSURL *)baseURL {
+               targeting:(LoopMeTargeting *)targeting baseURL:(NSURL *)baseURL
+         integrationType:(NSString *)integrationType {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[@"ak"] = appKey;
     parameters[@"vt"] = [self parameterForUniqueIdentifier];
@@ -60,6 +55,9 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     parameters[@"plg"] = [self parameterForBatteryState];
     parameters[@"chl"] = [NSString stringWithFormat:@"%f", [UIDevice currentDevice].batteryLevel];
     parameters[@"v360"] = @"1";
+    parameters[@"devicemodel"] = [LoopMeIdentityProvider deviceModel];
+    parameters[@"devicetype"] = [LoopMeIdentityProvider deviceType];
+    parameters[@"it"] = integrationType;
 
     if (targeting) {
         if (targeting.keywordsParameter)

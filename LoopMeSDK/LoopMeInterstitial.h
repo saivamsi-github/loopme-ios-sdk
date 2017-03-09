@@ -99,6 +99,12 @@ static NSString * const TEST_APP_KEY_INTERSTITIAL_LANDSCAPE = @"test_interstitia
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting;
 
 /**
+ * See `loadAd` method.
+ * Not for use by the publisher.
+ */
+- (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType;
+
+/**
  * Presents an interstitial ad modally.
  * This method presents interstitial ad if `ready` property is set to YES, otherwise this method does nothing
  * @param viewController view controller from which interstitial ad will be presented.

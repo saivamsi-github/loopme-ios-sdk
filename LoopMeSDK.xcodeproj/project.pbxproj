@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		47FF10011E6D77FC00558FA6 /* UniversalLib */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 47FF10021E6D77FC00558FA6 /* Build configuration list for PBXAggregateTarget "UniversalLib" */;
+			buildPhases = (
+				47FF10051E6D781300558FA6 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = UniversalLib;
+			productName = UniversalLib;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		4705E95C1E264CBE000B795F /* LoopMeMRAIDClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 4705E95A1E264CBE000B795F /* LoopMeMRAIDClient.h */; };
 		4705E95D1E264CBE000B795F /* LoopMeMRAIDClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 4705E95B1E264CBE000B795F /* LoopMeMRAIDClient.m */; };
@@ -60,7 +74,7 @@
 		474EC5421CEAF6BF0033C849 /* LoopMeGlobalSettings.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4ED1CEAF6BF0033C849 /* LoopMeGlobalSettings.m */; };
 		474EC5431CEAF6BF0033C849 /* LoopMeIdentityProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4EE1CEAF6BF0033C849 /* LoopMeIdentityProvider.h */; };
 		474EC5441CEAF6BF0033C849 /* LoopMeIdentityProvider.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4EF1CEAF6BF0033C849 /* LoopMeIdentityProvider.m */; };
-		474EC5471CEAF6BF0033C849 /* LoopMeLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F21CEAF6BF0033C849 /* LoopMeLogging.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		474EC5471CEAF6BF0033C849 /* LoopMeLogging.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F21CEAF6BF0033C849 /* LoopMeLogging.h */; };
 		474EC5481CEAF6BF0033C849 /* LoopMeLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4F31CEAF6BF0033C849 /* LoopMeLogging.m */; };
 		474EC5491CEAF6BF0033C849 /* LoopMe360ViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC4F61CEAF6BF0033C849 /* LoopMe360ViewController.h */; };
 		474EC54A1CEAF6BF0033C849 /* LoopMe360ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC4F71CEAF6BF0033C849 /* LoopMe360ViewController.m */; };
@@ -80,9 +94,9 @@
 		474EC5581CEAF6BF0033C849 /* LoopMeProgressOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC50C1CEAF6BF0033C849 /* LoopMeProgressOverlayView.m */; };
 		474EC5591CEAF6BF0033C849 /* LoopMeAdWebView.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC50E1CEAF6BF0033C849 /* LoopMeAdWebView.h */; };
 		474EC55A1CEAF6BF0033C849 /* LoopMeAdWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 474EC50F1CEAF6BF0033C849 /* LoopMeAdWebView.m */; };
-		474EC55B1CEAF6BF0033C849 /* LoopMeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5101CEAF6BF0033C849 /* LoopMeAdView.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		474EC55C1CEAF6BF0033C849 /* LoopMeInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5111CEAF6BF0033C849 /* LoopMeInterstitial.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		474EC55D1CEAF6BF0033C849 /* LoopMeTargeting.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5121CEAF6BF0033C849 /* LoopMeTargeting.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		474EC55B1CEAF6BF0033C849 /* LoopMeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5101CEAF6BF0033C849 /* LoopMeAdView.h */; };
+		474EC55C1CEAF6BF0033C849 /* LoopMeInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5111CEAF6BF0033C849 /* LoopMeInterstitial.h */; };
+		474EC55D1CEAF6BF0033C849 /* LoopMeTargeting.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5121CEAF6BF0033C849 /* LoopMeTargeting.h */; };
 		47EAE8621D23E6DC00FB7638 /* LoopMeInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EAE8611D23E6DC00FB7638 /* LoopMeInterstitial.m */; };
 		62777CFF15B5996000A7E4CA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62777CFE15B5996000A7E4CA /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
@@ -549,6 +563,13 @@
 			attributes = {
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "";
+				TargetAttributes = {
+					47FF10011E6D77FC00558FA6 = {
+						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = Q876VLK88R;
+						ProvisioningStyle = Automatic;
+					};
+				};
 			};
 			buildConfigurationList = 62777CF315B5995F00A7E4CA /* Build configuration list for PBXProject "LoopMeSDK" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -570,9 +591,26 @@
 			projectRoot = "";
 			targets = (
 				62777CFA15B5995F00A7E4CA /* LoopMeSDK */,
+				47FF10011E6D77FC00558FA6 /* UniversalLib */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		47FF10051E6D781300558FA6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# define output folder environment variable\nUNIVERSAL_OUTPUTFOLDER=${BUILD_DIR}/${CONFIGURATION}-universal\n\n# Step 1. Build Device and Simulator versions\nxcodebuild -target ${PROJECT_NAME} ONLY_ACTIVE_ARCH=NO -configuration ${CONFIGURATION} -sdk iphoneos  BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\nxcodebuild -target ${PROJECT_NAME} -configuration ${CONFIGURATION} -sdk iphonesimulator -arch x86_64 -arch i386 -arch armv7 -arch armv7s -arch arm64 BUILD_DIR=\"${BUILD_DIR}\" BUILD_ROOT=\"${BUILD_ROOT}\"\n\n# make sure the output directory exists\nmkdir -p \"${UNIVERSAL_OUTPUTFOLDER}\"\n\n# Step 2. Create universal binary file using lipo\nlipo -create -output \"${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" \"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\"\n\necho \"Universal library can be found here:\"\necho ${UNIVERSAL_OUTPUTFOLDER}/lib${PROJECT_NAME}.a\n\n# Last touch. copy the header files. Just for convenience\ncp -R \"${BUILD_DIR}/${CONFIGURATION}-iphoneos/include\" \"${UNIVERSAL_OUTPUTFOLDER}/\"";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		62777CF615B5995F00A7E4CA /* Sources */ = {
@@ -622,6 +660,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		47FF10031E6D77FC00558FA6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q876VLK88R;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		47FF10041E6D77FC00558FA6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEVELOPMENT_TEAM = Q876VLK88R;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		62777D0615B5996000A7E4CA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -769,6 +823,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		47FF10021E6D77FC00558FA6 /* Build configuration list for PBXAggregateTarget "UniversalLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47FF10031E6D77FC00558FA6 /* Debug */,
+				47FF10041E6D77FC00558FA6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		62777CF315B5995F00A7E4CA /* Build configuration list for PBXProject "LoopMeSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

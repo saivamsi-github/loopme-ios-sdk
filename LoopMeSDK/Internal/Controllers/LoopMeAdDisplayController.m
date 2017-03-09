@@ -56,6 +56,8 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 @property (nonatomic, strong) UIPanGestureRecognizer *panWebView;
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchWebView;
 
+@property (nonatomic, assign) BOOL adDisplayed;
+
 - (void)deviceShaken;
 - (BOOL)shouldIntercept:(NSURL *)URL
          navigationType:(UIWebViewNavigationType)navigationType;
@@ -82,7 +84,7 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 }
 
 - (void)setVisible:(BOOL)visible {
-    if (_visible != visible) {
+    if (self.adDisplayed && _visible != visible) {
         
         if (_forceHidden) {
             _visible = NO;
@@ -287,6 +289,7 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 }
 
 - (void)displayAd {
+    self.adDisplayed = YES;
     self.videoClient.viewController = [self.delegate viewControllerForPresentation];
     self.webView.frame = self.delegate.containerView.bounds;
     
@@ -327,6 +330,7 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 - (void)closeAd {
     [self stopHandlingRequests];
     self.visible = NO;
+    self.adDisplayed = NO;
     [self.webView removeGestureRecognizer:self.panWebView];
     [self.webView removeGestureRecognizer:self.pinchWebView];
     [self.JSClient executeEvent:LoopMeEvent.state forNamespace:kLoopMeNamespaceWebview param:LoopMeWebViewState.closed];
@@ -602,6 +606,13 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 - (void)videoClient:(LoopMeVideoClient *)client setupView:(UIView *)view {
     view.frame = self.delegate.containerView.bounds;
     [[self.delegate containerView] insertSubview:view belowSubview:self.webView];
+}
+
+- (void)videoClientDidBecomeActive:(LoopMeVideoClient *)client {
+    [self layoutSubviews];
+    if (/*!self.isDestIsShown && ![self.videoClient playerReachedEnd] && !self.isEndCardClicked && */self.visible) {
+        [self.videoClient play];
+    }
 }
 
 @end
