@@ -31,7 +31,8 @@ extern const struct LoopMeIntegrationTypeStruct {
 @property (nonatomic, assign, readonly, getter = isLoading) BOOL loading;
 
 - (instancetype)initWithDelegate:(id<LoopMeAdManagerDelegate>)delegate;
-- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType;
+- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting
+         integrationType:(NSString *)integrationType adSpotSize:(CGSize)size;
 - (void)invalidateTimers;
 
 @end

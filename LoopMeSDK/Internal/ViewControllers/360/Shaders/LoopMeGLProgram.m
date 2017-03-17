@@ -70,7 +70,8 @@ GLchar* infolog);
 
 - (id)initWithVertexShaderString:(NSString *)vShaderString
           fragmentShaderFilename:(NSString *)fShaderFilename; {
-    NSString *fragShaderPathname = [[NSBundle mainBundle] pathForResource:fShaderFilename ofType:@"fsh"];
+    NSBundle *resourcesBundle = [NSBundle bundleWithURL:[[NSBundle mainBundle] URLForResource:@"Resources" withExtension:@"bundle"]];
+    NSString *fragShaderPathname = [resourcesBundle pathForResource:fShaderFilename ofType:@"fsh"];
     NSString *fragmentShaderString = [NSString stringWithContentsOfFile:fragShaderPathname encoding:NSUTF8StringEncoding error:nil];
   
     self = [self initWithVertexShaderString:vShaderString fragmentShaderString:fragmentShaderString];
@@ -80,10 +81,11 @@ GLchar* infolog);
 
 - (id)initWithVertexShaderFilename:(NSString *)vShaderFilename
             fragmentShaderFilename:(NSString *)fShaderFilename; {
-    NSString *vertShaderPathname = [[NSBundle mainBundle] pathForResource:vShaderFilename ofType:@"vsh"];
+    NSBundle *resourcesBundle = [NSBundle bundleWithURL:[[NSBundle mainBundle] URLForResource:@"Resources" withExtension:@"bundle"]];
+    NSString *vertShaderPathname = [resourcesBundle pathForResource:vShaderFilename ofType:@"vsh"];
     NSString *vertexShaderString = [NSString stringWithContentsOfFile:vertShaderPathname encoding:NSUTF8StringEncoding error:nil];
   
-    NSString *fragShaderPathname = [[NSBundle mainBundle] pathForResource:fShaderFilename ofType:@"fsh"];
+    NSString *fragShaderPathname = [resourcesBundle pathForResource:fShaderFilename ofType:@"fsh"];
     NSString *fragmentShaderString = [NSString stringWithContentsOfFile:fragShaderPathname encoding:NSUTF8StringEncoding error:nil];
   
     self = [self initWithVertexShaderString:vertexShaderString fragmentShaderString:fragmentShaderString];

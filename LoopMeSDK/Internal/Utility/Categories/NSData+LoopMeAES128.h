@@ -9,6 +9,6 @@
 
 @interface NSData (LoopMeAES128)
 
-- (NSData *)AES128Encrypt;
+- (NSData *)lm_AES128Encrypt;
 
 @end

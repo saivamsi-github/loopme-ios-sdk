@@ -12,5 +12,6 @@
 + (NSString *)advertisingTrackingDeviceIdentifier;
 + (NSString *)deviceModel;
 + (NSString *)deviceType;
++ (NSString *)phoneName;
 
 @end

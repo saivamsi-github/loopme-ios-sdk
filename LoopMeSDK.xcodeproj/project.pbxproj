@@ -97,6 +97,9 @@
 		474EC55B1CEAF6BF0033C849 /* LoopMeAdView.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5101CEAF6BF0033C849 /* LoopMeAdView.h */; };
 		474EC55C1CEAF6BF0033C849 /* LoopMeInterstitial.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5111CEAF6BF0033C849 /* LoopMeInterstitial.h */; };
 		474EC55D1CEAF6BF0033C849 /* LoopMeTargeting.h in Headers */ = {isa = PBXBuildFile; fileRef = 474EC5121CEAF6BF0033C849 /* LoopMeTargeting.h */; };
+		47E7CF4D1E71B2FA0041FC55 /* FlashRuntimeExtensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E7CF4A1E71B2FA0041FC55 /* FlashRuntimeExtensions.h */; };
+		47E7CF4E1E71B2FA0041FC55 /* LoopMeANE.h in Headers */ = {isa = PBXBuildFile; fileRef = 47E7CF4B1E71B2FA0041FC55 /* LoopMeANE.h */; };
+		47E7CF4F1E71B2FA0041FC55 /* LoopMeANE.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E7CF4C1E71B2FA0041FC55 /* LoopMeANE.m */; };
 		47EAE8621D23E6DC00FB7638 /* LoopMeInterstitial.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EAE8611D23E6DC00FB7638 /* LoopMeInterstitial.m */; };
 		62777CFF15B5996000A7E4CA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62777CFE15B5996000A7E4CA /* Foundation.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 /* End PBXBuildFile section */
@@ -180,6 +183,9 @@
 		474EC5101CEAF6BF0033C849 /* LoopMeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeAdView.h; sourceTree = "<group>"; };
 		474EC5111CEAF6BF0033C849 /* LoopMeInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeInterstitial.h; sourceTree = "<group>"; };
 		474EC5121CEAF6BF0033C849 /* LoopMeTargeting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeTargeting.h; sourceTree = "<group>"; };
+		47E7CF4A1E71B2FA0041FC55 /* FlashRuntimeExtensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FlashRuntimeExtensions.h; path = "../loopme-ios-sdk-develop/ANE/FlashRuntimeExtensions.h"; sourceTree = "<group>"; };
+		47E7CF4B1E71B2FA0041FC55 /* LoopMeANE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoopMeANE.h; path = "../loopme-ios-sdk-develop/ANE/LoopMeANE.h"; sourceTree = "<group>"; };
+		47E7CF4C1E71B2FA0041FC55 /* LoopMeANE.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LoopMeANE.m; path = "../loopme-ios-sdk-develop/ANE/LoopMeANE.m"; sourceTree = "<group>"; };
 		47EAE8611D23E6DC00FB7638 /* LoopMeInterstitial.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeInterstitial.m; sourceTree = "<group>"; };
 		62777CFB15B5995F00A7E4CA /* libLoopMeSDK.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libLoopMeSDK.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		62777CFE15B5996000A7E4CA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -454,6 +460,9 @@
 		62777CEE15B5995F00A7E4CA = {
 			isa = PBXGroup;
 			children = (
+				47E7CF4A1E71B2FA0041FC55 /* FlashRuntimeExtensions.h */,
+				47E7CF4B1E71B2FA0041FC55 /* LoopMeANE.h */,
+				47E7CF4C1E71B2FA0041FC55 /* LoopMeANE.m */,
 				474EC4B01CEAF6BF0033C849 /* LoopMeSDK */,
 				62777D0115B5996000A7E4CA /* Supporting Files */,
 				62777CFD15B5995F00A7E4CA /* Frameworks */,
@@ -501,6 +510,7 @@
 				474EC52F1CEAF6BF0033C849 /* LoopMeVideoManager.h in Headers */,
 				474EC53A1CEAF6BF0033C849 /* LoopMeDefinitions.h in Headers */,
 				474EC54F1CEAF6BF0033C849 /* LoopMeBrowserViewController.h in Headers */,
+				47E7CF4E1E71B2FA0041FC55 /* LoopMeANE.h in Headers */,
 				474EC5381CEAF6BF0033C849 /* LoopMeAnalyticsProvider.h in Headers */,
 				474EC53D1CEAF6BF0033C849 /* LoopMeErrorEventSender.h in Headers */,
 				474EC5321CEAF6BF0033C849 /* NSData+LoopMeAES128.h in Headers */,
@@ -515,6 +525,7 @@
 				474EC5491CEAF6BF0033C849 /* LoopMe360ViewController.h in Headers */,
 				474EC5181CEAF6BF0033C849 /* LoopMeServerURLBuilder.h in Headers */,
 				474EC51C1CEAF6BF0033C849 /* LoopMeVideoClient.h in Headers */,
+				47E7CF4D1E71B2FA0041FC55 /* FlashRuntimeExtensions.h in Headers */,
 				474EC5431CEAF6BF0033C849 /* LoopMeIdentityProvider.h in Headers */,
 				474EC5201CEAF6BF0033C849 /* LoopMeAdDisplayController.h in Headers */,
 				474EC5531CEAF6BF0033C849 /* LoopMeCancelView.h in Headers */,
@@ -625,6 +636,7 @@
 				474EC52C1CEAF6BF0033C849 /* LoopMeServerCommunicator.m in Sources */,
 				474EC51B1CEAF6BF0033C849 /* LoopMeJSClient.m in Sources */,
 				474EC5351CEAF6BF0033C849 /* NSURL+LoopMeAdditions.m in Sources */,
+				47E7CF4F1E71B2FA0041FC55 /* LoopMeANE.m in Sources */,
 				474EC51D1CEAF6BF0033C849 /* LoopMeVideoClient.m in Sources */,
 				474EC5331CEAF6BF0033C849 /* NSData+LoopMeAES128.m in Sources */,
 				474EC5391CEAF6BF0033C849 /* LoopMeAnalyticsProvider.m in Sources */,

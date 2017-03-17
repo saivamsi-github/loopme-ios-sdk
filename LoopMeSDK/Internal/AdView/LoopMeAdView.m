@@ -134,7 +134,6 @@
 
 - (void)willMoveToSuperview:(UIView *)newSuperview {
     [super willMoveToSuperview:newSuperview];
-    
     if (!newSuperview) {
         [self closeAd];
     } else {
@@ -209,7 +208,7 @@
     self.ready = NO;
     self.loading = YES;
     self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
-    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType];
+    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType adSpotSize:self.containerView.bounds.size];
 }
 
 - (void)setAdVisible:(BOOL)visible {

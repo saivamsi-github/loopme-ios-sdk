@@ -181,7 +181,7 @@
     self.loading = YES;
     self.ready = NO;
     self.timeoutTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(timeOut) userInfo:nil repeats:NO];
-    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType];
+    [self.adManager loadAdWithAppKey:self.appKey targeting:targeting integrationType:integrationType adSpotSize:self.containerView.bounds.size];
 }
 
 - (void)showFromViewController:(UIViewController *)viewController animated:(BOOL)animated {

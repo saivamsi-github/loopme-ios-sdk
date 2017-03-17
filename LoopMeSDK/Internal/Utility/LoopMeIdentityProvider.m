@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import <sys/utsname.h>
 
+#import "NSString+Encryption.h"
 #import "LoopMeIdentityProvider.h"
 #import "LoopMeLogging.h"
 
@@ -47,7 +48,7 @@
         return @"tablet";
     }
     
-    return @"unknown";
+    return nil;
 }
 
 + (NSString *)deviceModel {
@@ -58,6 +59,10 @@
                                          encoding:NSUTF8StringEncoding];
     
     return currentModel;
+}
+
++ (NSString *)phoneName {
+    return [[[[UIDevice currentDevice] name] lm_AES128Encrypt] lm_stringByAddingPercentEncodingForRFC3986];
 }
 
 @end

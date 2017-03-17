@@ -271,7 +271,8 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
     
     if (configuration.isMraid) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            NSString *jsPath = [[NSBundle mainBundle] pathForResource:@"mraid" ofType:@"js"];
+            NSBundle *resourcesBundle = [NSBundle bundleWithURL:[[NSBundle mainBundle] URLForResource:@"Resources" withExtension:@"bundle"]];
+            NSString *jsPath = [resourcesBundle pathForResource:@"mraid" ofType:@"js"];
             NSString *mraidjs = [NSString stringWithContentsOfFile:jsPath encoding:NSUTF8StringEncoding error:NULL];
             
             if (mraidjs) {

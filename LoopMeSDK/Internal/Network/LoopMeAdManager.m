@@ -88,14 +88,15 @@ const struct LoopMeIntegrationTypeStruct LoopMeIntegrationType = {
 
 #pragma mark - Public
 
-- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
+- (void)loadAdWithAppKey:(NSString *)appKey targeting:(LoopMeTargeting *)targeting
+         integrationType:(NSString *)integrationType adSpotSize:(CGSize)size {
     if (self.testServerBaseURL) {
         [self loadAdWithURL:[LoopMeServerURLBuilder URLWithAppKey:appKey
                                                         targeting:targeting
-                                                          baseURL:self.testServerBaseURL integrationType:integrationType]];
+                                                          baseURL:self.testServerBaseURL integrationType:integrationType adSpotSize:size]];
     } else {
         [self loadAdWithURL:[LoopMeServerURLBuilder URLWithAppKey:appKey
-                                                        targeting:targeting integrationType:integrationType]];
+                                                        targeting:targeting integrationType:integrationType adSpotSize:size]];
     }
 }
 

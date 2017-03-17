@@ -31,14 +31,14 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 #pragma mark - Class Methods
 
 + (NSURL *)URLWithAppKey:(NSString *)appKey
-               targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
+               targeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType adSpotSize:(CGSize)size {
     return [LoopMeServerURLBuilder URLWithAppKey:appKey targeting:targeting
-                                         baseURL:[NSURL URLWithString:kLoopMeAPIURL] integrationType:integrationType];
+                                         baseURL:[NSURL URLWithString:kLoopMeAPIURL] integrationType:integrationType adSpotSize:size];
 }
 
 + (NSURL *)URLWithAppKey:(NSString *)appKey
                targeting:(LoopMeTargeting *)targeting baseURL:(NSURL *)baseURL
-         integrationType:(NSString *)integrationType {
+         integrationType:(NSString *)integrationType adSpotSize:(CGSize)size {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     parameters[@"ak"] = appKey;
     parameters[@"vt"] = [self parameterForUniqueIdentifier];
@@ -56,7 +56,17 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
     parameters[@"chl"] = [NSString stringWithFormat:@"%f", [UIDevice currentDevice].batteryLevel];
     parameters[@"v360"] = @"1";
     parameters[@"devicemodel"] = [LoopMeIdentityProvider deviceModel];
-    parameters[@"devicetype"] = [LoopMeIdentityProvider deviceType];
+    parameters[@"pn"] = [LoopMeIdentityProvider phoneName];
+    parameters[@"ww"] = [self parameterForScreenWidth];
+    parameters[@"wh"] = [self parameterForScreenHeight];
+    parameters[@"width"] = [NSString stringWithFormat:@"%1.0f", size.width];
+    parameters[@"height"] = [NSString stringWithFormat:@"%1.0f", size.height];
+    
+    NSString *deviceType = [LoopMeIdentityProvider deviceType];
+    if (deviceType) {
+        parameters[@"devicetype"] = deviceType;
+    }
+    
     parameters[@"it"] = integrationType;
 
     if (targeting) {
@@ -107,7 +117,7 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
 
     NSData *plain = [parametersString dataUsingEncoding:NSUTF8StringEncoding];
 
-    NSData *cipher = [plain AES128Encrypt];
+    NSData *cipher = [plain lm_AES128Encrypt];
     return [cipher base64EncodedStringWithOptions:NSDataBase64Encoding64CharacterLineLength];
 }
 
@@ -170,6 +180,14 @@ NSString * const kLoopMeInterfaceOrientationLandscape = @"l";
         }
     }
     return @"UNKNOWN";
+}
+
++ (NSString *)parameterForScreenWidth {
+    return [NSString stringWithFormat:@"%1.0f", [[UIScreen mainScreen] bounds].size.width];
+}
+
++ (NSString *)parameterForScreenHeight {
+    return [NSString stringWithFormat:@"%1.0f", [[UIScreen mainScreen] bounds].size.height];
 }
 
 + (NSString *)buildParameters:(NSMutableDictionary *)parameters {
