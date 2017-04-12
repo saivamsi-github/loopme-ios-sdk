@@ -13,6 +13,7 @@
 #import "LoopMeLogging.h"
 #import "LoopMeAdView.h"
 #import "MopubLoopMeNativeAd.h"
+#import "MPError.h"
 
 @interface MopubLoopMeNativeEvent ()
 <
@@ -45,6 +46,12 @@
                                                scrollView:nil
                                                  delegate:self];
 
+    if (!self.adView) {
+        LoopMeLogDebug(@"Old iOS version");
+        [self.delegate nativeCustomEvent:self
+                didFailToLoadAdWithError:[MOPUBError errorWithCode:MOPUBErrorAdapterInvalid]];
+        return;
+    }
     /*
      * Important: ensure you are displaying ONLY one LoopMe video ad
      * OR disable it otherwise.

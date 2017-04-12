@@ -41,6 +41,12 @@
     NSString *appKey = [info objectForKey:@"app_key"];
     self.loopmeInterstitial = [[MPInstanceProvider sharedProvider] buildLoopMeInterstitialWithAppKey:appKey
                                                                                             delegate:self];
+    if (!self.loopmeInterstitial) {
+        // MPError with invalid error code, in fact old iOS version
+        [self.delegate interstitialCustomEvent:self didFailToLoadAdWithError:[MOPUBError errorWithCode:MOPUBErrorAdapterInvalid]];
+        return;
+    }
+    
     [self.loopmeInterstitial loadAd];
 }
 
