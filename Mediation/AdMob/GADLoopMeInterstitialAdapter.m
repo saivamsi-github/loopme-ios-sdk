@@ -15,7 +15,7 @@
 
     self.loopMeInterstitial = [LoopMeInterstitial interstitialWithAppKey:serverParameter
                                                                 delegate:self];
-    [self.loopMeInterstitial loadAd];
+    [self.loopMeInterstitial loadAdWithTargeting:nil integrationType:@"admob"];
 
 }
 

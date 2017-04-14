@@ -166,7 +166,7 @@
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
-    [self loadAdWithTargeting:targeting integrationType:LoopMeIntegrationType.normal];
+    [self loadAdWithTargeting:targeting integrationType:kLoopMeIntegrationTypeNormal];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {

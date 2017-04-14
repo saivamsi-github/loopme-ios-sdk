@@ -15,15 +15,6 @@
 #import "LoopMeAdDisplayController.h"
 #import "LoopMeLogging.h"
 
-const struct LoopMeIntegrationTypeStruct LoopMeIntegrationType = {
-    .normal = @"normal",
-    .mopub = @"mopub",
-    .admob = @"admob",
-    .fyber = @"fyber",
-    .unity = @"unity",
-    .adobeAir = @"adobe_air"
-};
-
 @interface LoopMeAdManager ()
 <
     LoopMeServerCommunicatorDelegate

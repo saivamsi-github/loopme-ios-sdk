@@ -66,7 +66,7 @@
      * Trigerring ad request
      * Optionally use -loadWithTargeting: in order to receive more relevant ads
      */
-    [self.adView loadAd];
+    [self.adView loadAdWithTargeting:nil integrationType:@"mopub"];
 }
 
 #pragma mark - LoopMeAdViewDelegate

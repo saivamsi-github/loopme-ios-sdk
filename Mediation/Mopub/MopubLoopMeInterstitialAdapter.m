@@ -47,7 +47,7 @@
         return;
     }
     
-    [self.loopmeInterstitial loadAd];
+    [self.loopmeInterstitial loadAdWithTargeting:nil integrationType:@"mopub"];
 }
 
 - (void)showInterstitialFromRootViewController:(UIViewController *)rootViewController {

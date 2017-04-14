@@ -51,7 +51,6 @@
 		476677EC1D8AA2BF00A5D509 /* LoopMeActivityIndicatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 476677C01D8AA2BF00A5D509 /* LoopMeActivityIndicatorView.m */; };
 		476677ED1D8AA2BF00A5D509 /* LoopMeProgressOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 476677C21D8AA2BF00A5D509 /* LoopMeProgressOverlayView.m */; };
 		476677EE1D8AA2BF00A5D509 /* LoopMeAdWebView.m in Sources */ = {isa = PBXBuildFile; fileRef = 476677C51D8AA2BF00A5D509 /* LoopMeAdWebView.m */; };
-		47A070441E5F1B440019F463 /* GoogleMobileAds.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47A070431E5F1B440019F463 /* GoogleMobileAds.framework */; };
 		47A070471E5F1B730019F463 /* LoopMeMRAIDClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A070461E5F1B730019F463 /* LoopMeMRAIDClient.m */; };
 		47A0704A1E5F1B860019F463 /* LoopMeCloseButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 47A070491E5F1B860019F463 /* LoopMeCloseButton.m */; };
 /* End PBXBuildFile section */
@@ -146,7 +145,6 @@
 		476677C61D8AA2BF00A5D509 /* LoopMeAdView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeAdView.h; sourceTree = "<group>"; };
 		476677C71D8AA2BF00A5D509 /* LoopMeInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeInterstitial.h; sourceTree = "<group>"; };
 		476677C81D8AA2BF00A5D509 /* LoopMeTargeting.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeTargeting.h; sourceTree = "<group>"; };
-		47A070431E5F1B440019F463 /* GoogleMobileAds.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GoogleMobileAds.framework; sourceTree = "<group>"; };
 		47A070451E5F1B730019F463 /* LoopMeMRAIDClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeMRAIDClient.h; sourceTree = "<group>"; };
 		47A070461E5F1B730019F463 /* LoopMeMRAIDClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeMRAIDClient.m; sourceTree = "<group>"; };
 		47A070481E5F1B860019F463 /* LoopMeCloseButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeCloseButton.h; sourceTree = "<group>"; };
@@ -162,7 +160,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47A070441E5F1B440019F463 /* GoogleMobileAds.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,7 +169,6 @@
 		473B9C001D65BFB200DDD20A = {
 			isa = PBXGroup;
 			children = (
-				47A070431E5F1B440019F463 /* GoogleMobileAds.framework */,
 				476677661D8AA2BF00A5D509 /* LoopMeSDK */,
 				476677621D8AA2A000A5D509 /* LoopMeAdMobAdapter */,
 				473B9C0B1D65BFB200DDD20A /* AdMobAdapter */,

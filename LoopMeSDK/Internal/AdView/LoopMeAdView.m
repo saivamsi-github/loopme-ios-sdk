@@ -19,7 +19,6 @@
 #import "LoopMeErrorEventSender.h"
 #import "LoopMeAnalyticsProvider.h"
 
-
 @interface LoopMeAdView ()
 <
     LoopMeAdManagerDelegate,
@@ -189,11 +188,11 @@
 }
 
 - (void)loadAd {
-    [self loadAdWithTargeting:nil integrationType:LoopMeIntegrationType.normal];
+    [self loadAdWithTargeting:nil integrationType:kLoopMeIntegrationTypeNormal];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
-    [self loadAdWithTargeting:targeting integrationType:LoopMeIntegrationType.normal];
+    [self loadAdWithTargeting:targeting integrationType:kLoopMeIntegrationTypeNormal];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {

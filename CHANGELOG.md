@@ -1,3 +1,9 @@
+## Version 6.2.3 (14.03.2017)
+
+- ads delivery performance improvements
+- code refactoring
+- updated Demo aps
+
 ## Version 6.2.3 (17.02.2017)
 
 - ads delivery performance improvements

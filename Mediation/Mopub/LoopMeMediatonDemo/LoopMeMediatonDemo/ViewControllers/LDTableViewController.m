@@ -18,7 +18,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.menuItems = [NSArray arrayWithObjects:@"Native Ads (Ad Request)", nil];
+    self.menuItems = [NSArray arrayWithObjects:@"Native Ads (Ad Request)", @"Interstitial Ad", nil];
     //TODO: bridge for MPTableViewPlacer
 }
 
@@ -55,7 +55,7 @@
     if (indexPath.row == 0) {
         [self performSegueWithIdentifier:@"LDShowAdRequestSegueIdentifier" sender:self];
     } else if (indexPath.row == 1) {
-        
+        [self performSegueWithIdentifier:@"LDShowIntAdSegueIdentifier" sender:self];
     }
 }
 

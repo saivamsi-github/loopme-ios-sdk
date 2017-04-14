@@ -13,14 +13,7 @@
 @class LoopMeAdManager;
 @class LoopMeTargeting;
 
-extern const struct LoopMeIntegrationTypeStruct {
-    __unsafe_unretained NSString *normal;
-    __unsafe_unretained NSString *mopub;
-    __unsafe_unretained NSString *admob;
-    __unsafe_unretained NSString *fyber;
-    __unsafe_unretained NSString *unity;
-    __unsafe_unretained NSString *adobeAir;
-} LoopMeIntegrationType;
+static NSString * const kLoopMeIntegrationTypeNormal = @"normal";
 
 @protocol LoopMeAdManagerDelegate;
 
