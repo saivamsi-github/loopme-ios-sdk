@@ -9,7 +9,9 @@
 #ifndef LoopMeDefinitions_h
 #define LoopMeDefinitions_h
 
-#define LOOPME_SDK_VERSION @"6.2.4"
+#define LOOPME_SDK_VERSION @"6.3.0"
+
+#define LOOPME_MOAT_PARTNER_CODE @"loopmeinappvideo302333386816"
 
 #undef SYSTEM_VERSION_LESS_THAN
 

@@ -49,5 +49,6 @@ extern const struct LoopMeVideoStateStruct
 - (void)videoClientDidBecomeActive:(LoopMeVideoClient *)client;
 - (UIViewController *)viewControllerForPresentation;
 - (NSString *)appKey;
+- (BOOL)useMoatTracking;
 
 @end

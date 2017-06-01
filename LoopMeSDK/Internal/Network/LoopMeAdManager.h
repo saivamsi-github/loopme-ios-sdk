@@ -13,8 +13,6 @@
 @class LoopMeAdManager;
 @class LoopMeTargeting;
 
-static NSString * const kLoopMeIntegrationTypeNormal = @"normal";
-
 @protocol LoopMeAdManagerDelegate;
 
 @interface LoopMeAdManager : NSObject

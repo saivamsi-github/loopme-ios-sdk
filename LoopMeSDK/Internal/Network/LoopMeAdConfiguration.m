@@ -9,8 +9,20 @@
 #import "LoopMeAdConfiguration.h"
 #import "LoopMeLogging.h"
 #import "LoopMeGlobalSettings.h"
+#import "NSString+Encryption.h"
 
 const int kLoopMeExpireTimeIntervalMinimum = 600;
+
+// Events
+const struct LoopMeTrackerNameStruct LoopMeTrackerName = {
+    .moat = @"moat"
+};
+
+@interface LoopMeAdConfiguration ()
+
+@property (nonatomic) NSArray *measurePartners;
+
+@end
 
 @implementation LoopMeAdConfiguration
 
@@ -32,6 +44,20 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
         [self mapAdConfigurationFromDictionary:responseDictionary];
     }
     return self;
+}
+
+- (NSDictionary *)adIdsForMOAT {
+    if (!_adIdsForMOAT) {
+    
+        NSRange macros = [_adResponseHTMLString rangeOfString:@"macros"];
+        NSRange package_ids = [_adResponseHTMLString rangeOfString:@"package_ids"];
+        NSString *macrosString = [_adResponseHTMLString substringWithRange:NSMakeRange(macros.location + 8, package_ids.location - macros.location - 10)];
+        
+        NSDictionary *jsonMacroses = [NSJSONSerialization JSONObjectWithData:[macrosString dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:nil];
+        
+        _adIdsForMOAT = @{@"level1" : [jsonMacroses[kLoopMeAdvertiser] stringByRemovingPercentEncoding], @"level2" : [jsonMacroses[kLoopMeCampaign] stringByRemovingPercentEncoding], @"level3" : [jsonMacroses[kLoopMeLineItem] stringByRemovingPercentEncoding], @"level4" : [jsonMacroses[kLoopMeCreative] stringByRemovingPercentEncoding], @"slicer1" : [jsonMacroses[kLoopMeAPP] stringByRemovingPercentEncoding], @"slicer2" : @""};
+    }
+    return _adIdsForMOAT;
 }
 
 #pragma mark - Private
@@ -59,6 +85,8 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
         [LoopMeGlobalSettings sharedInstance].liveDebugEnabled = [settings[@"debug"] boolValue];
     }
     
+    self.measurePartners = [settings objectForKey:@"measure_partners"];
+    
     if ([settings[@"orientation"] isEqualToString:@"landscape"]) {
         _orientation = LoopMeAdOrientationLandscape;
     } else if ([settings[@"orientation"] isEqualToString:@"portrait"]) {
@@ -68,6 +96,22 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
     }
 }
 
+- (void)initAdIds {
+    NSRange macros = [_adResponseHTMLString rangeOfString:@"macros"];
+    NSRange package_ids = [_adResponseHTMLString rangeOfString:@"package_ids"];
+    NSString *macrosString = [_adResponseHTMLString substringWithRange:NSMakeRange(macros.location + 8, package_ids.location - macros.location - 10)];
+    
+    NSDictionary *jsonMacroses = [NSJSONSerialization JSONObjectWithData:[macrosString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
+    
+    NSString *advertiser = [[NSString alloc] initWithString:jsonMacroses[kLoopMeAdvertiser]];
+    NSString *capmaign = [[NSString alloc] initWithString:jsonMacroses[kLoopMeCampaign]];
+    NSString *lineItem = [[NSString alloc] initWithString:jsonMacroses[kLoopMeLineItem]];
+    NSString *creative = [[NSString alloc] initWithString:jsonMacroses[kLoopMeCreative]];
+    NSString *app = [[NSString alloc] initWithString:jsonMacroses[kLoopMeAPP]];
+
+    _adIdsForMOAT = @{@"level1" : advertiser, @"level2" : capmaign, @"level3" : lineItem, @"level4" : creative, @"slicer1" : app, @"slicer2" : @""};
+}
+
 - (NSString *)description {
     return [NSString stringWithFormat:@"Ad format: %@, orientation: %@, expires in: %ld seconds",
                    (self.format == LoopMeAdFormatBanner) ? @"banner" : @"interstitial",
@@ -75,4 +119,9 @@ const int kLoopMeExpireTimeIntervalMinimum = 600;
                    (long)self.expirationTime];
 
 }
+
+- (BOOL)useTracking:(NSString *)trakerName {
+    return [self.measurePartners containsObject:trakerName];
+}
+
 @end

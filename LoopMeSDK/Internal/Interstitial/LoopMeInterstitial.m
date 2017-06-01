@@ -41,6 +41,9 @@
 #pragma mark - Life Cycle
 
 - (void)dealloc {
+    if (self.adInterstitialViewController.presentingViewController) {
+        [self.adInterstitialViewController.presentingViewController dismissViewControllerAnimated:NO completion:nil];
+    }
     [self unRegisterObserver];
     [_adManager invalidateTimers];
     [_adDisplayController stopHandlingRequests];
@@ -166,7 +169,7 @@
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
-    [self loadAdWithTargeting:targeting integrationType:kLoopMeIntegrationTypeNormal];
+    [self loadAdWithTargeting:targeting integrationType:@"normal"];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
@@ -248,6 +251,8 @@
         return;
     }
     self.adConfiguration = adConfiguration;
+    
+    [[LoopMeGlobalSettings sharedInstance].adIds setObject:adConfiguration.adIdsForMOAT forKey:self.appKey];
     
     if ([LoopMeGlobalSettings sharedInstance].liveDebugEnabled ) {
         [LoopMeGlobalSettings sharedInstance].appKeyForLiveDebug = self.appKey;

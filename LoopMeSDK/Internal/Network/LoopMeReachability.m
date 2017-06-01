@@ -75,7 +75,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Public Class
 
-+ (LoopMeReachability *) reachabilityForLocalWiFi; {
++ (LoopMeReachability *) reachabilityForLocalWiFi {
     struct sockaddr_in localWifiAddress;
     bzero(&localWifiAddress, sizeof(localWifiAddress));
     localWifiAddress.sin_len = sizeof(localWifiAddress);
@@ -92,7 +92,7 @@ typedef NS_ENUM(NSUInteger, LoopMeReachabilityNetworkStatus) {
 
 #pragma mark - Private 
 
-+ (LoopMeReachability *)reachabilityWithAddress: (const struct sockaddr_in*) hostAddress; {
++ (LoopMeReachability *)reachabilityWithAddress: (const struct sockaddr_in*) hostAddress {
     SCNetworkReachabilityRef reachability = SCNetworkReachabilityCreateWithAddress(kCFAllocatorDefault, (const struct sockaddr*)hostAddress);
     LoopMeReachability* retVal = NULL;
     if(reachability!= NULL) {

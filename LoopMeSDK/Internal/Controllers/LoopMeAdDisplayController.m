@@ -8,6 +8,8 @@
 
 #import <AVFoundation/AVFoundation.h>
 #import <JavaScriptCore/JavaScriptCore.h>
+#import <LOOMoatMobileAppKit/LOOMoatAnalytics.h>
+#import <LOOMoatMobileAppKit/LOOMoatWebTracker.h>
 
 #import "LoopMeAdDisplayController.h"
 #import "LoopMeAdConfiguration.h"
@@ -57,6 +59,7 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchWebView;
 
 @property (nonatomic, assign) BOOL adDisplayed;
+@property (nonatomic, strong) LOOMoatWebTracker *tracker;
 
 - (void)deviceShaken;
 - (BOOL)shouldIntercept:(NSURL *)URL
@@ -269,6 +272,18 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
     self.configuration = configuration;
     self.shouldHandleRequests = YES;
     
+    if ([self.configuration useTracking:LoopMeTrackerName.moat]) {
+        LOOMoatOptions *options = [[LOOMoatOptions alloc] init];
+        options.debugLoggingEnabled = YES;
+        [[LOOMoatAnalytics sharedInstance] startWithOptions:options];
+        
+        if (!self.tracker) {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.tracker = [LOOMoatWebTracker trackerWithWebComponent:self.webView];
+            });
+        }
+    }
+
     if (configuration.isMraid) {
         dispatch_async(dispatch_get_main_queue(), ^{
             NSBundle *resourcesBundle = [NSBundle bundleWithURL:[[NSBundle mainBundle] URLForResource:@"Resources" withExtension:@"bundle"]];
@@ -290,6 +305,9 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 }
 
 - (void)displayAd {
+    if ([self.configuration useTracking:LoopMeTrackerName.moat]) {
+        [self.tracker startTracking];
+    }
     self.adDisplayed = YES;
     self.videoClient.viewController = [self.delegate viewControllerForPresentation];
     self.webView.frame = self.delegate.containerView.bounds;
@@ -329,6 +347,9 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
 }
 
 - (void)closeAd {
+    if ([self.configuration useTracking:LoopMeTrackerName.moat]) {
+        [self.tracker stopTracking];
+    }
     [self stopHandlingRequests];
     self.visible = NO;
     self.adDisplayed = NO;
@@ -614,6 +635,10 @@ NSString * const kLoopMeBaseURL = @"http://loopme.me/";
     if (/*!self.isDestIsShown && ![self.videoClient playerReachedEnd] && !self.isEndCardClicked && */self.visible) {
         [self.videoClient play];
     }
+}
+
+- (BOOL)useMoatTracking {
+    return [_configuration useTracking:LoopMeTrackerName.moat];
 }
 
 @end
