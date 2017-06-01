@@ -15,6 +15,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         instance = [[LoopMeGlobalSettings alloc] init];
+        instance.adIds = [[NSMutableDictionary alloc] init];
     });
     return instance;
 }

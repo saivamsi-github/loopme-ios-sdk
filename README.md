@@ -1,11 +1,10 @@
 You can find integration guide in our github [wiki](https://github.com/loopme/loopme-ios-sdk/wiki) page.
 
 ## What's new ##
-**v6.2.4**
+**v6.3.0**
 
-- ads delivery performance improvements
-- code refactoring
-- updated Demo aps
+- Added MOAT SDK viewability management
+- LoopMeSDK project changed to .framework template
 
 Please view the [changelog](CHANGELOG.md) for details.
 

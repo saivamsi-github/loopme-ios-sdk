@@ -199,7 +199,7 @@ NSTimeInterval const kLoopMeVideoCacheExpiredTime = (-1*32*60*60);
 
 - (NSURLRequest *)connection: (NSURLConnection *)connection
              willSendRequest: (NSURLRequest *)request
-            redirectResponse: (NSURLResponse *)redirectResponse; {
+            redirectResponse: (NSURLResponse *)redirectResponse {
     if (redirectResponse) {
         NSURL *newURL = [request URL];
         NSMutableURLRequest *newRequest = [self.request mutableCopy];

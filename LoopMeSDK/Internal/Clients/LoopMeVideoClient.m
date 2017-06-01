@@ -8,6 +8,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MediaPlayer/MediaPlayer.h>
 #import <AVKit/AVKit.h>
+#import <LOOMoatMobileAppKit/LOOMoatMobileAppKit.h>
 
 #import "LoopMeVideoClient.h"
 #import "LoopMeDefinitions.h"
@@ -71,6 +72,7 @@ const CGFloat kOneFrameDuration = 0.03;
 @property (nonatomic, assign) BOOL preloadingForCacheStarted;
 
 @property (nonatomic, strong) AVAssetResourceLoadingRequest *resourceLoadingRequest;
+@property (nonatomic, strong) LOOMoatVideoTracker *moatTracker;
 
 - (NSURL *)currentAssetURLForPlayer:(AVPlayer *)player;
 - (void)setupPlayerWithFileURL:(NSURL *)URL;
@@ -205,6 +207,9 @@ const CGFloat kOneFrameDuration = 0.03;
 - (instancetype)initWithDelegate:(id<LoopMeVideoClientDelegate>)delegate {
     if (self = [super init]) {
         _delegate = delegate;
+        if (_delegate.useMoatTracking && ![LoopMeGlobalSettings sharedInstance].isV360) {
+            _moatTracker = [LOOMoatVideoTracker trackerWithPartnerCode:LOOPME_MOAT_PARTNER_CODE];
+        }
         [self registerObservers];
     }
     return self;
@@ -412,6 +417,9 @@ const CGFloat kOneFrameDuration = 0.03;
 }
 
 - (void)cancel {
+    if (self.delegate.useMoatTracking) {
+        [self.moatTracker stopTracking];
+    }
     [self.videoManager cancel];
     [self.playerLayer removeFromSuperlayer];
     [self.videoView removeFromSuperview];
@@ -478,6 +486,15 @@ const CGFloat kOneFrameDuration = 0.03;
     //if time is negative, dont seek. Hack for setVisibleNoJS property in LoopMeAdDisplaycontroller.
     if (time >= 0) {
         [self seekToTime:time];
+    }
+    
+    if (self.delegate.useMoatTracking) {
+        NSDictionary *adIds = [LoopMeGlobalSettings sharedInstance].adIds[self.appKey];
+        if (self.playerLayer) {
+            [self.moatTracker trackVideoAd:adIds usingAVMoviePlayer:self.player withLayer:self.playerLayer withContainingView:self.videoView];
+        } else {
+            [self.moatTracker trackVideoAd:adIds usingAVMoviePlayer:self.player withLayer:self.videoView.layer withContainingView:self.videoView];
+        }
     }
     
     self.shouldPlay = YES;

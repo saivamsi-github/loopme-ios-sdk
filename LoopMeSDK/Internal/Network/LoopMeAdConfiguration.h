@@ -24,15 +24,21 @@ struct LoopMeMRAIDExpandProperties {
     BOOL useCustomClose;
 };
 
+extern const struct LoopMeTrackerNameStruct {
+    __unsafe_unretained NSString *moat;
+} LoopMeTrackerName;
+
 @interface LoopMeAdConfiguration : NSObject
 
 - (instancetype)initWithData:(NSData *)data;
+- (BOOL)useTracking:(NSString *)trakerName;
 
 @property (nonatomic, assign) BOOL allowOrientationChange;
 @property (nonatomic, assign) LoopMeAdFormat format;
 @property (nonatomic, assign) LoopMeAdOrientation orientation;
 @property (nonatomic, assign) struct LoopMeMRAIDExpandProperties expandProperties;
 @property (nonatomic, assign, getter=isMraid) BOOL mraid;
+@property (nonatomic, strong) NSDictionary *adIdsForMOAT;
 @property (nonatomic, assign) NSInteger expirationTime;
 @property (nonatomic, strong) NSString *adResponseHTMLString;
 

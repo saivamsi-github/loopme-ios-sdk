@@ -188,11 +188,11 @@
 }
 
 - (void)loadAd {
-    [self loadAdWithTargeting:nil integrationType:kLoopMeIntegrationTypeNormal];
+    [self loadAdWithTargeting:nil integrationType:@"normal"];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting {
-    [self loadAdWithTargeting:targeting integrationType:kLoopMeIntegrationTypeNormal];
+    [self loadAdWithTargeting:targeting integrationType:@"normal"];
 }
 
 - (void)loadAdWithTargeting:(LoopMeTargeting *)targeting integrationType:(NSString *)integrationType {
@@ -377,13 +377,14 @@
 #pragma mark - LoopMeAdManagerDelegate
 
 - (void)adManager:(LoopMeAdManager *)manager didReceiveAdConfiguration:(LoopMeAdConfiguration *)adConfiguration {
-    if (!adConfiguration || adConfiguration.format != LoopMeAdFormatBanner) {
+    if (!adConfiguration) {
         NSString *errorMessage = @"Could not process ad: interstitial format expected.";
         LoopMeLogDebug(errorMessage);
         [self failedLoadingAdWithError:[LoopMeError errorForStatusCode:LoopMeErrorCodeIncorrectFormat]];
         return;
     }
     self.adConfiguration = adConfiguration;
+    [[LoopMeGlobalSettings sharedInstance].adIds setObject:adConfiguration.adIdsForMOAT forKey:self.appKey];
     [self.adDisplayController loadConfiguration:self.adConfiguration];
 }
 
