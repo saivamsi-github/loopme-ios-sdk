@@ -1,6 +1,6 @@
 ## Version 6.3.0 (1.06.2017)
 
-- Added MOAT SDK viewability management
+- Added MOAT SDK viewability measurement support for Native and Rich Media ads
 - LoopMeSDK project changed to .framework template
 
 ## Version 6.2.3 (14.03.2017)

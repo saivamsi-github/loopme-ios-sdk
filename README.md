@@ -3,7 +3,7 @@ You can find integration guide in our github [wiki](https://github.com/loopme/lo
 ## What's new ##
 **v6.3.0**
 
-- Added MOAT SDK viewability management
+- Added MOAT SDK viewability measurement support for Native and Rich Media ads
 - LoopMeSDK project changed to .framework template
 
 Please view the [changelog](CHANGELOG.md) for details.
