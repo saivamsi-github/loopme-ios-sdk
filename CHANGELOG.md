@@ -1,3 +1,7 @@
+## Version 6.3.1 (14.06.2017)
+
+- Changed name of resources bundle to avoid name conflicts.
+
 ## Version 6.3.0 (1.06.2017)
 
 - Added MOAT SDK viewability measurement support for Native and Rich Media ads

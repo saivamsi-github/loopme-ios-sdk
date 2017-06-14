@@ -40,7 +40,7 @@
 		47F4FED51EDFFC08007963DA /* LoopMeURLResolver.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F4FE7C1EDFFC08007963DA /* LoopMeURLResolver.m */; };
 		47F4FED61EDFFC08007963DA /* LoopMeVideoManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F4FE7D1EDFFC08007963DA /* LoopMeVideoManager.h */; };
 		47F4FED71EDFFC08007963DA /* LoopMeVideoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F4FE7E1EDFFC08007963DA /* LoopMeVideoManager.m */; };
-		47F4FED81EDFFC08007963DA /* Resources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 47F4FE801EDFFC08007963DA /* Resources.bundle */; };
+		47F4FED81EDFFC08007963DA /* LoopMeResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 47F4FE801EDFFC08007963DA /* LoopMeResources.bundle */; };
 		47F4FED91EDFFC08007963DA /* LoopMeTargeting.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F4FE821EDFFC08007963DA /* LoopMeTargeting.m */; };
 		47F4FEDA1EDFFC08007963DA /* NSData+LoopMeAES128.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F4FE851EDFFC08007963DA /* NSData+LoopMeAES128.h */; };
 		47F4FEDB1EDFFC08007963DA /* NSData+LoopMeAES128.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F4FE861EDFFC08007963DA /* NSData+LoopMeAES128.m */; };
@@ -127,7 +127,7 @@
 		47F4FE7C1EDFFC08007963DA /* LoopMeURLResolver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeURLResolver.m; sourceTree = "<group>"; };
 		47F4FE7D1EDFFC08007963DA /* LoopMeVideoManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoopMeVideoManager.h; sourceTree = "<group>"; };
 		47F4FE7E1EDFFC08007963DA /* LoopMeVideoManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeVideoManager.m; sourceTree = "<group>"; };
-		47F4FE801EDFFC08007963DA /* Resources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Resources.bundle; sourceTree = "<group>"; };
+		47F4FE801EDFFC08007963DA /* LoopMeResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = LoopMeResources.bundle; sourceTree = "<group>"; };
 		47F4FE821EDFFC08007963DA /* LoopMeTargeting.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoopMeTargeting.m; sourceTree = "<group>"; };
 		47F4FE851EDFFC08007963DA /* NSData+LoopMeAES128.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+LoopMeAES128.h"; sourceTree = "<group>"; };
 		47F4FE861EDFFC08007963DA /* NSData+LoopMeAES128.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+LoopMeAES128.m"; sourceTree = "<group>"; };
@@ -339,7 +339,7 @@
 		47F4FE7F1EDFFC08007963DA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				47F4FE801EDFFC08007963DA /* Resources.bundle */,
+				47F4FE801EDFFC08007963DA /* LoopMeResources.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -591,7 +591,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47F4FED81EDFFC08007963DA /* Resources.bundle in Resources */,
+				47F4FED81EDFFC08007963DA /* LoopMeResources.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
