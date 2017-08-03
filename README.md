@@ -1,3 +1,5 @@
+// Loopme-ios-sdk
+
 You can find integration guide in our github [wiki](https://github.com/loopme/loopme-ios-sdk/wiki) page.
 
 ## What's new ##
